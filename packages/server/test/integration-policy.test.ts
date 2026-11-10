@@ -64,9 +64,8 @@ it.live("integration policy filters /connect and blocks denied integrations and 
     expect(integrations.status).toBe(200)
     // MCP sign-ins are outside integration policy; `mcp.use` governs MCP servers.
     const listed: { id: string; metadata?: { source?: string } }[] = integrations.body.data
-    expect(listed.filter((integration) => integration.metadata?.source !== "mcp").map((item) => item.id)).toEqual([
-      "opencode",
-    ])
+    // The fork ships an empty catalog, so no built-in integrations are registered.
+    expect(listed.filter((integration) => integration.metadata?.source !== "mcp").map((item) => item.id)).toEqual([])
     const mcp = listed.find((integration) => integration.metadata?.source === "mcp")
     expect(mcp?.id).toStartWith("mcp_")
     const signIn = yield* request("POST", `/api/integration/${encodeURIComponent(mcp?.id ?? "")}/connect/oauth`, {
