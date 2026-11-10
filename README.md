@@ -77,7 +77,9 @@ Tests live per package; run them from a package directory, e.g. `cd packages/cor
 
 ## Attribution and license
 
-PorkCode is derived from [OpenCode](https://github.com/anomalyco/opencode) by the opencode project, used under the MIT License. The full upstream commit history is retained in this repository for attribution, and the original copyright notice is kept in [LICENSE](LICENSE).
+PorkCode is derived from [OpenCode](https://github.com/anomalyco/opencode) by the opencode project, used under the MIT License. This repository keeps a fresh history that starts at an import of upstream `dev` at commit [`73c95abac2`](https://github.com/anomalyco/opencode/commit/73c95abac21dfe308f649f10b7c7df549ef94c59); every later commit is a PorkCode change. The original copyright notice is kept in [LICENSE](LICENSE).
+
+Upstream updates are applied vendor-drop style: the import commit's tree matches `dev@73c95abac2` byte for byte, so syncing means applying `git diff <old-base>..<new-tip>` from an `upstream` remote onto this branch and committing the result.
 
 ```
 MIT License
