@@ -26,3 +26,9 @@ export const APP_NAME = app.isPackaged ? appNames[CHANNEL] : "PorkCode Dev"
 // userData, and with it the single-instance lock, logs, drafts, and CLI stages, is named after this id;
 // keeping upstream's ai.opencode.desktop made PorkCode a second instance of OpenCode on the same data.
 export const APP_ID = app.isPackaged ? appIDs[CHANNEL] : "com.imrparker.porkcode.dev"
+
+// The bundled CLI is built with OPENCODE_CHANNEL=porkcode (see the README installer recipe): its daemon registers
+// under this file, on a hash-derived port and a fork-owned database, instead of the shared service.json. That keeps
+// PorkCode from adopting or replacing an installed OpenCode background service while their versions diverge.
+// Keep in sync with filename() in packages/cli/src/services/service-config.ts.
+export const SERVICE_FILE = "service-porkcode.json"

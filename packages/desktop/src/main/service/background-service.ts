@@ -2,7 +2,7 @@ import { app } from "electron"
 import type { Endpoint } from "@opencode/client/service"
 import { Context, Effect, FileSystem, Layer, Option, Path, Schema } from "effect"
 import { SidecarChanged } from "../../shared/ipc-rpc/events"
-import { CHANNEL } from "../constants"
+import { CHANNEL, SERVICE_FILE } from "../constants"
 import { emitIpcEvent } from "../ipc-events"
 import { getMainWindows } from "../windows"
 import { BackgroundServiceMachine } from "./background-service-machine"
@@ -108,14 +108,14 @@ const prepare = Effect.fn("BackgroundService.prepare")(function* (mode: Backgrou
   if (isolated) process.env.XDG_STATE_HOME = app.getPath("userData")
   const client = yield* Effect.promise(() => import("@opencode/client/service"))
 
+  const stateDir = process.env.XDG_STATE_HOME ?? path.join(app.getPath("home"), ".local", "state")
+  // Packaged PorkCode talks only to its own channel's registration; see SERVICE_FILE in constants.ts.
   const file =
     process.env.OPENCODE_DESKTOP_SERVER_CHANNEL === "local"
-      ? path.join(
-          process.env.XDG_STATE_HOME ?? path.join(app.getPath("home"), ".local", "state"),
-          "opencode",
-          "service-local.json",
-        )
-      : undefined
+      ? path.join(stateDir, "opencode", "service-local.json")
+      : app.isPackaged
+        ? path.join(stateDir, "opencode", SERVICE_FILE)
+        : undefined
 
   return { cli, client, file, isolated, version }
 })
