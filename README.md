@@ -81,11 +81,13 @@ The desktop app bundles the CLI and packages into a per-user NSIS installer. Bui
 
 ```powershell
 # 1. CLI binary (the desktop bundles the win-x64 baseline variant).
-#    OPENCODE_VERSION gives release semantics: channel "latest", so the daemon
-#    registers in the shared service.json that every client discovers. Building
-#    with OPENCODE_CHANNEL=prod instead would hide the service from all clients.
+#    OPENCODE_CHANNEL=porkcode gives PorkCode its own background-service
+#    registration (service-porkcode.json), port, and database, so it never
+#    shares or replaces an installed OpenCode service — packaged desktop
+#    builds look for exactly that file, so keep this channel.
 cd packages\cli
-$env:OPENCODE_VERSION = "2.2.5"
+$env:OPENCODE_CHANNEL = "porkcode"
+$env:OPENCODE_VERSION = "0.0.1"
 bun run script/build.ts --single --baseline
 
 # 2. Desktop app against that CLI (prod is correct for the APP packaging channel)
