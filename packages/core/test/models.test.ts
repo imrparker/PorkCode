@@ -262,12 +262,6 @@ describe("ModelsDev Service", () => {
   it.live("takes each model's package from its first API and skips URLs packages build themselves", () =>
     Effect.gen(function* () {
       const cache = makeCache()
-      const azureAPI = (protocol: string, opencodeai: string) => ({
-        [protocol]: {
-          base_url: "https://${AZURE_RESOURCE_NAME}.openai.azure.com/openai/v1",
-          sdk: { aisdk: "@ai-sdk/azure", opencodeai },
-        },
-      })
       writeCache(cache, {
         acme: {
           ...fixture.acme,
@@ -277,30 +271,48 @@ describe("ModelsDev Service", () => {
               api: {
                 responses: {
                   base_url: "https://api.acme.test/v1",
-                  sdk: { aisdk: "@ai-sdk/openai", opencodeai: "@opencode/ai/providers/openai/responses" },
+                  sdk: { opencodeai: "@opencode/ai/providers/openai-compatible/responses" },
                 },
                 "chat-completions": { base_url: "https://other.acme.test/v1", sdk: { aisdk: "@ai-sdk/openai" } },
               },
             }),
+            // Without an opencode entrypoint the AI SDK name is kept as-is; only the
+            // openai-compatible alias still maps to a native package.
             "acme-fallback": sourceModel("acme-fallback", {
               api: { messages: { base_url: "https://claude.acme.test/v1", sdk: { aisdk: "@ai-sdk/anthropic" } } },
             }),
           },
         },
-        azure: {
-          id: "azure",
-          name: "Azure",
-          env: ["AZURE_RESOURCE_NAME", "AZURE_API_KEY"],
+        proxy: {
+          id: "proxy",
+          name: "Proxy",
+          env: ["PROXY_API_KEY"],
           models: {
-            "gpt-5": sourceModel("gpt-5", { api: azureAPI("responses", "@opencode/ai/providers/azure/responses") }),
-            "custom-chat": sourceModel("custom-chat", {
-              api: azureAPI("chat-completions", "@opencode/ai/providers/azure/chat"),
+            chat: sourceModel("chat", {
+              api: { "chat-completions": { base_url: "https://api.proxy.test/v1", sdk: { aisdk: "@ai-sdk/openai-compatible" } } },
+            }),
+            responses: sourceModel("responses", {
+              api: {
+                responses: {
+                  base_url: "https://resp.proxy.test/v1",
+                  sdk: { opencodeai: "@opencode/ai/providers/openai-compatible/responses" },
+                },
+              },
             }),
             claude: sourceModel("claude", {
               api: {
                 messages: {
-                  base_url: "https://${AZURE_RESOURCE_NAME}.services.ai.azure.com/anthropic/v1",
+                  base_url: "https://${PROXY_REGION}.proxy.test/anthropic/v1",
                   sdk: { aisdk: "@ai-sdk/anthropic", opencodeai: "@opencode/ai/providers/anthropic-compatible" },
+                },
+              },
+            }),
+            // Packages that build their own URL from settings keep the catalog URL out.
+            "own-url": sourceModel("own-url", {
+              api: {
+                "chat-completions": {
+                  base_url: "https://${WATSONX_REGION}.watsonx.test/v1",
+                  sdk: { aisdk: "watsonx-ai-provider" },
                 },
               },
             }),
@@ -308,29 +320,31 @@ describe("ModelsDev Service", () => {
         },
       })
       const state = yield* Ref.make(initialState)
-      const [acme, azure] = yield* provided(
+      const [acme, proxy] = yield* provided(
         state,
         cache,
         ModelsDev.Service.use((service) => service.get()),
       )
       const acmeModel = (id: string) => acme?.models.find((model) => model.id === id)
-      expect(acmeModel("acme-responses")?.package).toBe("@opencode/ai/providers/openai/responses")
+      expect(acmeModel("acme-responses")?.package).toBe("@opencode/ai/providers/openai-compatible/responses")
       expect(acmeModel("acme-responses")?.settings).toBeUndefined()
-      // Without an opencode package, the AI SDK package maps to the native one as before.
-      expect(acmeModel("acme-fallback")?.package).toBe("@opencode/ai/providers/anthropic")
+      expect(acmeModel("acme-fallback")?.package).toBe("aisdk:@ai-sdk/anthropic")
       expect(acmeModel("acme-fallback")?.settings).toEqual({ baseURL: "https://claude.acme.test/v1" })
 
-      const azureModel = (id: string) => azure?.models.find((model) => model.id === id)
-      expect(azure?.info.package).toBe("@opencode/ai/providers/azure/responses")
-      expect(azure?.info.settings).toBeUndefined()
-      expect(azureModel("gpt-5")?.package).toBeUndefined()
-      expect(azureModel("gpt-5")?.settings).toBeUndefined()
-      expect(azureModel("custom-chat")?.package).toBe("@opencode/ai/providers/azure/chat")
-      expect(azureModel("custom-chat")?.settings).toBeUndefined()
-      expect(azureModel("claude")?.settings).toEqual({
-        baseURL: "https://${AZURE_RESOURCE_NAME}.services.ai.azure.com/anthropic/v1",
-        provider: "azure",
+      const proxyModel = (id: string) => proxy?.models.find((model) => model.id === id)
+      // One model omits its catalog URL, so the provider carries no common baseURL.
+      expect(proxy?.info.settings).toBeUndefined()
+      expect(proxyModel("chat")?.package).toBeUndefined()
+      expect(proxyModel("chat")?.settings).toEqual({ baseURL: "https://api.proxy.test/v1", provider: "proxy" })
+      expect(proxyModel("responses")?.package).toBe("@opencode/ai/providers/openai-compatible/responses")
+      expect(proxyModel("responses")?.settings).toEqual({ baseURL: "https://resp.proxy.test/v1" })
+      expect(proxyModel("claude")?.package).toBe("@opencode/ai/providers/anthropic-compatible")
+      expect(proxyModel("claude")?.settings).toEqual({
+        baseURL: "https://${PROXY_REGION}.proxy.test/anthropic/v1",
+        provider: "proxy",
       })
+      expect(proxyModel("own-url")?.package).toBe("aisdk:watsonx-ai-provider")
+      expect(proxyModel("own-url")?.settings).toBeUndefined()
     }),
   )
 
@@ -486,7 +500,7 @@ describe("ModelsDev Service", () => {
       })
       expect(model("next")).toMatchObject({ package: undefined, settings: { provider: "acme" } })
       expect(model("sdk-fallback")).toMatchObject({
-        package: "@opencode/ai/providers/anthropic",
+        package: "aisdk:@ai-sdk/anthropic",
         settings: { baseURL: "https://claude.acme.test/v1" },
       })
       expect(model("image-known")).toMatchObject({
@@ -502,6 +516,7 @@ describe("ModelsDev Service", () => {
         "chat-completions": { base_url: "https://api.acme.test/v1", sdk: { opencodeai } },
       })
       const chatPackage = "@opencode/ai/providers/openai-compatible"
+      // This build ships no decisions entrypoint, so decision-type models are always skipped.
       const [acme] = yield* ModelsDev.decodeSnapshot(
         JSON.stringify({
           acme: {
@@ -519,11 +534,7 @@ describe("ModelsDev Service", () => {
               "decision-chat-only": sourceModel("decision-chat-only", { type: "decision", api: api(chatPackage) }),
               "decision-image-only": sourceModel("decision-image-only", {
                 type: "decision",
-                api: api("@opencode/ai/providers/openrouter/images"),
-              }),
-              decision: sourceModel("decision", {
-                type: "decision",
-                api: api("@opencode/ai/providers/openrouter/decisions"),
+                api: api("@opencode/ai/providers/openai-compatible/images"),
               }),
             },
           },
@@ -532,7 +543,6 @@ describe("ModelsDev Service", () => {
       expect(acme?.models.map((item) => [item.id, item.type, item.package ?? acme.info.package])).toEqual([
         [Model.ID.make("chat"), "chat", chatPackage],
         [Model.ID.make("image"), "image", "@opencode/ai/providers/openai-compatible/images"],
-        [Model.ID.make("decision"), "decision", "@opencode/ai/providers/openrouter/decisions"],
       ])
     }),
   )
@@ -541,7 +551,10 @@ describe("ModelsDev Service", () => {
     Effect.gen(function* () {
       const cache = makeCache()
       const api = {
-        images: { base_url: "https://api.acme.test/v1", sdk: { opencodeai: "@opencode/ai/providers/openai/images" } },
+        images: {
+          base_url: "https://api.acme.test/v1",
+          sdk: { opencodeai: "@opencode/ai/providers/openai-compatible/images" },
+        },
       }
       const model = (id: string, type: string) => ({
         id,
@@ -736,9 +749,12 @@ describe("ModelsDev Service", () => {
         cache,
         ModelsDev.Service.use((s) => s.get()),
       )
-      expect(result.length).toBeGreaterThan(0)
-      const anthropic = result.find((snapshot) => snapshot.info.id === "anthropic")
-      expect(anthropic?.environment).toContain("ANTHROPIC_API_KEY")
+      // The fork ships its own committed snapshot (currently minimal); the fallback must
+      // match a fresh decode of that file without any network call.
+      const bundled = yield* ModelsDev.decodeSnapshot(
+        yield* Effect.promise(() => Bun.file(new URL("../src/models-dev/snapshot.txt", import.meta.url)).text()),
+      )
+      expect(result).toEqual(bundled)
       const final = yield* Ref.get(state)
       expect(final.calls).toEqual([])
     }),
@@ -788,7 +804,7 @@ describe("ModelsDev Service", () => {
         Effect.provide(buildLayer(state, cache, { url: "", fetch: true, snapshot: false })),
       )
       expect((yield* Ref.get(state)).calls[0]?.url).toBe(
-        "https://models.opencode.ai/experimental/v2.0/api.json?type=chat,decision,image",
+        "https://models.dev/experimental/v2.0/api.json?type=chat,decision,image",
       )
     }),
   )

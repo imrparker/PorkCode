@@ -152,23 +152,7 @@ type Route = {
 
 // These packages build their URL from provider settings (region, resource, account, project…), which
 // only happens when no baseURL is set. The catalog's URL for them is a template or SDK default.
-const BUILDS_OWN_URL = new Set([
-  "@opencode/ai/providers/amazon-bedrock",
-  "@opencode/ai/providers/azure/chat",
-  "@opencode/ai/providers/azure/images",
-  "@opencode/ai/providers/azure/messages",
-  "@opencode/ai/providers/azure/responses",
-  "@opencode/ai/providers/cloudflare-ai-gateway",
-  "@opencode/ai/providers/cloudflare-ai-gateway/decisions",
-  "@opencode/ai/providers/cloudflare-workers-ai",
-  "@opencode/ai/providers/cloudflare-workers-ai/decisions",
-  "@opencode/ai/providers/cloudflare-workers-ai/images",
-  "@opencode/ai/providers/google-vertex/gemini",
-  "@opencode/ai/providers/google-vertex/images",
-  "@opencode/ai/providers/google-vertex/messages",
-  "aisdk:@jerome-benoit/sap-ai-provider-v2",
-  "aisdk:watsonx-ai-provider",
-])
+const BUILDS_OWN_URL = new Set(["aisdk:@jerome-benoit/sap-ai-provider-v2", "aisdk:watsonx-ai-provider"])
 
 const normalize = Effect.fnUntraced(function* (catalog: Record<string, unknown>) {
   const failed: { readonly model: string; readonly issue: unknown }[] = []
@@ -491,9 +475,10 @@ const CacheMeta = Schema.Struct({
   digest: Schema.optional(Schema.String),
   etag: Schema.optional(Schema.String),
 })
-const defaultSource = "https://models.opencode.ai"
+const defaultSource = "https://models.dev"
 
-// The experimental v2 API, limited to the model types opencode keeps.
+// The community models.dev catalog; its experimental v2 path is tried first and
+// falls back to /api.json (see fetchApi).
 export const catalogPath = `/experimental/v2.0/api.json?type=${TYPES.join(",")}`
 
 export const decodeSnapshot = (text: string) => decodeCatalog(text).pipe(Effect.flatMap(normalize))
@@ -586,10 +571,10 @@ export const layer = (options?: Options) =>
 
       const fetchApi = Effect.fn("ModelsDev.fetchApi")(function* (etag?: string) {
         return yield* fetchPath(catalogPath, etag).pipe(
-          // A custom mirror may only serve the v1 catalog, which is converted when decoded.
+          // Sources without the experimental v2 path, models.dev included, serve the v1 catalog at
+          // /api.json, which is converted when decoded.
           Effect.catchIf(
-            (error) =>
-              source !== defaultSource && HttpClientError.isHttpClientError(error) && error.response?.status === 404,
+            (error) => HttpClientError.isHttpClientError(error) && error.response?.status === 404,
             () => fetchPath("/api.json", etag),
           ),
         )

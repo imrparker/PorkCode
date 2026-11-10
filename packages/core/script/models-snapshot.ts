@@ -8,10 +8,11 @@ const MINIMUM_PROVIDERS = 100
 export const committedSnapshot = new URL("../src/models-dev/snapshot.txt", import.meta.url)
 
 export async function fetchModelsSnapshot() {
-  const source = process.env.OPENCODE_MODELS_URL || "https://models.opencode.ai"
-  const url = `${source}${ModelsDev.catalogPath}`
-  const response = await fetch(url, { signal: AbortSignal.timeout(30_000) })
-  if (!response.ok) throw new Error(`${url} returned ${response.status} ${response.statusText}`)
+  const source = process.env.OPENCODE_MODELS_URL || "https://models.dev"
+  let response = await fetch(`${source}${ModelsDev.catalogPath}`, { signal: AbortSignal.timeout(30_000) })
+  // Sources without the experimental v2 path, models.dev included, serve the v1 catalog at /api.json.
+  if (response.status === 404) response = await fetch(`${source}/api.json`, { signal: AbortSignal.timeout(30_000) })
+  if (!response.ok) throw new Error(`${response.url} returned ${response.status} ${response.statusText}`)
   return validateModelsSnapshot(trim(await response.text()))
 }
 
