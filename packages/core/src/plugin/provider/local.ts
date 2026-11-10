@@ -1,15 +1,18 @@
 import { define } from "@opencode/plugin/effect/plugin"
 import type { Entry } from "@opencode/schema/config"
+import { Integration } from "@opencode/schema/integration"
 import { Duration, Effect, Option, Schedule, type Schema, Semaphore, Stream } from "effect"
 import { HttpClient, HttpClientRequest, HttpClientResponse } from "effect/http"
 import photonWasm from "#photon-wasm"
 import { Config } from "../../config.js"
+import { Credential } from "../../credential.js"
 import { Environment } from "../../environment/index.js"
 import { EnvironmentUnavailable } from "../../environment/unavailable.js"
 import { Location } from "../../location.js"
 import { Model } from "../../model.js"
 import type { PluginInternal } from "../internal.js"
 import { foldSettings } from "./configured.js"
+import { ProviderRefresh } from "./refresh.js"
 
 export type LocalModel = {
   readonly id: string
@@ -41,6 +44,7 @@ export function createLocalProviderPlugin<Discovered>(input: {
       effect: Effect.fn(function* (ctx) {
         const http = HttpClient.filterStatusOk(yield* HttpClient.HttpClient)
         const config = yield* Config.Service
+        const credentials = yield* Credential.Service
         const environment = yield* Effect.serviceOption(Environment.Service)
         const location = yield* Effect.serviceOption(Location.Service)
         const defaultOrigin =
@@ -50,7 +54,23 @@ export function createLocalProviderPlugin<Discovered>(input: {
           (Option.isSome(environment) && environment.value.spawner === EnvironmentUnavailable.spawner)
             ? undefined
             : input.origin)
-        const source = { current: configured(yield* config.entries(), input.providerID, defaultOrigin, suffix) }
+        // /connect stores a plain API key as a credential under the provider's integration ID; discovery must use it
+        // too, not only settings.apiKey written in config (#51570).
+        const storedApiKey = Effect.fn("LocalProviderPlugin.storedApiKey")(function* () {
+          const keys = (yield* credentials.list(Integration.ID.make(input.providerID))).flatMap((item) =>
+            item.value.type === "key" && item.value.key !== "" ? [item.value.key] : [],
+          )
+          return keys.at(-1)
+        })
+        const source = {
+          current: configured(
+            yield* config.entries(),
+            input.providerID,
+            defaultOrigin,
+            suffix,
+            yield* storedApiKey(),
+          ),
+        }
         const loaded = { models: [] as readonly Discovered[], hash: "[]" }
 
         yield* ctx.integration.transform((integrations) => {
@@ -128,7 +148,13 @@ export function createLocalProviderPlugin<Discovered>(input: {
         // Keep the last successful inventory through transient outages instead of flickering model availability.
         yield* refresh().pipe(Effect.ignore, Effect.repeat(Schedule.spaced(interval)), Effect.forkScoped)
         const reload = Effect.fn("LocalProviderPlugin.reload")(function* () {
-          const next = configured(yield* config.entries(), input.providerID, defaultOrigin, suffix)
+          const next = configured(
+            yield* config.entries(),
+            input.providerID,
+            defaultOrigin,
+            suffix,
+            yield* storedApiKey(),
+          )
           if (
             next.baseURL === source.current.baseURL &&
             next.apiKey === source.current.apiKey &&
@@ -145,6 +171,8 @@ export function createLocalProviderPlugin<Discovered>(input: {
         yield* ctx.event
           .subscribe({ types: ["config.updated"] })
           .pipe(Stream.runForEach(reload), Effect.forkScoped({ startImmediately: true }))
+        // Connecting or switching the stored key while running must re-authenticate discovery without a restart.
+        yield* ProviderRefresh.onSwitch(input.providerID, reload())
       }),
     } satisfies PluginInternal.InternalPlugin)
   }
@@ -183,7 +211,13 @@ function createClient(
   }
 }
 
-function configured(entries: readonly Entry[], providerID: string, origin: string | undefined, suffix: RegExp) {
+function configured(
+  entries: readonly Entry[],
+  providerID: string,
+  origin: string | undefined,
+  suffix: RegExp,
+  fallbackApiKey?: string,
+) {
   const settings = foldSettings(entries, providerID, undefined)
   const baseURL = (
     typeof settings?.baseURL === "string"
@@ -192,7 +226,7 @@ function configured(entries: readonly Entry[], providerID: string, origin: strin
         ? `${origin.replace(/\/+$/, "")}/v1`
         : ""
   ).replace(/\/+$/, "")
-  const apiKey = typeof settings?.apiKey === "string" ? settings.apiKey : undefined
+  const apiKey = typeof settings?.apiKey === "string" && settings.apiKey !== "" ? settings.apiKey : fallbackApiKey
   if (!URL.canParse(baseURL)) return { baseURL, apiKey }
   const url = new URL(baseURL)
   if (url.protocol !== "http:" && url.protocol !== "https:") return { baseURL, apiKey }

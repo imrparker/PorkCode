@@ -1,5 +1,6 @@
 import { Bus } from "@opencode/core/bus"
 import { Config } from "@opencode/core/config"
+import { Credential } from "@opencode/core/credential"
 import { Integration } from "@opencode/core/integration"
 import { Model } from "@opencode/core/model"
 import { Plugin } from "@opencode/core/plugin"
@@ -337,7 +338,145 @@ describe("LMStudioPlugin", () => {
       ({ server }) => Effect.promise(() => server.stop(true)),
     ),
   )
+
+  it.live(
+    "discovers with the API key stored through /connect when config sets none",
+    () =>
+      Effect.acquireUseRelease(
+        Effect.gen(function* () {
+          const credentials = yield* Credential.Service
+          const requests: Array<string | null> = []
+          const server = Bun.serve({
+            port: 0,
+            fetch: (request) => {
+              const authorization = request.headers.get("authorization")
+              requests.push(authorization)
+              if (authorization !== "Bearer stored-secret")
+                return Response.json({ error: { type: "invalid_request", code: "invalid_api_key" } }, { status: 401 })
+              return Response.json({ models: [model("stored-model")] })
+            },
+          })
+          const credential = yield* credentials.create({
+            integrationID: Integration.ID.make("lmstudio"),
+            value: { type: "key", key: "stored-secret" },
+          })
+          return { requests, server, credential }
+        }),
+        ({ requests, server }) =>
+          Effect.gen(function* () {
+            const modelState = yield* Model.Service
+            yield* addPlugin(server.url.origin)
+            yield* eventually(
+              modelState.get(Provider.ID.make("lmstudio"), Model.ID.make("stored-model")),
+              (discovered) => discovered !== undefined,
+            )
+            expect(requests[0]).toBe("Bearer stored-secret")
+          }),
+        ({ server, credential }) =>
+          Effect.gen(function* () {
+            const credentials = yield* Credential.Service
+            yield* Effect.promise(() => server.stop(true))
+            yield* credentials.remove(credential.id)
+          }),
+      ),
+  )
+
+  it.live(
+    "prefers a configured API key over the stored credential",
+    () =>
+      Effect.acquireUseRelease(
+        Effect.gen(function* () {
+          const credentials = yield* Credential.Service
+          const requests: Array<string | null> = []
+          const server = Bun.serve({
+            port: 0,
+            fetch: (request) => {
+              const authorization = request.headers.get("authorization")
+              requests.push(authorization)
+              if (authorization !== "Bearer config-secret")
+                return Response.json({ error: { type: "invalid_request", code: "invalid_api_key" } }, { status: 401 })
+              return Response.json({ models: [model("preferred-model")] })
+            },
+          })
+          const credential = yield* credentials.create({
+            integrationID: Integration.ID.make("lmstudio"),
+            value: { type: "key", key: "stored-secret" },
+          })
+          return { requests, server, credential }
+        }),
+        ({ requests, server }) =>
+          Effect.gen(function* () {
+            const config = yield* Config.Test
+            const modelState = yield* Model.Service
+            yield* config.setEntries([configuration(`${server.url.origin}/v1`, "config-secret")])
+            yield* addPlugin(server.url.origin)
+            yield* eventually(
+              modelState.get(Provider.ID.make("lmstudio"), Model.ID.make("preferred-model")),
+              (discovered) => discovered !== undefined,
+            )
+            expect(requests[0]).toBe("Bearer config-secret")
+          }),
+        ({ server, credential }) =>
+          Effect.gen(function* () {
+            const credentials = yield* Credential.Service
+            yield* Effect.promise(() => server.stop(true))
+            yield* credentials.remove(credential.id)
+          }),
+      ),
+  )
+
+  it.live(
+    "authenticates discovery when a key is connected while the plugin runs",
+    () =>
+      Effect.acquireUseRelease(
+        Effect.sync(() => {
+          const requests: Array<string | null> = []
+          return {
+            requests,
+            created: { id: undefined as Credential.ID | undefined },
+            server: Bun.serve({
+              port: 0,
+              fetch: (request) => {
+                const authorization = request.headers.get("authorization")
+                requests.push(authorization)
+                if (authorization !== "Bearer late-secret")
+                  return Response.json({ error: { type: "invalid_request", code: "invalid_api_key" } }, { status: 401 })
+                return Response.json({ models: [model("late-model")] })
+              },
+            }),
+          }
+        }),
+        ({ requests, server, created }) =>
+          Effect.gen(function* () {
+            const credentials = yield* Credential.Service
+            const modelState = yield* Model.Service
+            // The default interval is 1 hour, so only the credential-switch event can re-authenticate discovery.
+            yield* addPlugin(server.url.origin)
+            created.id = (
+              yield* credentials.create({
+                integrationID: Integration.ID.make("lmstudio"),
+                value: { type: "key", key: "late-secret" },
+              })
+            ).id
+            yield* eventually(
+              modelState.get(Provider.ID.make("lmstudio"), Model.ID.make("late-model")),
+              (discovered) => discovered !== undefined,
+            )
+            expect(requests.at(-1)).toBe("Bearer late-secret")
+          }),
+        ({ server, created }) =>
+          Effect.gen(function* () {
+            const credentials = yield* Credential.Service
+            yield* Effect.promise(() => server.stop(true))
+            if (created.id !== undefined) yield* credentials.remove(created.id)
+          }),
+      ),
+  )
 })
+
+function model(key: string) {
+  return { type: "llm", key, display_name: key, loaded_instances: [], max_context_length: 32_768 }
+}
 
 function configuration(baseURL: string, apiKey: string | null) {
   return new Document({
