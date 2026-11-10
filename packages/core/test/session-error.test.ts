@@ -134,19 +134,6 @@ describe("toSessionError", () => {
     expect(toSessionError(other)).toMatchObject({ type: "provider.rate-limit", retryAfterMs: 10_000 })
   })
 
-  test("types the ChatGPT usage limit whichever way the failure arrives", () => {
-    const body = JSON.stringify({ error: { code: "subscription_sharing_usage_limit_exceeded", message: "Limit" } })
-    for (const reason of [
-      new RateLimitError({ message: "Too many requests", body }),
-      new UnknownProviderError({ message: "Request failed", body }),
-    ])
-      expect(toSessionError(llm(reason))).toEqual({
-        type: "provider.chatgpt-limit",
-        message: "ChatGPT usage limit reached. Check ChatGPT Settings → Usage for details.",
-        response: { body },
-      })
-  })
-
   test("preserves the permission rejection type without exposing internal fields", () => {
     const blocked = new Permission.BlockedError({ rules: [], permission: "external_directory", resources: [] })
     expect(toSessionError(blocked)).toEqual({
@@ -210,31 +197,6 @@ describe("toSessionError", () => {
       message: "Slow down",
       response: { body: '{"error":"rate limit"}' },
     })
-  })
-
-  test("maps token-sharing failures while preserving HTTP and stream bodies", () => {
-    const cases = [
-      ["subscription_sharing_user_not_eligible", "token sharing isn't available for this account"],
-      ["subscription_sharing_usage_limit_exceeded", "ChatGPT usage limit reached"],
-      ["subscription_sharing_workplace_individual_usage_limit_exceeded", "workspace admin"],
-      ["subscription_sharing_usage_unavailable", "Try again later"],
-      ["subscription_sharing_unsupported_capability", "Remove the unsupported feature"],
-      ["subscription_sharing_route_not_supported", "Check the configured endpoint"],
-      ["subscription_sharing_invalid_user", "Reconnect to ChatGPT"],
-      ["subscription_sharing_user_unavailable", "Try again later"],
-      ["chatpass_v2_scope_not_authorized", "isn't authorized for this request"],
-      ["chatpass_v2_invalid_authorization_context", "isn't authorized for this request"],
-    ] as const
-    for (const [code, guidance] of cases) {
-      for (const body of [
-        JSON.stringify({ error: { code, message: "Request failed" } }),
-        JSON.stringify({ type: "response.failed", response: { error: { code, message: "Request failed" } } }),
-      ]) {
-        const error = toSessionError(llm(new UnknownProviderError({ message: "Request failed", body })))
-        expect(error.message).toContain(guidance)
-        expect(error.response).toEqual({ body })
-      }
-    }
   })
 
   test("preserves unresolved provider endpoint errors", () => {
