@@ -15,8 +15,6 @@ const sandboxes = Array.from({ length: 12 }, (_, index) => `${directory}/workspa
 const override =
   "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Crect width='16' height='16' fill='red'/%3E%3C/svg%3E"
 
-const contributors = "https://api.github.com/repos/anomalyco/opencode/contributors?anon=1&per_page=1"
-
 test.use({ serviceWorkers: "block" })
 
 // One project with 12 worktrees, each with one session, and a configured zsh shell.
@@ -1115,59 +1113,6 @@ test.describe("pages open before slow data", () => {
     await expect(details.getByText(error, { exact: true })).toBeVisible()
   })
 
-  for (const fails of [false, true]) {
-    test(`about ${fails ? "keeps its fallback when contributors fail" : "updates contributors later"}`, async ({
-      page,
-    }) => {
-      const { settings } = await open(page)
-      const gate = Promise.withResolvers<void>()
-      await page.route(contributors, async (route) => {
-        await gate.promise
-
-        if (fails) return route.abort("failed")
-        await route.fulfill({
-          json: [],
-          headers: {
-            "access-control-allow-origin": "*",
-            "access-control-expose-headers": "Link",
-            Link: `<${contributors}&page=1004>; rel="last"`,
-          },
-        })
-      })
-      const requested = page.waitForRequest(contributors)
-      await settings.getByRole("tab", { name: "About", exact: true }).click()
-      await requested
-      await expect(settings.getByText("Released under the MIT License", { exact: true })).toBeVisible()
-      await expect(settings.getByRole("link", { name: "935 others", exact: true })).toBeVisible()
-      await expect(settings.getByRole("button", { name: "Back to app" })).toBeVisible()
-
-      const website = settings.getByRole("link", { name: "www.opencode.ai", exact: true })
-      await website.focus()
-
-      const settled = fails
-        ? page.waitForEvent("requestfailed", (request) => request.url() === contributors)
-        : page.waitForResponse(contributors)
-
-      gate.resolve()
-      await settled
-      await expect(settings.getByRole("link", { name: fails ? "935 others" : "988 others", exact: true })).toBeVisible()
-      await expect(website).toBeFocused()
-    })
-  }
-})
-
-test("the version's Copied tooltip closes when another settings page opens", async ({ page, context }) => {
-  await context.grantPermissions(["clipboard-read", "clipboard-write"])
-  const { settings } = await open(page)
-  await page.route(contributors, (route) => route.abort("failed"))
-  await settings.getByRole("tab", { name: "About", exact: true }).click()
-  await settings.getByRole("button", { name: "Copy", exact: true }).click()
-  const tooltip = page.getByRole("tooltip")
-  await expect(tooltip).toHaveText("Copied")
-  await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toMatch(/^Version /)
-
-  await settings.getByRole("tab", { name: "Preferences", exact: true }).click()
-  await expect(tooltip).toBeHidden()
 })
 
 test("worktrees follow inventory events, wait for session counts, and delete by project", async ({ page }) => {
@@ -1580,32 +1525,6 @@ const consoleIntegrations = [
   { id: "opencode-go", name: "OpenCode Go", methods: [{ type: "key" }], connections: [] },
 ]
 
-test("providers: OpenCode Console signs in from its method list", async ({ page, context }) => {
-  const url = "https://auth.example.test/device?user_code=ABCD-EFGH"
-  await context.route("https://auth.example.test/**", (route) => route.fulfill({ body: "Sign in" }))
-  const { settings } = await open(page, { integrations: consoleIntegrations, onIntegrationOAuth: () => ({ url }) })
-
-  await settings.getByRole("tab", { name: "Providers", exact: true }).click()
-  await settings
-    .locator(".settings-provider-row", { hasText: "OpenCode Console" })
-    .getByRole("button", { name: "Connect", exact: true })
-    .click()
-  const methods = page.getByRole("dialog", { name: "Connect OpenCode Console", exact: true })
-  // The methods come from the integration in the TUI's order: sign-ins first, API keys last.
-  await expect(methods.locator('[data-action="provider-connect-method"]')).toHaveText([
-    "OpenCode Console account",
-    "API key (service account)",
-  ])
-
-  const popup = page.waitForEvent("popup")
-  await methods.getByRole("button", { name: "OpenCode Console account", exact: true }).click()
-  await expect(await popup).toHaveURL(url)
-
-  const signIn = page.getByRole("dialog", { name: "Connecting to OpenCode Console", exact: true })
-  await expect(signIn.getByRole("group", { name: "Device code: ABCD-EFGH", exact: true })).toBeVisible()
-  await expect(signIn.getByRole("button", { name: "Copy sign-in link", exact: true })).toBeVisible()
-})
-
 test("providers: OpenCode Go connects with its own methods, not the Console sign-in", async ({ page }) => {
   const attempts: string[] = []
 
@@ -1912,53 +1831,6 @@ test("providers: Back from a Claude Agent check started by Add account returns t
   held.release()
 })
 
-test("providers: Back from a Console connection without models returns to its sign-in methods", async ({
-  page,
-  context,
-}) => {
-  await context.route("https://auth.example.test/**", (route) => route.fulfill({ body: "Sign in" }))
-  const state = { authorized: false }
-
-  const { settings } = await open(page, {
-    // The workspace has loaded, but it offers no models.
-    provider: () =>
-      state.authorized
-        ? {
-            all: [
-              { id: "opencode", integrationID: "opencode", name: "Anomaly / OpenCode", models: {} },
-              { id: "console-google", integrationID: "opencode", name: "Anomaly / Google", models: {} },
-            ],
-            connected: ["opencode", "console-google"],
-            default: {},
-          }
-        : NO_PROVIDER,
-    integrations: consoleIntegrations,
-    onIntegrationOAuth: () => ({ url: "https://auth.example.test/device?user_code=ABCD-EFGH" }),
-    onIntegrationOAuthStatus: () => {
-      state.authorized = true
-
-      return "complete"
-    },
-  })
-
-  await settings.getByRole("tab", { name: "Providers", exact: true }).click()
-  await settings
-    .locator(".settings-provider-row", { hasText: "OpenCode Console" })
-    .getByRole("button", { name: "Connect", exact: true })
-    .click()
-  const dialog = page.getByRole("dialog", { name: "Connect OpenCode Console", exact: true })
-  const popup = page.waitForEvent("popup")
-  await dialog.getByRole("button", { name: "OpenCode Console account", exact: true }).click()
-  await popup
-  await expect(page.getByRole("dialog").getByText("OpenCode connected", { exact: true })).toBeVisible()
-
-  await page.getByRole("dialog").getByRole("button", { name: "Navigate back", exact: true }).click()
-  await expect(dialog.locator('[data-action="provider-connect-method"]')).toHaveText([
-    "OpenCode Console account",
-    "API key (service account)",
-  ])
-})
-
 test("providers: the account options rename and remove the active account", async ({ page }) => {
   const account = { type: "credential", id: "cred_work", label: "Work", method: "key" }
   const other = { type: "credential", id: "cred_personal", label: "Personal", method: "key" }
@@ -2041,260 +1913,6 @@ test("providers: a disconnect that finds no stored credentials keeps the provide
   await expect(page.getByText("No removable credentials found for OpenRouter", { exact: true })).toBeVisible()
   await expect(connected.getByText("OpenRouter", { exact: true })).toBeVisible()
   await expect(disconnect).toBeVisible()
-})
-
-test("providers: switching to a Zen API key does not wait for a Console workspace", async ({ page }) => {
-  const accounts = [
-    { type: "credential", id: "cred_console", label: "Anomaly", method: "oauth" },
-    { type: "credential", id: "cred_zen", label: "Zen key", method: "key" },
-  ]
-
-  const state = { active: "cred_console" }
-
-  const { settings } = await open(page, {
-    provider: () =>
-      state.active === "cred_console"
-        ? {
-            all: [
-              { id: "opencode", integrationID: "opencode", name: "Anomaly / OpenCode", models: {} },
-              { id: "console-google", integrationID: "opencode", name: "Anomaly / Google", models: {} },
-            ],
-            connected: ["opencode", "console-google"],
-            default: {},
-          }
-        : {
-            all: [
-              {
-                id: "opencode",
-                name: "OpenCode Zen",
-                models: { paid: { id: "paid", name: "Paid", cost: { input: 3 } } },
-              },
-            ],
-            connected: ["opencode"],
-            default: {},
-          },
-    integrations: () => [
-      {
-        id: "opencode",
-        name: "OpenCode Console",
-        methods: [{ id: "device", type: "oauth", label: "OpenCode Console account" }],
-        connections: accounts.toSorted((a, b) => Number(b.id === state.active) - Number(a.id === state.active)),
-      },
-    ],
-    onCredentialActivate: (credentialID) => {
-      state.active = credentialID
-    },
-  })
-
-  await settings.getByRole("tab", { name: "Providers", exact: true }).click()
-  const trigger = settings.getByRole("button", { name: "Manage OpenCode Console accounts", exact: true })
-  await expect(trigger).toHaveText("Anomaly")
-  await trigger.click()
-
-  const catalogReads: string[] = []
-
-  page.on("request", (request) => {
-    if (request.method() === "GET" && new URL(request.url()).pathname === "/api/provider")
-      catalogReads.push(request.url())
-  })
-  await page.getByRole("menuitemradio", { name: "Zen key", exact: true }).click()
-  await expect(page.getByText("OpenCode Console account switched")).toBeVisible()
-  // One refresh after the switch; a Console workspace poll would keep reading the catalog.
-  expect(catalogReads).toHaveLength(1)
-})
-
-test("providers: adding a Console account keeps the Console row in place", async ({ page, context }) => {
-  await context.route("https://auth.example.test/**", (route) => route.fulfill({ body: "Sign in" }))
-
-  // After the sign-in the server reloads the workspace, briefly serving only the free catalog.
-  const state = { authorized: false, pendingReads: 0 }
-
-  const workspace = {
-    all: [
-      { id: "opencode", integrationID: "opencode", name: "Anomaly / OpenCode", models: {} },
-      { id: "console-google", integrationID: "opencode", name: "Anomaly / Google", models: {} },
-    ],
-    connected: ["opencode", "console-google"],
-    default: {},
-  }
-
-  const catalog = () => {
-    if (state.pendingReads > 0) {
-      state.pendingReads--
-
-      return { all: [{ id: "opencode", name: "OpenCode", models: {} }], connected: ["opencode"], default: {} }
-    }
-
-    return workspace
-  }
-
-  const { settings } = await open(page, {
-    provider: catalog,
-    integrations: () => [
-      {
-        id: "opencode",
-        name: "OpenCode Console",
-        methods: [{ id: "device", type: "oauth", label: "OpenCode Console account" }],
-        connections: [
-          { type: "credential", id: "cred_console", label: "Anomaly", method: "oauth" },
-          ...(state.authorized ? [{ type: "credential", id: "cred_clara", label: "Clara", method: "oauth" }] : []),
-        ],
-      },
-      { id: "opencode-go", name: "OpenCode Go", methods: [{ type: "key" }], connections: [] },
-    ],
-    onIntegrationOAuth: () => ({ url: "https://auth.example.test/device?user_code=GOGO-1234" }),
-    onIntegrationOAuthStatus: () => {
-      if (!state.authorized) {
-        state.authorized = true
-        state.pendingReads = 3
-      }
-
-      return "complete"
-    },
-  })
-
-  await settings.getByRole("tab", { name: "Providers", exact: true }).click()
-  const connected = settings.locator('[data-component="connected-providers-section"]')
-  await expect(connected.getByText("OpenCode Console", { exact: true })).toBeVisible()
-  await connected.evaluate((element) => {
-    new MutationObserver(() => {
-      if (!element.textContent?.includes("OpenCode Console")) element.dataset.flashed = ""
-    }).observe(element, { childList: true, subtree: true, characterData: true })
-  })
-
-  await settings.getByRole("button", { name: "Show more providers", exact: true }).click()
-  const dialog = page.getByRole("dialog")
-  await dialog.locator('[data-provider-id="opencode"]').click()
-  const popup = page.waitForEvent("popup")
-  await dialog.getByRole("button", { name: "Add account", exact: true }).click()
-  await popup
-  await expect(page.getByText("OpenCode Console connected", { exact: true })).toBeVisible()
-
-  await expect(connected.getByText("OpenCode Console", { exact: true })).toBeVisible()
-  await expect(connected).not.toHaveAttribute("data-flashed")
-})
-
-test("providers: switching Console accounts keeps the list until the new workspace loads", async ({ page }) => {
-  const accounts = [
-    { type: "credential", id: "cred_clara", label: "Clara", method: "oauth" },
-    { type: "credential", id: "cred_anomaly", label: "Anomaly", method: "oauth" },
-  ]
-
-  // The server loads the new workspace's providers a few catalog reads after the switch.
-  const state = { active: "cred_clara", pendingReads: 0 }
-  const workspace = () => accounts.find((account) => account.id === state.active)!.label
-
-  const catalog = () => {
-    if (state.pendingReads > 0) {
-      state.pendingReads--
-
-      return {
-        all: [{ id: "opencode", name: "OpenCode", models: { free: { id: "free", name: "Free", cost: { input: 0 } } } }],
-        connected: ["opencode"],
-        default: {},
-      }
-    }
-
-    return {
-      all: [
-        { id: "opencode", integrationID: "opencode", name: `${workspace()} / OpenCode`, models: {} },
-        { id: "console-google", integrationID: "opencode", name: `${workspace()} / Google`, models: {} },
-      ],
-      connected: ["opencode", "console-google"],
-      default: {},
-    }
-  }
-
-  const { settings } = await open(page, {
-    provider: catalog,
-    integrations: () => [
-      {
-        id: "opencode",
-        name: "OpenCode Console",
-        methods: [{ id: "device", type: "oauth", label: "OpenCode Console account" }],
-        connections: accounts.toSorted((a, b) => Number(b.id === state.active) - Number(a.id === state.active)),
-      },
-    ],
-    onCredentialActivate: (credentialID) => {
-      state.active = credentialID
-      state.pendingReads = 2
-    },
-  })
-
-  await settings.getByRole("tab", { name: "Providers", exact: true }).click()
-  const connected = settings.locator('[data-component="connected-providers-section"]')
-  const trigger = connected.getByRole("button", { name: "Manage OpenCode Console accounts", exact: true })
-  await expect(trigger).toHaveText("Clara")
-  await connected.evaluate((element) => {
-    new MutationObserver(() => {
-      if (element.textContent?.includes("No connected providers")) element.dataset.flashed = ""
-    }).observe(element, { childList: true, subtree: true, characterData: true })
-  })
-
-  await trigger.click()
-  await page.getByRole("menuitemradio", { name: "Anomaly", exact: true }).click()
-  await expect(page.getByText("OpenCode Console account switched")).toBeVisible()
-  await expect(trigger).toHaveText("Anomaly")
-  await expect(connected).not.toHaveAttribute("data-flashed")
-})
-
-test("models: a Console provider picked on Providers opens its collapsed group, then the search types normally", async ({
-  page,
-}) => {
-  const model = (id: string, name: string) => ({ [id]: { id, name, limit: { context: 200_000 } } })
-
-  const { settings } = await open(page, {
-    provider: {
-      all: [
-        {
-          id: "opencode",
-          integrationID: "opencode",
-          name: "Anomaly / OpenCode",
-          models: model("console-model", "Console Model"),
-        },
-        {
-          id: "console-google",
-          canonical: "google",
-          integrationID: "opencode",
-          name: "Anomaly / Google",
-          models: model("managed-gemini", "Managed Gemini"),
-        },
-      ],
-      connected: ["opencode", "console-google"],
-      default: {},
-    },
-    integrations: [
-      {
-        id: "opencode",
-        name: "OpenCode Console",
-        methods: [{ id: "device", type: "oauth", label: "OpenCode Console account" }],
-        connections: [{ type: "credential", id: "cred_anomaly", label: "Anomaly", method: "oauth" }],
-      },
-    ],
-  })
-
-  const group = settings
-    .locator('[data-component="settings-models-console"]')
-    .getByRole("button", { name: /^OpenCode Console/ })
-
-  await settings.getByRole("tab", { name: "Models", exact: true }).click()
-  await group.click()
-  await expect(group).toHaveAttribute("aria-expanded", "false")
-
-  await settings.getByRole("tab", { name: "Providers", exact: true }).click()
-  const connected = settings.locator('[data-component="connected-providers-section"]')
-  await connected.getByRole("button", { name: "2 providers available", exact: true }).click()
-  await connected.getByRole("button", { name: "Google", exact: true }).click()
-
-  // The nested provider mounts only inside the expanded Console group, so the reveal opens the group first.
-  const google = settings.locator('[data-component="provider-model-group"][data-provider="console-google"]')
-  await expect(group).toHaveAttribute("aria-expanded", "true")
-  await expect(google.locator(".provider-model-group-trigger")).toBeFocused()
-
-  const search = settings.getByRole("searchbox", { name: "Search models", exact: true })
-  await search.pressSequentially("gemini")
-  await expect(search).toHaveValue("gemini")
-  await expect(settings.getByRole("switch", { name: "Managed Gemini", exact: true })).toBeVisible()
 })
 
 test("the add server dialog keeps focus above fullscreen settings", async ({ page }) => {
@@ -2450,9 +2068,6 @@ for (const viewport of [
   { name: "mobile", width: 390, height: 844, bottom: true },
 ]) {
   test(`settings layout (${viewport.name}): every page scrolls inside settings with room below`, async ({ page }) => {
-    await page.route("https://api.github.com/repos/anomalyco/opencode/contributors?*", (route) =>
-      route.fulfill({ json: [] }),
-    )
     const { settings } = await open(page)
     await page.setViewportSize(viewport)
     const panel = settings.locator(".settings-content > .settings-panel:visible")
@@ -2493,8 +2108,6 @@ for (const viewport of [
       "Providers",
       "Models",
       "Extensions",
-      "Server",
-      "About",
     ]
 
     for (const [index, name] of pages.entries()) {
@@ -2505,12 +2118,9 @@ for (const viewport of [
         await page.getByRole("menuitemradio", { name, exact: true }).click()
       }
 
-      if (name === "About") await expect(panel.getByText("Released under the MIT License")).toBeVisible()
-
-      if (name !== "About")
-        await expect(
-          panel.getByRole("heading", { name: name === "Shortcuts" ? "Keyboard shortcuts" : name, exact: true }),
-        ).toBeVisible()
+      await expect(
+        panel.getByRole("heading", { name: name === "Shortcuts" ? "Keyboard shortcuts" : name, exact: true }),
+      ).toBeVisible()
 
       if (name === "Worktrees") {
         const last = settings.getByText("Workspace 12 session", { exact: true })

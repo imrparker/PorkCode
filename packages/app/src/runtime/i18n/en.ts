@@ -538,7 +538,7 @@ export const dict = {
   "error.page.action.updateTo": "Update to {{version}}",
   "error.page.circular": "[Circular]",
   "error.page.report.prefix": "Please report this error to the PorkCode team",
-  "error.page.report.discord": "on Discord",
+  "error.page.report.discord": "on GitHub",
   "error.page.version": "Version: {{version}}",
 
   "error.dev.rootNotFound":
@@ -880,9 +880,8 @@ export const dict = {
   "settings.about.otherContributor.other": "{{count}} others",
   "settings.about.firstPublished": "First published in Missouri, USA",
   "settings.about.firstIllustrated": "First illustrated in London, England",
-  "settings.about.website": "www.opencode.ai",
+  "settings.about.website": "github.com/imrparker/PorkCode",
   "settings.about.description": "PorkCode, the open source coding agent",
-  "settings.about.trademark": "PorkCode is a registered trademark of Anomaly Innovations, Inc.",
   "settings.about.typeset": "Typeset in Inter and IBM Plex Mono",
   "settings.about.notices.title": "Third-party notices",
   "settings.about.notices.description": "PorkCode includes the following open source software.",

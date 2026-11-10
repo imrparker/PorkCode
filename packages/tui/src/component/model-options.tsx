@@ -12,8 +12,8 @@ export function prioritizeFavorites<T extends { value: { providerID: string; mod
   )
 }
 
-// The server owns model order (`Model.available()`: preferred free models first when signed out, newest first
-// otherwise). This only applies the picker's grouping and keeps the server's order for everything else.
+// The server owns model order (`Model.available()`: newest first). This only applies the picker's
+// grouping by provider name and keeps free (zero-cost) models ahead within a group.
 export function sortModelOptions<
   T extends {
     providerID?: string
@@ -22,12 +22,6 @@ export function sortModelOptions<
   },
 >(options: T[], grouped = true) {
   return options.toSorted((a, b) => {
-    const provider = grouped
-      ? Number(b.providerID === "opencode-go") - Number(a.providerID === "opencode-go") ||
-        Number(b.providerID === "opencode") - Number(a.providerID === "opencode")
-      : 0
-    if (provider !== 0) return provider
-
     const name = grouped ? (a.providerName ?? "").localeCompare(b.providerName ?? "") : 0
     if (name !== 0) return name
 

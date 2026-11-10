@@ -16,8 +16,6 @@ import { ModelTooltip } from "./tooltip"
 
 type ModelState = ModelSelection
 
-const featuredProviders = ["opencode-go", "opencode", "openai", "anthropic", "google", "github-copilot"]
-
 const displayModelName = (name: string) => name.replace(/\s+(?:\(free\)|free)$/i, "")
 
 export const DialogSelectModelUnpaid: Component<{ model?: ModelState }> = (props) => {
@@ -35,9 +33,6 @@ export const DialogSelectModelUnpaid: Component<{ model?: ModelState }> = (props
 
     return c ? `${c.provider.id}:${c.id}` : undefined
   })
-
-  const providerName = (provider: { id: string; name: string }) =>
-    provider.id === "opencode" ? language.t("provider.connect.opencode.name") : provider.name
 
   const freeModels = createMemo(() => model.list().filter(isFreeModel))
 
@@ -142,12 +137,7 @@ export const DialogSelectModelUnpaid: Component<{ model?: ModelState }> = (props
                   </div>
                 </div>
                 <div class="grid w-full grid-cols-1 gap-y-1.5 gap-x-2 sm:grid-cols-2">
-                  <For
-                    each={integrations
-                      .list()
-                      .filter((provider) => featuredProviders.includes(provider.id))
-                      .sort((a, b) => featuredProviders.indexOf(a.id) - featuredProviders.indexOf(b.id))}
-                  >
+                  <For each={integrations.list().slice().sort((a, b) => a.name.localeCompare(b.name))}>
                     {(provider) => (
                       <button
                         type="button"
@@ -160,21 +150,9 @@ export const DialogSelectModelUnpaid: Component<{ model?: ModelState }> = (props
                         }}
                         onClick={() => openProviders(provider.id)}
                       >
-                        <ProviderModelIcon
-                          provider={{ id: provider.id, name: providerName(provider) }}
-                          class="mt-0.5 shrink-0 text-v2-icon-icon-base"
-                        />
+                        <ProviderModelIcon provider={provider} class="mt-0.5 shrink-0 text-v2-icon-icon-base" />
                         <span class="flex min-w-0 flex-col">
-                          <span class="truncate">{providerName(provider)}</span>
-                          <Show when={provider.id === "opencode" || provider.id === "opencode-go"}>
-                            <span class="truncate font-[440] text-v2-text-text-muted">
-                              {language.t(
-                                provider.id === "opencode"
-                                  ? "dialog.provider.opencode.tagline"
-                                  : "dialog.provider.opencodeGo.tagline",
-                              )}
-                            </span>
-                          </Show>
+                          <span class="truncate">{provider.name}</span>
                         </span>
                       </button>
                     )}

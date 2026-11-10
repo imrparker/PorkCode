@@ -14,17 +14,15 @@ const integration = (value: Partial<IntegrationInfo> & Pick<IntegrationInfo, "id
 })
 
 describe("integrationOptions", () => {
-  test("keeps popular integrations first and sorts the rest alphabetically", () => {
+  test("sorts integrations alphabetically by name", () => {
     expect(
       integrationOptions([
         integration({ id: "mistral", name: "Mistral" }),
-        integration({ id: "openai", name: "OpenAI" }),
+        integration({ id: "zeta", name: "Zeta Proxy" }),
         integration({ id: "custom-z", name: "Zebra" }),
-        integration({ id: "anthropic", name: "Anthropic" }),
-        integration({ id: "opencode", name: "OpenCode Zen" }),
-        integration({ id: "opencode-go", name: "OpenCode Go" }),
+        integration({ id: "local", name: "Local vLLM" }),
       ]).map((item) => item.id),
-    ).toEqual(["opencode", "opencode-go", "openai", "anthropic", "mistral", "custom-z"])
+    ).toEqual(["local", "mistral", "custom-z", "zeta"])
   })
 })
 

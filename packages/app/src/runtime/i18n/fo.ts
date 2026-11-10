@@ -674,7 +674,6 @@ export const dict = {
   "settings.about.firstIllustrated": "Fyrst myndprýdd í London í Onglandi",
   "settings.about.website": "www.opna koda.ai",
   "settings.about.description": "PorkCode, opna keldukoduumboðnum",
-  "settings.about.trademark": "PorkCode er eitt skrásett vørumerki hjá Anomaly Innovations, Inc.",
   "settings.about.typeset": "Skriftsett í Inter og IBM Plex Mono",
   "settings.about.tagline": "AI kann ikki byggja góða ritbúnað, uttan teg",
   "settings.about.copyright": "© Anomaly nýskapanir, Inc.",

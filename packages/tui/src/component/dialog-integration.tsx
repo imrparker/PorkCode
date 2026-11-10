@@ -46,15 +46,6 @@ import {
   type FormAnswerField,
 } from "../util/form"
 
-const INTEGRATION_PRIORITY: Record<string, number> = {
-  opencode: 0,
-  "opencode-go": 1,
-  openai: 2,
-  "github-copilot": 3,
-  anthropic: 4,
-  google: 5,
-}
-
 type ConnectMethod = Exclude<IntegrationInfo["methods"][number], { type: "env" }>
 type IntegrationAttempt = IntegrationOauthConnectOutput["data"]
 type CommandAttempt = IntegrationCommandConnectOutput["data"]
@@ -67,12 +58,7 @@ const SUBMIT = Symbol("submit")
 const OAUTH_CODE = /[A-Z0-9]{4}-[A-Z0-9]{4,5}/
 
 export function integrationOptions(list: IntegrationInfo[]) {
-  return list.toSorted(
-    (a, b) =>
-      (INTEGRATION_PRIORITY[a.id] ?? 99) - (INTEGRATION_PRIORITY[b.id] ?? 99) ||
-      a.name.localeCompare(b.name) ||
-      a.id.localeCompare(b.id),
-  )
+  return list.toSorted((a, b) => a.name.localeCompare(b.name) || a.id.localeCompare(b.id))
 }
 
 export function connectMethods(integration: IntegrationInfo): ConnectMethod[] {
@@ -129,8 +115,6 @@ export function DialogIntegration(
     return integrations().map((integration) => {
       const methods = connectMethods(integration)
       const credentials = credentialConnections(integration)
-      let category = "Services"
-      if (integration.id in INTEGRATION_PRIORITY) category = "Popular"
       const status = integration.connections[0]?.status
       return {
         title: integration.name,
@@ -138,7 +122,7 @@ export function DialogIntegration(
         description: methods.length === 0 ? "Environment only" : undefined,
         footer: status ? "Sign in required →" : connectionSummary(integration) || undefined,
         footerColor: status ? theme.text.feedback.warning.base : undefined,
-        category,
+        category: "Services",
         disabled: methods.length === 0 && credentials.length === 0,
         gutter:
           integration.connections.length > 0 && !status

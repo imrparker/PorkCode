@@ -18,15 +18,6 @@ import {
   type ConnectMethod,
 } from "./shared"
 
-const integrationPriority = new Map([
-  ["opencode-go", 0],
-  ["opencode", 1],
-  ["openai", 2],
-  ["github-copilot", 3],
-  ["anthropic", 4],
-  ["google", 5],
-])
-
 export default Runtime.handler(
   Commands.commands.auth.commands.login,
   Effect.fn("cli.auth.login")((input) =>
@@ -82,20 +73,13 @@ export function loginChoices(integrations: IntegrationInfo[]): IntegrationChoice
     .toSorted(
       (a, b) =>
         Number(b.metadata?.source === "mcp") - Number(a.metadata?.source === "mcp") ||
-        (integrationPriority.get(a.id) ?? integrationPriority.size) -
-          (integrationPriority.get(b.id) ?? integrationPriority.size) ||
         a.name.localeCompare(b.name) ||
         a.id.localeCompare(b.id),
     )
     .map((integration) => ({
       value: integration.id,
       label: integration.name,
-      category:
-        integration.metadata?.source === "mcp"
-          ? "MCP"
-          : integrationPriority.has(integration.id)
-            ? "Popular"
-            : "Services",
+      category: integration.metadata?.source === "mcp" ? "MCP" : "Services",
       connected: integration.connections.length > 0,
     }))
 }
