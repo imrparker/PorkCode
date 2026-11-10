@@ -15,12 +15,14 @@ const appNames: Record<string, string> = {
 }
 
 const appIDs: Record<string, string> = {
-  dev: "ai.opencode.desktop.dev",
-  beta: "ai.opencode.desktop.beta",
-  prod: "ai.opencode.desktop",
+  dev: "com.imrparker.porkcode.dev",
+  beta: "com.imrparker.porkcode.beta",
+  prod: "com.imrparker.porkcode",
 }
 
 // Local renderer/server mode keeps the dev application identity.
 export const APP_NAME = app.isPackaged ? appNames[CHANNEL] : "PorkCode Dev"
 
-export const APP_ID = app.isPackaged ? appIDs[CHANNEL] : "ai.opencode.desktop.dev"
+// userData, and with it the single-instance lock, logs, drafts, and CLI stages, is named after this id;
+// keeping upstream's ai.opencode.desktop made PorkCode a second instance of OpenCode on the same data.
+export const APP_ID = app.isPackaged ? appIDs[CHANNEL] : "com.imrparker.porkcode.dev"
