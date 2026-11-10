@@ -1,7 +1,7 @@
 import { expect } from "bun:test"
 import { Effect } from "effect"
 import { ai, Message } from "../../src/effect.js"
-import { OpenAI } from "../../src/providers.js"
+import { configure } from "../../src/providers/openai-compatible-responses.js"
 import { OpenResponses } from "../../src/protocols/open-responses.js"
 import { it } from "../lib/effect.js"
 
@@ -9,7 +9,7 @@ it.effect("conversation lowering excludes generation settings and tool definitio
   Effect.gen(function* () {
     const body = yield* OpenResponses.lowerConversation(
       ai.request({
-        model: OpenAI.configure({ apiKey: "test" }).responses("fixture"),
+        model: configure({ apiKey: "test", baseURL: "https://responses.example.test/v1" }).model("fixture"),
         system: "Keep the context",
         messages: [Message.user("hello"), Message.assistant("hi")],
         maxTokens: 100,

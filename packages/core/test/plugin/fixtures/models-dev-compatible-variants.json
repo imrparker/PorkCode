@@ -1,0 +1,73 @@
+{
+  "compat": {
+    "id": "compat",
+    "name": "Compat",
+    "env": ["COMPAT_API_KEY"],
+    "models": {
+      "chat-effort": {
+        "id": "chat-effort",
+        "type": "chat",
+        "name": "Chat Effort",
+        "release_date": "2026-01-01",
+        "modalities": { "input": ["text"], "output": ["text"] },
+        "capabilities": {
+          "tools": { "supported": true },
+          "reasoning": { "supported": true, "effort": ["default", "low", "high"] },
+          "temperature": true
+        },
+        "limit": { "context": 128000, "output": 8192 },
+        "api": {
+          "chat-completions": {
+            "base_url": "https://compat.test/v1",
+            "sdk": { "opencodeai": "@opencode/ai/providers/openai-compatible" }
+          }
+        }
+      },
+      "responses-effort": {
+        "id": "responses-effort",
+        "type": "chat",
+        "name": "Responses Effort",
+        "release_date": "2026-01-01",
+        "modalities": { "input": ["text"], "output": ["text"] },
+        "capabilities": {
+          "tools": { "supported": true },
+          "reasoning": { "supported": true, "effort": ["low", "high"] },
+          "temperature": true
+        },
+        "limit": { "context": 128000, "output": 8192 },
+        "api": {
+          "responses": {
+            "base_url": "https://resp.test/v1",
+            "sdk": { "opencodeai": "@opencode/ai/providers/openai-compatible/responses" }
+          }
+        }
+      }
+    }
+  },
+  "anthropic-compat": {
+    "id": "anthropic-compat",
+    "name": "Anthropic Compat",
+    "env": ["ANTHROPIC_COMPAT_API_KEY"],
+    "models": {
+      "claude-sonnet-4-5": {
+        "id": "claude-sonnet-4-5",
+        "type": "chat",
+        "name": "Claude Sonnet 4.5",
+        "release_date": "2026-01-01",
+        "modalities": { "input": ["text"], "output": ["text"] },
+        "capabilities": {
+          "tools": { "supported": true },
+          "reasoning": { "supported": true, "budget": { "min": 1024 } },
+          "temperature": true
+        },
+        "limit": { "context": 200000, "output": 64000 },
+        "api": {
+          "messages": {
+            "base_url": "https://anthropic.test/v1",
+            "sdk": { "opencodeai": "@opencode/ai/providers/anthropic-compatible" }
+          }
+        }
+      }
+    }
+  }
+}

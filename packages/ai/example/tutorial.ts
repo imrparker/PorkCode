@@ -4,14 +4,16 @@ import { NodeFileSystem } from "@effect/platform-node"
 import { ai, AIClient, Media, Message, ProviderID, ToolRuntime } from "@opencode/ai/effect"
 import { tool } from "@opencode/ai/effect"
 import { Route, Auth, Endpoint, Framing, Protocol, RequestExecutor } from "@opencode/ai/route"
-import { OpenAI } from "@opencode/ai/providers"
+import { OpenAICompatible } from "@opencode/ai/providers"
 
 /**
  * A runnable walkthrough of the LLM package use-site API.
  *
- * Run from `packages/ai` with an OpenAI key in the environment:
+ * Run from `packages/ai` against any OpenAI-compatible endpoint (a hosted
+ * service you have a key for, or a local server such as LM Studio, Ollama or
+ * vLLM) by pointing the environment at it:
  *
- *   OPENAI_API_KEY=... bun example/tutorial.ts [example]
+ *   OPENAI_BASE_URL=http://localhost:1234/v1 OPENAI_API_KEY=... bun example/tutorial.ts [example]
  *
  * where `example` is one of the keys of `examples` at the bottom (default
  * `tools`). The `fake` example runs offline and needs no key.
@@ -24,16 +26,16 @@ const apiKey = Config.Redacted("OPENAI_API_KEY")
 
 // 1. Configure a provider. The configured facade records provider identity,
 // deployment options, authentication, and defaults. Per-modality selectors pick
-// the API: `.responses(...)` / `.chat(...)` for LLM calls and `.image(...)` for
-// image generation.
-const openai = OpenAI.configure({
+// the API: `.model(...)` for LLM calls and `.image(...)` for image generation.
+const client = OpenAICompatible.configure({
+  baseURL: process.env.OPENAI_BASE_URL ?? "http://localhost:1234/v1",
   apiKey,
   maxTokens: 160,
   providerOptions: {
     store: false,
   },
 })
-const model = openai.responses("gpt-4o-mini")
+const model = client.model("gpt-4o-mini")
 
 // 2. Build a provider-neutral request. This is useful when reusing one request
 // across generate and stream examples.
@@ -44,8 +46,7 @@ const model = openai.responses("gpt-4o-mini")
 //     common controls set at the top level.
 //   - `promptCacheKey`: stable cache affinity for protocols that support it.
 //   - `providerOptions`: model-typed provider-native behavior. For example,
-//     OpenAI store behavior, Anthropic thinking, Gemini thinking config, or
-//     OpenRouter routing/reasoning.
+//     OpenAI store behavior or a compatible host's custom routing fields.
 //   - `http`: last-resort serializable overlays for final request body, headers,
 //     and query params. Prefer typed `providerOptions` when a field is stable.
 //
@@ -245,7 +246,7 @@ const generateFake = Effect.gen(function* () {
 // `Media.write` persists them through the Effect `FileSystem`.
 const generateImage = Effect.gen(function* () {
   const response = yield* ai.image.generate({
-    model: openai.image("gpt-image-1-mini"),
+    model: client.image("gpt-image-1-mini"),
     prompt: "A flat black circle centered on a plain white background.",
     aspect: "1:1",
     // Exact pixel sizes and output formats are provider options.

@@ -32,50 +32,6 @@ function required<T>(value: T | undefined): T {
 const decode = Schema.decodeUnknownSync(Info)
 
 describe("ConfigProviderPlugin.Plugin", () => {
-  it.effect("inherits the provider compaction setting with model overrides and rejects unsupported routes", () =>
-    Effect.gen(function* () {
-      const models = yield* Model.Service
-      const providers = yield* Provider.Service
-      yield* addPlugin([
-        new Document({
-          type: "document",
-          info: decode({
-            providers: {
-              custom: {
-                package: "@opencode/ai/providers/openai/responses",
-                settings: { compaction: { type: "native" } },
-                models: {
-                  native: {},
-                  local: {
-                    settings: { compaction: { type: "summary" } },
-                    package: "@opencode/ai/providers/openai/chat",
-                  },
-                  unsupported: { package: "@opencode/ai/providers/openai/chat" },
-                },
-              },
-              default: { package: "@opencode/ai/providers/openai/chat", models: { chat: {} } },
-            },
-          }),
-        }),
-      ])
-      const native = required(yield* models.get(Provider.ID.make("custom"), Model.ID.make("native")))
-      const local = required(yield* models.get(Provider.ID.make("custom"), Model.ID.make("local")))
-      const unsupported = required(yield* models.get(Provider.ID.make("custom"), Model.ID.make("unsupported")))
-      const defaultModel = required(yield* models.get(Provider.ID.make("default"), Model.ID.make("chat")))
-      expect(native.settings?.compaction).toEqual({ type: "native" })
-      expect(local.settings?.compaction).toEqual({ type: "summary" })
-      expect(defaultModel.settings?.compaction).toBeUndefined()
-      expect((yield* providers.get(Provider.ID.make("custom")))?.settings?.compaction).toEqual({ type: "native" })
-      yield* ModelResolver.fromCatalogModel(native)
-      yield* ModelResolver.fromCatalogModel(local)
-      yield* ModelResolver.fromCatalogModel(defaultModel)
-      expect(yield* ModelResolver.fromCatalogModel(unsupported).pipe(Effect.flip)).toMatchObject({
-        _tag: "SessionRunnerModel.UnsupportedCompactionError",
-        message: "Provider compaction is not supported by custom/unsupported (openai-chat)",
-      })
-    }),
-  )
-
   it.effect("keeps provider and model compatibility precedence across config documents", () =>
     Effect.gen(function* () {
       const providers = yield* Provider.Service
@@ -202,7 +158,8 @@ describe("ConfigProviderPlugin.Plugin", () => {
       const providerID = Provider.ID.make("proxy")
       yield* providers.transform((editor) => {
         editor.update(providerID, (provider) => {
-          provider.package = "@opencode/ai/providers/openai/chat"
+          provider.package = "@opencode/ai/providers/openai-compatible"
+          provider.settings = { baseURL: "https://proxy.test/v1" }
         })
         editor.models.update(providerID, Model.ID.make("catalog"), (model) => {
           model.compatibility = { maxTokensField: "max_tokens" }
@@ -232,7 +189,7 @@ describe("ConfigProviderPlugin.Plugin", () => {
         requireFinishReason: false,
       })
       expect(configured.compatibility).toEqual({ supportsPromptCacheKey: true, requireFinishReason: false })
-      // The OpenAI chat package enables the key by default; provider config overrides it on the runtime model.
+      // Explicit compatibility config decides promptCacheKey on the runtime model, whatever the package defaults.
       expect((yield* ModelResolver.fromCatalogModel(catalog)).capabilities?.promptCacheKey).toBe(false)
       expect((yield* ModelResolver.fromCatalogModel(configured)).capabilities?.promptCacheKey).toBe(true)
     }),
@@ -757,11 +714,12 @@ describe("ConfigProviderPlugin.Plugin", () => {
           info: decode({
             providers: {
               custom: {
-                package: "aisdk:@ai-sdk/openai",
+                package: "aisdk:@ai-sdk/openai-compatible",
+                settings: { baseURL: "https://custom.test/v1" },
                 models: {
-                  claude: {
-                    modelID: "claude-opus-4-8",
-                    package: "aisdk:@ai-sdk/anthropic",
+                  chat: {
+                    modelID: "reasoner-1",
+                    package: "aisdk:@ai-sdk/openai-compatible",
                   },
                 },
               },
@@ -770,14 +728,12 @@ describe("ConfigProviderPlugin.Plugin", () => {
         }),
       ])
 
-      const model = required(yield* models.get(Provider.ID.make("custom"), Model.ID.make("claude")))
-      expect(model.package).toBe("@opencode/ai/providers/anthropic")
+      const model = required(yield* models.get(Provider.ID.make("custom"), Model.ID.make("chat")))
+      expect(model.package).toBe("@opencode/ai/providers/openai-compatible")
       expect(model.variants.map((variant) => variant.id)).toEqual([
         Model.VariantID.make("low"),
         Model.VariantID.make("medium"),
         Model.VariantID.make("high"),
-        Model.VariantID.make("xhigh"),
-        Model.VariantID.make("max"),
       ])
     }),
   )
@@ -837,15 +793,15 @@ describe("ConfigProviderPlugin.Plugin", () => {
     Effect.gen(function* () {
       const providers = yield* Provider.Service
       const models = yield* Model.Service
-      const providerID = Provider.ID.make("bedrock")
-      const modelID = Model.ID.make("anthropic.claude-opus-5-5")
+      const providerID = Provider.ID.make("custom")
+      const modelID = Model.ID.make("reasoner-1")
       yield* providers.transform((editor) => {
         editor.models.update(providerID, modelID, (model) => {
-          model.package = "@opencode/ai/providers/amazon-bedrock"
+          model.package = "@opencode/ai/providers/openai-compatible"
           model.variants = [
             {
               id: Model.VariantID.make("high"),
-              body: { additionalModelRequestFields: { output_config: { effort: "high" } } },
+              body: { chat_template_kwargs: { enable_thinking: true } },
             },
           ]
         })
@@ -855,17 +811,17 @@ describe("ConfigProviderPlugin.Plugin", () => {
           type: "document",
           info: decode({
             providers: {
-              bedrock: { models: { [modelID]: { package: "@opencode/ai/providers/amazon-bedrock/mantle" } } },
+              custom: { models: { [modelID]: { package: "@opencode/ai/providers/openai-compatible/responses" } } },
             },
           }),
         }),
       ])
 
       const model = required(yield* models.get(providerID, modelID))
-      expect(model.package).toBe("@opencode/ai/providers/amazon-bedrock/mantle/messages")
+      expect(model.package).toBe("@opencode/ai/providers/openai-compatible/responses")
       expect(model.variants.find((variant) => variant.id === "high")).toEqual({
         id: Model.VariantID.make("high"),
-        settings: { effort: "high", thinking: { type: "adaptive", display: "summarized" } },
+        settings: { reasoningEffort: "high", reasoningSummary: "auto", include: ["reasoning.encrypted_content"] },
       })
     }),
   )
@@ -906,29 +862,27 @@ describe("ConfigProviderPlugin.Plugin", () => {
           info: decode({
             providers: {
               custom: {
-                package: "aisdk:@ai-sdk/openai",
+                package: "aisdk:@ai-sdk/openai-compatible",
+                settings: { baseURL: "https://custom.test/v1" },
                 models: {
                   effort: {
                     capabilities: { reasoning: { supported: true, effort: ["default", "low", "high"] } },
                     variants: [{ id: "high", headers: { "x-tier": "high" } }],
                   },
                   gpt: {
-                    package: "aisdk:@ai-sdk/openai",
+                    package: "aisdk:@ai-sdk/openai-compatible",
                     capabilities: { reasoning: { supported: true, effort: ["low", "high"] } },
                     variants: [{ id: "high", headers: { "x-tier": "high" } }],
                   },
+                  responses: {
+                    package: "@opencode/ai/providers/openai-compatible/responses",
+                    capabilities: { reasoning: { supported: true, effort: ["low", "high"] } },
+                  },
                   "claude-sonnet-4-5": {
-                    package: "aisdk:@ai-sdk/anthropic",
+                    package: "@opencode/ai/providers/anthropic-compatible",
+                    settings: { baseURL: "https://anthropic.test/v1" },
                     capabilities: { reasoning: { supported: true, budget: { min: 1024 } } },
                     limit: { output: 64_000 },
-                  },
-                  "gemini-3.1-pro": {
-                    package: "aisdk:@ai-sdk/google",
-                    capabilities: { reasoning: { supported: true, effort: ["low", "high"] } },
-                  },
-                  "magistral-medium": {
-                    package: "aisdk:@ai-sdk/mistral",
-                    capabilities: { reasoning: { supported: true, effort: ["low", "high"] } },
                   },
                   fixed: { capabilities: { reasoning: { supported: true } } },
                   plain: { capabilities: { reasoning: { supported: false } } },
@@ -941,6 +895,18 @@ describe("ConfigProviderPlugin.Plugin", () => {
 
       const effort = required(yield* models.get(providerID, Model.ID.make("effort")))
       expect(effort.variants).toEqual([
+        { id: Model.VariantID.make("low"), settings: { reasoningEffort: "low" } },
+        {
+          id: Model.VariantID.make("high"),
+          settings: { reasoningEffort: "high" },
+          headers: { "x-tier": "high" },
+        },
+      ])
+      const gpt = required(yield* models.get(providerID, Model.ID.make("gpt")))
+      expect(gpt.package).toBe("@opencode/ai/providers/openai-compatible")
+      expect(gpt.variants).toEqual(effort.variants)
+      const responses = required(yield* models.get(providerID, Model.ID.make("responses")))
+      expect(responses.variants).toEqual([
         {
           id: Model.VariantID.make("low"),
           settings: { reasoningEffort: "low", reasoningSummary: "auto", include: ["reasoning.encrypted_content"] },
@@ -948,35 +914,13 @@ describe("ConfigProviderPlugin.Plugin", () => {
         {
           id: Model.VariantID.make("high"),
           settings: { reasoningEffort: "high", reasoningSummary: "auto", include: ["reasoning.encrypted_content"] },
-          headers: { "x-tier": "high" },
         },
       ])
-      const gpt = required(yield* models.get(providerID, Model.ID.make("gpt")))
-      expect(gpt.package).toBe("@opencode/ai/providers/openai")
-      expect(gpt.variants).toEqual(effort.variants)
       const claude = required(yield* models.get(providerID, Model.ID.make("claude-sonnet-4-5")))
-      expect(claude.package).toBe("@opencode/ai/providers/anthropic")
+      expect(claude.package).toBe("@opencode/ai/providers/anthropic-compatible")
       expect(claude.variants).toEqual([
         { id: Model.VariantID.make("high"), settings: { thinking: { type: "enabled", budgetTokens: 16_000 } } },
         { id: Model.VariantID.make("max"), settings: { thinking: { type: "enabled", budgetTokens: 31_999 } } },
-      ])
-      const gemini = required(yield* models.get(providerID, Model.ID.make("gemini-3.1-pro")))
-      expect(gemini.package).toBe("@opencode/ai/providers/google")
-      expect(gemini.variants).toEqual([
-        {
-          id: Model.VariantID.make("low"),
-          settings: { thinkingConfig: { includeThoughts: true, thinkingLevel: "low" } },
-        },
-        {
-          id: Model.VariantID.make("high"),
-          settings: { thinkingConfig: { includeThoughts: true, thinkingLevel: "high" } },
-        },
-      ])
-      const magistral = required(yield* models.get(providerID, Model.ID.make("magistral-medium")))
-      expect(magistral.package).toBe("@opencode/ai/providers/mistral")
-      expect(magistral.variants).toEqual([
-        { id: Model.VariantID.make("low"), settings: { reasoningEffort: "low" } },
-        { id: Model.VariantID.make("high"), settings: { reasoningEffort: "high" } },
       ])
       expect(required(yield* models.get(providerID, Model.ID.make("fixed"))).variants).toEqual([])
       expect(required(yield* models.get(providerID, Model.ID.make("plain"))).variants).toEqual([])

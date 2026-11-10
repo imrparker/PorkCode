@@ -2,7 +2,6 @@ import { describe, expect } from "bun:test"
 import { Effect } from "effect"
 import { ai, LLMEvent, Media, Message, ToolDefinition } from "../../src/effect.js"
 import { configure } from "../../src/providers/openai-compatible-responses.js"
-import { OpenAI } from "../../src/providers.js"
 import { OpenResponses } from "../../src/protocols/open-responses.js"
 import { OpenAICompatibleResponses } from "../../src/protocols/openai-compatible-responses.js"
 import { OpenAIResponses } from "../../src/protocols/openai-responses.js"
@@ -164,7 +163,18 @@ describe("Open Responses-compatible route", () => {
         baseURL: "https://responses.example.test/v1",
       }).model("example-model")
       const error = yield* compileRequest(
-        ai.request({ model, prompt: "Draw.", tools: [OpenAI.imageGeneration()] }),
+        ai.request({
+          model,
+          prompt: "Draw.",
+          tools: [
+            ToolDefinition.make({
+              name: "image_generation",
+              description: "Hosted image generation tool the compatible protocol must reject.",
+              inputSchema: { type: "object", properties: {}, additionalProperties: false },
+              native: { openai: { type: "image_generation" } },
+            }),
+          ],
+        }),
       ).pipe(Effect.flip)
 
       expect(error.reason._tag).toBe("InvalidRequest")

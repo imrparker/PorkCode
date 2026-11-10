@@ -50,7 +50,7 @@ describe("Provider", () => {
   })
 
   test("keeps loading the hyphenated provider paths existing configs reference", async () => {
-    for (const name of ["google-vertex-messages", "openai-compatible-responses"]) {
+    for (const name of ["openai-compatible-responses"]) {
       const specifier = `@opencode/ai/providers/${name}`
       expect(Provider.builtinPackages.has(specifier)).toBe(true)
       const loaded = await Effect.runPromise(Provider.loadPackage(specifier))

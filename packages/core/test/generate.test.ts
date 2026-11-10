@@ -20,11 +20,8 @@ import { Generate } from "@opencode/core/generate"
 import { Integration } from "@opencode/core/integration"
 import { IntegrationConnection } from "@opencode/core/integration/connection"
 import { ModelResolver } from "@opencode/core/model-resolver"
-import { ModelsDev } from "@opencode/core/models-dev"
 import { ID, Info, Model, Ref, VariantID } from "@opencode/core/model"
 import { Provider } from "@opencode/core/provider"
-import { Variant } from "@opencode/core/variant"
-import { Money } from "@opencode/schema/money"
 import { Npm } from "@opencode/util/npm"
 import { Effect, Exit, Fiber, Layer } from "effect"
 import { TestClock } from "effect/testing"
@@ -275,43 +272,38 @@ testEffect(Layer.empty).effect("attributes each stateless completion without cre
   }),
 )
 
-describe("image and decision generation", () => {
+describe("image generation", () => {
   const catalog = [
     Info.make({
       ...Info.default(Provider.ID.openai, ID.make("gpt-image-1-mini")),
       type: "image",
-      package: "@opencode/ai/providers/openai/images",
+      package: "@opencode/ai/providers/openai-compatible/images",
+      settings: { baseURL: "https://img.test/v1" },
     }),
     Info.make({
       ...Info.default(Provider.ID.opencode, ID.make("gpt-image-2.5-sunburst")),
       type: "image",
-      package: "@opencode/ai/providers/openai/images",
+      package: "@opencode/ai/providers/openai-compatible/images",
+      settings: { baseURL: "https://img.test/v1" },
     }),
     Info.make({
       ...Info.default(Provider.ID.make("zai"), ID.make("glm-image")),
       type: "image",
-      package: "@opencode/ai/providers/zai/images",
+      package: "@opencode/ai/providers/openai-compatible/images",
+      settings: { baseURL: "https://gen.z.test/v4" },
     }),
     Info.make({
       ...Info.default(Provider.ID.openai, ID.make("gpt-5")),
-      package: "@opencode/ai/providers/openai/responses",
+      package: "@opencode/ai/providers/openai-compatible",
     }),
     Info.make({
-      ...Info.default(Provider.ID.make("openrouter"), ID.make("typesafe/jev-1.13")),
-      type: "decision",
-      package: "@opencode/ai/providers/openrouter/decisions",
+      ...Info.default(Provider.ID.make("acme"), ID.make("flux-dev")),
+      type: "image",
+      package: "@opencode/ai/providers/openai-compatible/images",
+      settings: { baseURL: "https://reject.test/v1" },
+      variants: [{ id: VariantID.make("high"), body: { quality: "hd" } }],
     }),
-  ].concat(
-    decisionCatalog(),
-    (() => {
-      const gemini = Info.make({
-        ...Info.default(Provider.ID.make("google"), ID.make("gemini-3.1-flash-image")),
-        type: "image",
-        package: "@opencode/ai/providers/google/images",
-      })
-      return [{ ...gemini, variants: Variant.resolve(gemini, Variant.supports({ supported: true, effort: ["high"] })) }]
-    })(),
-  )
+  ]
   const mediaProviders = Layer.mock(Provider.Service, {
     get: (providerID) =>
       Effect.succeed(
@@ -384,12 +376,12 @@ describe("image and decision generation", () => {
         const text = request.body._tag === "Uint8Array" ? new TextDecoder().decode(request.body.body) : ""
         requests.push({ url: request.url, headers: request.headers, body: text ? JSON.parse(text) : undefined })
         if (request.url === "https://images.example/fox") return HttpClientResponse.fromWeb(request, new Response(PNG))
-        if (request.url === "https://api.z.ai/api/paas/v4/images/generations")
+        if (request.url === "https://gen.z.test/v4/images/generations")
           return HttpClientResponse.fromWeb(
             request,
             Response.json({ created: 1, data: [{ url: "https://images.example/fox" }] }),
           )
-        if (request.url === "https://api.openai.com/v1/images/generations")
+        if (request.url === "https://img.test/v1/images/generations")
           return HttpClientResponse.fromWeb(
             request,
             Response.json({
@@ -397,16 +389,6 @@ describe("image and decision generation", () => {
               output_format: "png",
               usage: { input_tokens: 9, output_tokens: 272 },
             }),
-          )
-        if (request.url === "https://api.typesafe.ai/v1/systemone")
-          return HttpClientResponse.fromWeb(
-            request,
-            Response.json({ model: "clef", answers: { photo: { type: "noul", noul: 0.9 } } }),
-          )
-        if (request.url === "https://openrouter.ai/api/v1/systemone")
-          return HttpClientResponse.fromWeb(
-            request,
-            new Response(DECISION_RESPONSE, { headers: { "content-type": "application/json" } }),
           )
         return HttpClientResponse.fromWeb(
           request,
@@ -435,7 +417,7 @@ describe("image and decision generation", () => {
       const generate = yield* Generate.Service
       const result = yield* generate.image({ model: ref("openai", "gpt-image-1-mini"), prompt: "A black circle" })
       expect(requests[0]).toMatchObject({
-        url: "https://api.openai.com/v1/images/generations",
+        url: "https://img.test/v1/images/generations",
         headers: { authorization: "Bearer openai-key" },
         body: { model: "gpt-image-1-mini", prompt: "A black circle" },
       })
@@ -454,7 +436,7 @@ describe("image and decision generation", () => {
       const generate = yield* Generate.Service
       yield* generate.image({ model: ref("opencode", "gpt-image-2.5-sunburst"), prompt: "A black circle" })
       expect(requests[0]).toMatchObject({
-        url: "https://api.openai.com/v1/images/generations",
+        url: "https://img.test/v1/images/generations",
         headers: { authorization: "Bearer console-token" },
       })
       expect(requests[0]?.body).toStrictEqual({ model: "gpt-image-2.5-sunburst", prompt: "A black circle" })
@@ -469,125 +451,15 @@ describe("image and decision generation", () => {
     }),
   )
 
-  mediaIt.effect("answers decision questions and reports the provider's cost", () =>
-    Effect.gen(function* () {
-      requests.length = 0
-      const generate = yield* Generate.Service
-      const result = yield* generate.decisions({
-        model: ref("openrouter", "typesafe/jev-1.13"),
-        input: [
-          {
-            type: "text",
-            text: "I was charged twice for the same invoice. Please refund the duplicate payment today.",
-          },
-        ],
-        questions: [
-          {
-            type: "choice",
-            name: "department",
-            instructions: "Which team should handle this support request?",
-            choices: [
-              { value: "billing", description: "Payments, invoices, refunds, or failed charges" },
-              { value: "technical", description: "Bugs, outages, or integrations" },
-              { value: "sales", description: "Pricing, upgrades, or new accounts" },
-            ],
-          },
-          {
-            type: "score",
-            name: "urgency",
-            instructions: "How urgent is this support request?",
-            levels: [
-              { label: "Can wait for normal support" },
-              { label: "Needs prompt attention" },
-              { label: "Actively blocking revenue" },
-            ],
-          },
-          {
-            type: "predicate",
-            name: "refund",
-            instructions: "Is the customer asking for a refund?",
-            criteria: { true: "They want money back.", false: "Anything else." },
-          },
-        ],
-      })
-      expect(requests[0]).toMatchObject({
-        url: "https://openrouter.ai/api/v1/systemone",
-        headers: { authorization: "Bearer openrouter-key" },
-        body: {
-          questions: {
-            refund: {
-              type: "noul",
-              instructions: "Is the customer asking for a refund?",
-              criteria: { true: "They want money back.", false: "Anything else." },
-            },
-          },
-        },
-      })
-      expect(result.answers.map((answer) => [answer.name, answer.type])).toEqual([
-        ["department", "choice"],
-        ["urgency", "score"],
-        ["refund", "predicate"],
-      ])
-      expect(result.answers[0]).toMatchObject({ choice: "billing" })
-      expect(result.cost).toBe(Money.USD.make(0.000017724))
-      expect(result.tokens).toEqual({ input: 422, output: 69 })
-    }),
-  )
-
-  const sendImage = (id: string) =>
-    Effect.gen(function* () {
-      requests.length = 0
-      const generate = yield* Generate.Service
-      yield* generate.decisions({
-        model: ref("decide-host", id),
-        input: [
-          { type: "text", text: "Is this a photo?" },
-          { type: "file", data: "aW1hZ2U=", mime: "image/png" },
-        ],
-        questions: [{ type: "predicate", name: "photo", instructions: "Is this a photo?" }],
-      })
-      return requests[0]?.body
-    })
-
-  mediaIt.effect("places decision media where the catalog's media_input says", () =>
-    Effect.gen(function* () {
-      expect(yield* sendImage("decide-root")).toMatchObject({
-        state: "Is this a photo?",
-        images: ["data:image/png;base64,aW1hZ2U="],
-      })
-      expect(yield* sendImage("decide-state")).toMatchObject({
-        state: ["Is this a photo?", { type: "image_url", image_url: { url: "data:image/png;base64,aW1hZ2U=" } }],
-      })
-      // Unset or unknown values keep TypeSafe's assets map.
-      for (const id of ["decide-default", "decide-unknown"])
-        expect(yield* sendImage(id)).toMatchObject({
-          state: ["Is this a photo?", "<image-1>"],
-          assets: { "<image-1>": { type: "image", format: "png", data_base64: "aW1hZ2U=" } },
-        })
-      expect(yield* sendImage("decide-override")).toMatchObject({ images: ["data:image/png;base64,aW1hZ2U="] })
-    }),
-  )
-
-  mediaIt.effect("sends a variant's reasoning setting and maps provider rejections", () =>
+  mediaIt.effect("sends a variant's body overlay and maps provider rejections", () =>
     Effect.gen(function* () {
       requests.length = 0
       const generate = yield* Generate.Service
       const error = yield* generate
-        .image({ model: ref("google", "gemini-3.1-flash-image", "high"), prompt: "A black circle" })
+        .image({ model: ref("acme", "flux-dev", "high"), prompt: "A black circle" })
         .pipe(Effect.flip)
-      expect(JSON.stringify(requests[0]?.body)).toContain("thinkingLevel")
+      expect(requests[0]?.body).toMatchObject({ model: "flux-dev", quality: "hd" })
       expect(error).toMatchObject({ _tag: "Generate.ProviderRequestError", reason: "invalid_request", status: 400 })
-    }),
-  )
-
-  mediaIt.effect("returns a typed error for an invalid request instead of crashing", () =>
-    Effect.gen(function* () {
-      const generate = yield* Generate.Service
-      const question = { type: "predicate" as const, name: "a", instructions: "?" }
-      const error = yield* generate
-        .decisions({ model: ref("openrouter", "typesafe/jev-1.13"), input: [], questions: [question, question] })
-        .pipe(Effect.flip)
-      expect(error._tag).toBe("Generate.InvalidRequestError")
     }),
   )
 
@@ -613,57 +485,5 @@ describe("image and decision generation", () => {
     }),
   )
 })
-
-// Decision models decoded from models.dev data the way the catalog is, so `media_input` flows from the source.
-function decisionCatalog() {
-  const model = (id: string, compatibility?: Record<string, string>) => ({
-    id,
-    type: "decision",
-    name: id,
-    description: "A decision model",
-    release_date: "2026-01-01",
-    modalities: { input: ["text", "image/png"], output: ["text"] },
-    capabilities: { tools: { supported: false }, reasoning: { supported: false }, temperature: false },
-    limit: { context: 65536, output: 0 },
-    api: {
-      systemone: {
-        base_url: "https://api.typesafe.ai/v1",
-        sdk: { opencodeai: "@opencode/ai/providers/typesafe-ai/decisions" },
-        ...(compatibility ? { compatibility } : {}),
-      },
-    },
-  })
-  const snapshot = Effect.runSync(
-    ModelsDev.decodeSnapshot(
-      JSON.stringify({
-        "decide-host": {
-          id: "decide-host",
-          name: "Decide Host",
-          env: [],
-          models: {
-            "decide-default": model("decide-default"),
-            "decide-root": model("decide-root", { media_input: "root" }),
-            "decide-state": model("decide-state", { media_input: "state" }),
-            "decide-unknown": model("decide-unknown", { media_input: "somewhere_new" }),
-            "decide-override": model("decide-override", { media_input: "state" }),
-          },
-        },
-      }),
-    ),
-  )
-  return snapshot.flatMap((entry) =>
-    entry.models.map((item) =>
-      Info.make({
-        ...item,
-        package: item.package ?? entry.info.package,
-        // What a config `compatibility` override merges in.
-        ...(item.id === "decide-override" ? { compatibility: { ...item.compatibility, mediaInput: "root" } } : {}),
-      }),
-    ),
-  )
-}
-
-const DECISION_RESPONSE =
-  '{"model":"typesafe/jev-1.13-20260917","answers":{"department":{"type":"choice","choice":"billing","probabilities":{"billing":1,"sales":0,"technical":0},"confidence":1},"urgency":{"type":"score","score":1.02,"legend":{"0":"Can wait for normal support","1":"Needs prompt attention","2":"Actively blocking revenue"},"probabilities":{"0":0.01,"1":0.96,"2":0.03},"confidence":0.95},"refund":{"type":"noul","noul":0.99}},"usage":{"input_tokens":422,"output_tokens":69,"cost":0.000017724},"id":"gen-dec-1790088886-JRlffOLUwQdx4Lltu2se","provider":"TypeSafe"}'
 
 const PNG = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0, 0, 0, 13, 0x49, 0x48, 0x44, 0x52])
