@@ -218,7 +218,7 @@ export function getConfig() {
       return {
         ...base,
         appId,
-        productName: "OpenCode Dev",
+        productName: "PorkCode Dev",
         publish: {
           provider: "generic",
           url: "https://opencode.ai/update/api/dev/desktop/opencode/",
@@ -236,7 +236,7 @@ export function getConfig() {
       return {
         ...base,
         appId,
-        productName: "OpenCode Beta",
+        productName: "PorkCode Beta",
         protocols: { name: "OpenCode Beta", schemes: ["opencode"] },
         publish: {
           provider: "generic",
@@ -255,7 +255,7 @@ export function getConfig() {
       return {
         ...base,
         appId,
-        productName: "OpenCode",
+        productName: "PorkCode",
         protocols: { name: "OpenCode", schemes: ["opencode"] },
         // An Icon Composer package compiles to Assets.car, which macOS 26 and later draw the app icon from
         // (Dock, Finder, system dialogs and the system icon styles). Older macOS keeps using the ICNS.

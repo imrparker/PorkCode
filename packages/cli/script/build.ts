@@ -70,7 +70,9 @@ const targets =
 if (!targets.length) throw new Error(`Unknown build target: ${requestedTarget}`)
 
 // Bun 1.4.4 skips native packages for the other libc by default, but the musl targets need them.
-if (!skipInstall)
+// Single-target local builds only need this platform's natives; the wildcard install re-adds every
+// OS/libc/arch variant (~5 GB of optionalDependencies) to node_modules on each rebuild.
+if (!skipInstall && !singleFlag)
   await $`bun install --os="*" --cpu="*" --libc="*" @opentui/core@${pkg.dependencies["@opentui/core"]} @opencode/pty@${pkg.dependencies["@opencode/pty"]}`
 const appArchive = path.join(dir, ".cache", "bun-app-archive.bin")
 await Bun.write(appArchive, await buildAppArchive(Script.channel, Script.version, { skipBuild: skipWebUi }))
