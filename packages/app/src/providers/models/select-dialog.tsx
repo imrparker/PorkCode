@@ -32,10 +32,7 @@ import { TextInput } from "@opencode/ui/text-input"
 import { ModelTooltip } from "./tooltip"
 import { ModelDetails } from "./details"
 import { useLanguage } from "@/runtime/i18n/language"
-import { ExternalLink } from "@/runtime/platform/external-link"
-import { useData } from "@/runtime/server/current"
 import { useWorkspaceLocation } from "@/workspaces/location"
-import { createModelUsage, ModelUsageTag } from "@/usage/model"
 import {
   correctFlyoutPosition,
   createDialogFlyoutState,
@@ -57,12 +54,7 @@ import { formatKeybindParts, matchKeybind, parseKeybind } from "@/shell/commands
 import { createEventListener } from "@solid-primitives/event-listener"
 import { matchesModelSearch } from "./search"
 import { SettingsList } from "@/settings/list"
-import {
-  CONSOLE_GROUP_KEY,
-  consoleModelGroup,
-  ProviderModelIcon,
-  ProviderModelSections,
-} from "@/providers/models/provider-group"
+import { CONSOLE_GROUP_KEY, consoleModelGroup, ProviderModelSections } from "@/providers/models/provider-group"
 import { consoleProviderName } from "@/providers/catalog/console"
 import "@/settings/settings.css"
 import "@/shell/commands/dialog.css"
@@ -105,7 +97,6 @@ const ModelList: Component<{
   model?: ModelState
 }> = (props) => {
   const language = useLanguage()
-  const usage = createModelUsage({ refresh: true })
 
   const controller = createModelSelectorController({
     model: props.model,
@@ -217,7 +208,6 @@ const ModelList: Component<{
                   <Show when={item.latest}>
                     <Badge class="shrink-0">{language.t("model.tag.latest")}</Badge>
                   </Show>
-                  <Show when={usage(item)}>{(value) => <ModelUsageTag usage={value()} />}</Show>
                 </div>
               </div>
               <div data-slot="settings-row-control" class="size-4">
@@ -315,14 +305,6 @@ export function ModelSelectorDrawer(props: {
   const dialog = useDialog()
   const location = useWorkspaceLocation()
 
-  const controller = createModelSelectorController({
-    model: props.model,
-    provider: () => props.provider,
-    onSelect: () => props.onClose?.(),
-  })
-
-  const chatgptPlan = createChatgptPlan(controller.current)
-
   const manage = async () => {
     const { DialogManageModels } = await import("./manage")
     void dialog.show(() => <DialogManageModels />)
@@ -340,7 +322,6 @@ export function ModelSelectorDrawer(props: {
       model={props.model}
       provider={props.provider}
       onConnect={connect}
-      chatgptPlan={chatgptPlan()}
       onClose={() => props.onClose?.()}
     />
   )
@@ -350,7 +331,6 @@ function ModelDrawer(props: {
   trigger: ModelSelectorTrigger
   model?: ModelState
   provider?: string
-  chatgptPlan?: boolean
   onClose: () => void
   onManage: () => void
   onConnect?: () => void
@@ -447,19 +427,6 @@ function ModelDrawer(props: {
                   >
                     {language.t("command.provider.connect")}
                   </Button>
-                </Show>
-                <Show when={props.chatgptPlan}>
-                  <div class="flex min-h-10 items-center gap-2 border-t border-v2-border-border-muted px-3 py-2 text-[13px] leading-5 text-v2-text-text-base">
-                    <ProviderModelIcon provider={{ id: "openai", name: "OpenAI" }} class="shrink-0" />
-                    <span class="min-w-0 flex-1 truncate">{language.t("dialog.model.chatgptPlan")}</span>
-                    <ExternalLink
-                      href="https://chatgpt.com/settings/usage"
-                      class="flex shrink-0 items-center gap-1 rounded-sm text-v2-text-text-muted no-underline hover:text-v2-text-text-base focus-visible:outline focus-visible:outline-2"
-                    >
-                      {language.t("dialog.model.chatgptManageUsage")}
-                      <Icon name="arrow-up-right" size="small" />
-                    </ExternalLink>
-                  </div>
                 </Show>
               </div>
             </div>
@@ -590,42 +557,6 @@ const round = (value: number) => Math.round(value * 1000) / 1000
 
 type ModelRow = { id: string; item: ModelItem; group: ModelGroup }
 
-function createChatgptPlan(current: () => string | undefined) {
-  const data = useData()
-  const location = useWorkspaceLocation()
-
-  return () => {
-    if (!current()?.startsWith("openai:")) return false
-
-    const connection = data.location.integration
-      .list(location().ref)
-      ?.find((integration) => integration.id === "openai")?.connections[0]
-
-    return connection?.type === "credential" && connection.method === "oauth"
-  }
-}
-
-function ChatgptPlanFooter() {
-  const language = useLanguage()
-
-  return (
-    <>
-      <div class="h-px bg-v2-border-border-muted" />
-      <div class="flex min-h-10 items-center gap-2 px-3 py-2 text-[13px] leading-5 text-v2-text-text-base">
-        <ProviderModelIcon provider={{ id: "openai", name: "OpenAI" }} class="shrink-0" />
-        <span class="min-w-0 flex-1 truncate">{language.t("dialog.model.chatgptPlan")}</span>
-        <ExternalLink
-          href="https://chatgpt.com/settings/usage"
-          class="flex shrink-0 items-center gap-1 rounded-sm text-v2-text-text-muted no-underline hover:text-v2-text-text-base focus-visible:outline focus-visible:outline-2"
-        >
-          {language.t("dialog.model.chatgptManageUsage")}
-          <Icon name="arrow-up-right" size="small" />
-        </ExternalLink>
-      </div>
-    </>
-  )
-}
-
 export function DialogSelectModel(props: { provider?: string; model?: ModelState }) {
   const dialog = useDialog()
   const language = useLanguage()
@@ -637,8 +568,6 @@ export function DialogSelectModel(props: { provider?: string; model?: ModelState
   })
 
   const labels = createProviderLabels(controller.all)
-  const chatgptPlan = createChatgptPlan(controller.current)
-  const usage = createModelUsage({ refresh: true })
 
   // `navigated`: the arrows have moved through the results since the query last changed.
   const [query, setQuery] = createStore({ search: "", navigated: false })
@@ -967,7 +896,6 @@ export function DialogSelectModel(props: { provider?: string; model?: ModelState
             <Badge class="shrink-0">{language.t("model.tag.latest")}</Badge>
           </Show>
         </span>
-        <Show when={usage(item())}>{(value) => <ModelUsageTag usage={value()} />}</Show>
         <Show when={active()}>
           <span data-slot="model-dialog-variant">
             <span class="truncate capitalize">{variant(item()) ?? language.t("common.default")}</span>
@@ -1050,9 +978,6 @@ export function DialogSelectModel(props: { provider?: string; model?: ModelState
             {(row, attrs) => <Row model={row()} attrs={attrs} />}
           </SearchList>
         </div>
-        <Show when={chatgptPlan()}>
-          <ChatgptPlanFooter />
-        </Show>
       </DialogBody>
       <Show when={flyoutItem()}>
         {(item) => (
@@ -1113,7 +1038,6 @@ export function DialogSelectModel(props: { provider?: string; model?: ModelState
                 provider={labels.workspace(item().provider) ? item().provider.name : labels.name(item().provider)}
                 compact
                 standalone
-                usage={usage(item())}
               />
             </MenuScroll>
           </div>

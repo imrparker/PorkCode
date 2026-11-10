@@ -497,10 +497,6 @@ function createStoryFetch(): typeof fetch {
 
     if (pathname.startsWith("/api/credential/")) return noContentResponse()
 
-    if (pathname === "/api/experimental/usage/limits") {
-      return jsonResponse({ location, data: null })
-    }
-
     if (pathname === "/api/agent") {
       return jsonResponse({
         location,
