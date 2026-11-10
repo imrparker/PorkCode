@@ -136,7 +136,6 @@ A test must pay for its upkeep. Before adding one, answer three questions: which
 - A test must be able to fail. Do not assert values the code under test produced, mock the behavior you assert, use soft assertions for the order the test guards, or leave `rejects`/`resolves` un-awaited. A regression test must fail on the code before the fix.
 - Do not repeat a case per theme, text direction, viewport or channel. Use one table, and only when the behavior differs.
 - When you delete or move coverage, name the test that still proves the contract. When you move a contract, mutate its owner once and confirm the new test fails.
-- A contract proven by a `packages/session-ui/component-tests` test does not also get an app e2e copy.
 
 ## Tool Calling
 

@@ -481,13 +481,12 @@ A built-in always runs, whatever setting is saved under its id, so Extensions â€
 | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
 | SDK compile checks      | [`plugin/src/gui/context.typecheck.ts`](../plugin/src/gui/context.typecheck.ts), [`plugin.typecheck.ts`](../plugin/src/gui/plugin.typecheck.ts) | Async window setups, readonly drafts, panel and slot inputs, no-input Ipc options, declared store types       |
 | Registry compile checks | [`plugin/src/gui/registries.typecheck.ts`](../plugin/src/gui/registries.typecheck.ts)                                                           | A `MenuItem` field its menu ignores                                                                           |
-| Graph matrix            | `packages/app/component-tests/plugin-graph.spec.ts`                                                                                             | A built-in that fails when another built-in is disabled                                                       |
 | Keeper suites           | `packages/app/e2e/regression/`                                                                                                                  | What the user sees, per product area                                                                          |
 | Unit tests              | `*.test.ts` beside the code                                                                                                                     | Pure logic with a contract: paths, migrations, protocols                                                      |
 | Lint gate               | `bun run lint` (oxlint, ast-grep, `script/sdk-docs.ts`); `bun run lint:changed`                                                                 | Raw effects, app imports, module state, undocumented SDK, a guide block that differs from its shipping source |
 
 - Test a main entry through its `Ipc` contract with real inputs, not Electron mocks.
-- The hosts own their contracts: main storage in `packages/desktop/src/main/plugin/storage.test.ts`, the real window host in `packages/app/component-tests/plugin-host.spec.ts`. A plugin does not test them again.
+- The hosts own their contracts: main storage in `packages/desktop/src/main/plugin/storage.test.ts`. A plugin does not test them again.
 - Drive the race the user hits: a reload during async work, a store that loads late, an Ipc that goes away and returns.
 
 ## Build your first plugin
