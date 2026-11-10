@@ -16,17 +16,21 @@ export const Mark = (props: { class?: string }) => {
 }
 
 export const Splash = (props: Pick<ComponentProps<"svg">, "ref" | "class">) => {
+  // The wordmark's lowercase p glyph, lifted to the origin; the counter carries the shadow tone like Mark.
   return (
     <svg
       ref={props.ref}
       data-component="logo-splash"
       classList={{ [props.class ?? ""]: !!props.class }}
-      viewBox="0 0 80 100"
+      viewBox="0 0 73.8462 110.5714"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <path d="M60 80H20V40H60V80Z" fill="var(--icon-base)" />
-      <path d="M60 20H20V80H60V20ZM80 100H0V0H80V100Z" fill="var(--icon-strong-base)" />
+      <path d="M18.4615 18.4286H55.3846V73.7143H18.4615Z" fill="var(--icon-weak-base)" />
+      <path
+        d="M0 0H73.8462V92.1429H18.4615V110.5714H0V0ZM18.4615 18.4286V73.7143H55.3846V18.4286H18.4615Z"
+        fill="var(--icon-strong-base)"
+      />
     </svg>
   )
 }
