@@ -497,7 +497,6 @@ export const dict = {
   "settings.providers.section.connected": "Ofruesit e lidhur",
   "settings.providers.connected.empty": "Nuk ka ofrues të lidhur",
   "settings.providers.connected.environmentDescription": "Lidhur nga variablat e mjedisit tuaj",
-  "settings.providers.section.popular": "Ofruesit e njohur",
   "settings.providers.tag.environment": "Mjedisi",
   "settings.providers.tag.config": "Konfigurimi",
   "settings.providers.tag.custom": "Me porosi",

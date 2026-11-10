@@ -498,7 +498,6 @@ export const dict = {
   "settings.providers.section.connected": "Pievienotie pakalpojumi",
   "settings.providers.connected.empty": "Nav pievienotu pakalpojumu",
   "settings.providers.connected.environmentDescription": "Pievienots no jūsu vides mainīgajiem",
-  "settings.providers.section.popular": "Populāri pakalpojumi",
   "settings.providers.tag.environment": "Vide",
   "settings.providers.tag.config": "Konfigurācija",
   "settings.providers.tag.custom": "Pielāgots",

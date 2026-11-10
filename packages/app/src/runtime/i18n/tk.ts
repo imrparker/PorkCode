@@ -495,7 +495,6 @@ export const dict = {
   "settings.providers.section.connected": "Birikdirilen üpjün edijiler",
   "settings.providers.connected.empty": "Baglanan üpjün edijiler ýok",
   "settings.providers.connected.environmentDescription": "Daşky gurşaw üýtgeýjilerinden birikdirildi",
-  "settings.providers.section.popular": "Meşhur üpjün edijiler",
   "settings.providers.tag.environment": "Daşky gurşaw",
   "settings.providers.tag.config": "Sazlamak",
   "settings.providers.tag.custom": "Omörite",

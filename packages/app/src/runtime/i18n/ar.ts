@@ -477,7 +477,6 @@ export const dict = {
   "settings.providers.description": "ستكون إعدادات الموفر قابلة للتكوين هنا.",
   "settings.providers.section.connected": "الموفرون المتصلون",
   "settings.providers.connected.empty": "لا يوجد موفرون متصلون",
-  "settings.providers.section.popular": "الموفرون الشائعون",
   "settings.providers.tag.environment": "البيئة",
   "settings.providers.tag.config": "التكوين",
   "settings.providers.tag.custom": "مخصص",

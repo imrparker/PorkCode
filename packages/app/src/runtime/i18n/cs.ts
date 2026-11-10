@@ -498,7 +498,6 @@ export const dict = {
   "settings.providers.section.connected": "Připojení poskytovatelé",
   "settings.providers.connected.empty": "Žádní připojení poskytovatelé",
   "settings.providers.connected.environmentDescription": "Připojeno z vašich proměnných prostředí",
-  "settings.providers.section.popular": "Populární poskytovatelé",
   "settings.providers.tag.environment": "Životní prostředí",
   "settings.providers.tag.config": "Konfigurace",
   "settings.providers.tag.custom": "Vlastní",

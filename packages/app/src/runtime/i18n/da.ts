@@ -645,7 +645,6 @@ export const dict = {
   "settings.providers.description": "Udbyderindstillinger vil kunne konfigureres her.",
   "settings.providers.section.connected": "Forbundne udbydere",
   "settings.providers.connected.empty": "Ingen forbundne udbydere",
-  "settings.providers.section.popular": "Populære udbydere",
   "settings.providers.tag.environment": "Miljø",
   "settings.providers.tag.config": "Konfiguration",
   "settings.providers.tag.custom": "Brugerdefineret",

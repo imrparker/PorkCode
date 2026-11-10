@@ -655,7 +655,6 @@ export const dict = {
   "settings.providers.section.connected": "Provider connessi",
   "settings.providers.connected.empty": "Nessun provider connesso",
   "settings.providers.connected.environmentDescription": "Connesso tramite le variabili di ambiente",
-  "settings.providers.section.popular": "Provider più diffusi",
   "settings.providers.tag.environment": "Ambiente",
   "settings.providers.tag.config": "Configurazione",
   "settings.providers.tag.custom": "Personalizzato",

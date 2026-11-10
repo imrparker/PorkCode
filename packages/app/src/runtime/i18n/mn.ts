@@ -500,7 +500,6 @@ export const dict = {
   "settings.providers.section.connected": "Холбогдсон үйлчилгээ үзүүлэгчид",
   "settings.providers.connected.empty": "Холбогдсон үйлчилгээ үзүүлэгч байхгүй байна",
   "settings.providers.connected.environmentDescription": "Таны орчны хувьсагчдаас холбогдсон",
-  "settings.providers.section.popular": "Алдартай үйлчилгээ үзүүлэгчид",
   "settings.providers.tag.environment": "Байгаль орчин",
   "settings.providers.tag.config": "Тохиргоо",
   "settings.providers.tag.custom": "Захиалгат",

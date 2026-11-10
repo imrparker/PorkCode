@@ -510,7 +510,6 @@ export const dict = {
   "settings.providers.section.connected": "Prisijungę teikėjai",
   "settings.providers.connected.empty": "Nėra prisijungusių teikėjų",
   "settings.providers.connected.environmentDescription": "Prisijungta iš jūsų aplinkos kintamųjų",
-  "settings.providers.section.popular": "Populiarūs tiekėjai",
   "settings.providers.tag.environment": "Aplinka",
   "settings.providers.tag.config": "Konfigūracija",
   "settings.providers.tag.custom": "Pasirinktinis",

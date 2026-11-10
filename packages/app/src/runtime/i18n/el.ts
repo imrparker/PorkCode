@@ -502,7 +502,6 @@ export const dict = {
   "settings.providers.section.connected": "Συνδεδεμένοι πάροχοι",
   "settings.providers.connected.empty": "Δεν υπάρχουν συνδεδεμένοι πάροχοι",
   "settings.providers.connected.environmentDescription": "Συνδέθηκε από τις μεταβλητές περιβάλλοντος",
-  "settings.providers.section.popular": "Δημοφιλείς πάροχοι",
   "settings.providers.tag.environment": "Περιβάλλον",
   "settings.providers.tag.config": "Ρύθμιση",
   "settings.providers.tag.custom": "Προσαρμοσμένο",

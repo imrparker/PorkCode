@@ -503,7 +503,6 @@ export const dict = {
   "settings.providers.section.connected": "Qoşulmuş provayderlər",
   "settings.providers.connected.empty": "Qoşulmuş provayder yoxdur",
   "settings.providers.connected.environmentDescription": "Mühit dəyişənlərinizdən qoşulub",
-  "settings.providers.section.popular": "Populyar provayderlər",
   "settings.providers.tag.environment": "Mühit",
   "settings.providers.tag.config": "Konfiqurasiya",
   "settings.providers.tag.custom": "Fərdi",

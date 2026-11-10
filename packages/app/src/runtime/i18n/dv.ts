@@ -511,7 +511,6 @@ export const dict = {
   "settings.providers.section.connected": "ގުޅިފައިވާ ޕްރޮވައިޑަރުންނެވެ",
   "settings.providers.connected.empty": "ގުޅިފައިވާ ޕްރޮވައިޑަރުންތަކެއް ނެތެވެ",
   "settings.providers.connected.environmentDescription": "ތިބާގެ މާހައުލުގެ ވެރިއޭބަލްތަކުން ގުޅިފައިވެއެވެ",
-  "settings.providers.section.popular": "މަޝްހޫރު ޕްރޮވައިޑަރުންނެވެ",
   "settings.providers.tag.environment": "މާޙައުލު",
   "settings.providers.tag.config": "ކޮންފިގް",
   "settings.providers.tag.custom": "ސަޤާފަތް",

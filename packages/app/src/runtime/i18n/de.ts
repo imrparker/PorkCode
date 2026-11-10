@@ -617,7 +617,6 @@ export const dict = {
   "settings.providers.description": "Anbietereinstellungen können hier konfiguriert werden.",
   "settings.providers.section.connected": "Verbundene Anbieter",
   "settings.providers.connected.empty": "Keine verbundenen Anbieter",
-  "settings.providers.section.popular": "Beliebte Anbieter",
   "settings.providers.tag.environment": "Umgebung",
   "settings.providers.tag.config": "Konfiguration",
   "settings.providers.tag.custom": "Benutzerdefiniert",

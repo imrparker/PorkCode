@@ -492,7 +492,6 @@ export const dict = {
   "settings.providers.section.connected": "Ühendatud pakkujad",
   "settings.providers.connected.empty": "Ühendatud pakkujaid pole",
   "settings.providers.connected.environmentDescription": "Ühendatud teie keskkonnamuutujatega",
-  "settings.providers.section.popular": "Populaarsed pakkujad",
   "settings.providers.tag.environment": "Keskkond",
   "settings.providers.tag.config": "Konfig",
   "settings.providers.tag.custom": "Kohandatud",

@@ -498,7 +498,6 @@ export const dict = {
   "settings.providers.section.connected": "Ulangan provayderlar",
   "settings.providers.connected.empty": "Ulangan provayderlar yo'q",
   "settings.providers.connected.environmentDescription": "Atrof-muhit o'zgaruvchilaringizdan ulangan",
-  "settings.providers.section.popular": "Mashhur provayderlar",
   "settings.providers.tag.environment": "Atrof-muhit",
   "settings.providers.tag.config": "Konfiguratsiya",
   "settings.providers.tag.custom": "Maxsus",

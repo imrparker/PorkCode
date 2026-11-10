@@ -521,7 +521,6 @@ export const dict = {
   "settings.providers.section.connected": "Povezani ponudniki",
   "settings.providers.connected.empty": "Ni povezanih ponudnikov",
   "settings.providers.connected.environmentDescription": "Povezano iz spremenljivk vašega okolja",
-  "settings.providers.section.popular": "Priljubljeni ponudniki",
   "settings.providers.tag.environment": "okolje",
   "settings.providers.tag.config": "Konfiguracija",
   "settings.providers.tag.custom": "Po meri",

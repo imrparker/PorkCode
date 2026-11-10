@@ -510,7 +510,6 @@ export const dict = {
   "settings.providers.section.connected": "Повезани провајдери",
   "settings.providers.connected.empty": "Нема повезаних добављача",
   "settings.providers.connected.environmentDescription": "Повезано из променљивих окружења",
-  "settings.providers.section.popular": "Популарни провајдери",
   "settings.providers.tag.environment": "окружење",
   "settings.providers.tag.config": "Конфигурација",
   "settings.providers.tag.custom": "Прилагођено",

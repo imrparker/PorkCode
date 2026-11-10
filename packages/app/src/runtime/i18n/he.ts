@@ -525,7 +525,6 @@ export const dict = {
   "settings.providers.section.connected": "ספקים מחוברים",
   "settings.providers.connected.empty": "אין ספקים מחוברים",
   "settings.providers.connected.environmentDescription": "מחובר ממשתני הסביבה שלך",
-  "settings.providers.section.popular": "ספקים פופולריים",
   "settings.providers.tag.environment": "סביבה",
   "settings.providers.tag.config": "הגדרות",
   "settings.providers.tag.custom": "מותאם אישית",

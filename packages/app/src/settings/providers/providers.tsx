@@ -4,9 +4,10 @@ import { useDialog } from "@opencode/ui/context/dialog"
 import { Icon } from "@opencode/ui/icon"
 import { IconButton } from "@opencode/ui/icon-button"
 import { Menu } from "@opencode/ui/menu"
+import { ProviderIcon } from "@opencode/ui/provider-icon"
 import { OpenCodeLogo } from "@/providers/opencode-logo"
 import { showToast } from "@/shell/notifications/toast"
-import { popularProviders, useProviders } from "@/providers/catalog/providers"
+import { useProviders } from "@/providers/catalog/providers"
 import { consoleProviderGroup } from "@/providers/catalog/console"
 import { useIntegrations } from "@/providers/catalog/integrations"
 import { createEffect, createMemo, createSignal, on, untrack, type Component, For, type JSX, Show } from "solid-js"
@@ -35,16 +36,13 @@ type ProviderSource = "env" | "api" | "account" | "config" | "custom"
 
 type ProviderItem = ReturnType<ReturnType<typeof useProviders>["connected"]>[number]
 
-const PROVIDER_NOTES = [
-  { match: (id: string) => id === "opencode", key: "dialog.provider.opencode.note" },
-  { match: (id: string) => id === "opencode-go", key: "dialog.provider.opencodeGo.tagline" },
-  { match: (id: string) => id === "anthropic", key: "dialog.provider.anthropic.note" },
-  { match: (id: string) => id === "claude-agent", key: "dialog.provider.claudeAgent.note" },
-  { match: (id: string) => id.startsWith("github-copilot"), key: "dialog.provider.copilot.note" },
-  { match: (id: string) => id === "openai", key: "dialog.provider.openai.note" },
-  { match: (id: string) => id === "google", key: "dialog.provider.google.note" },
-  { match: (id: string) => id === "openrouter", key: "dialog.provider.openrouter.note" },
-  { match: (id: string) => id === "vercel", key: "dialog.provider.vercel.note" },
+// PorkCode's core use case. These backends self-register their models while they run (core plugin
+// provider/local.ts), so the rows stay listed with a live detection state instead of vanishing until
+// a server answers; other ports are set through opencode.json providers.<id>.settings.baseURL.
+const LOCAL_BACKENDS = [
+  { id: "lmstudio", name: "LM Studio", url: "http://127.0.0.1:1234" },
+  { id: "ollama", name: "Ollama", url: "http://127.0.0.1:11434" },
+  { id: "vllm", name: "vLLM", url: "http://127.0.0.1:8000" },
 ] as const
 
 export const SettingsProviders: Component<{
@@ -225,28 +223,6 @@ export const SettingsProviders: Component<{
     return connected().filter((item) => !grouped.has(item.id))
   })
 
-  const popular = createMemo(() => {
-    const connectedIDs = new Set(connected().map((p) => p.id))
-    // The Console account (integration `opencode`) shares its id with the Zen provider. A stored API
-    // key, including one imported from a v1 auth.json, makes Zen "connected" without any account, so
-    // the Popular list keeps the sign-in row until the active credential is an OAuth grant. Until the
-    // integration list arrives the row is still the models.dev Zen provider, so dedupe it as before.
-    const account = integrations.list().find((entry) => entry.id === CONSOLE_INTEGRATION)
-
-    const items = providers
-      .popular()
-      .filter((p) => {
-        if (p.id !== CONSOLE_INTEGRATION || !account) return !connectedIDs.has(p.id)
-
-        return account.connections.find((connection) => connection.type === "credential")?.method !== "oauth"
-      })
-      .slice()
-
-    items.sort((a, b) => popularProviders.indexOf(a.id) - popularProviders.indexOf(b.id))
-
-    return items
-  })
-
   // Connection state comes from the integration list like the TUI: credential
   // connections mean an API key or an account login, env connections mean detected
   // environment variables, and a connectionless integration is config-provided.
@@ -294,8 +270,6 @@ export const SettingsProviders: Component<{
   }
 
   const canManageAccounts = (item: ProviderItem) => providerAccounts(integration(item)).length > 0
-
-  const note = (id: string) => PROVIDER_NOTES.find((item) => item.match(id))?.key
 
   const disconnect = (item: ProviderItem, name: string) => {
     const group = consoleGroup()
@@ -597,38 +571,37 @@ export const SettingsProviders: Component<{
           </SettingsList>
         </div>
 
-        <div class="settings-section">
-          <h3 class="settings-section-title">{language.t("settings.providers.section.popular")}</h3>
+        <div class="settings-section" data-component="local-backends-section">
+          <h3 class="settings-section-title">{language.t("settings.providers.section.local")}</h3>
           <SettingsList variant="catalog">
-            <For each={popular()}>
-              {(item) => (
-                <div class="settings-provider-row">
-                  <div class="settings-provider-lead">
-                    <ProviderModelIcon provider={item} class="settings-provider-icon shrink-0" />
+            <For each={LOCAL_BACKENDS}>
+              {(backend) => {
+                // Detection follows the server catalog: the local plugin registers the provider with its
+                // discovered models while the backend answers, and drops it again when the server goes away.
+                const detected = () => Object.keys(providers.all().get(backend.id)?.models ?? {}).length > 0
 
-                    <div class="settings-provider-copy">
-                      <div class="settings-provider-main">
-                        <span class="settings-provider-name">{item.name}</span>
-                        <Show when={item.id === "opencode" || item.id === "opencode-go"}>
-                          <Badge>{language.t("dialog.provider.tag.recommended")}</Badge>
-                        </Show>
+                return (
+                  <div class="settings-provider-row">
+                    <div class="settings-provider-lead">
+                      <ProviderIcon id={backend.id} class="settings-provider-icon shrink-0" />
+
+                      <div class="settings-provider-copy">
+                        <div class="settings-provider-main">
+                          <span class="settings-provider-name">{backend.name}</span>
+                          <Badge>
+                            {language.t(
+                              detected() ? "settings.providers.local.detected" : "settings.providers.local.waiting",
+                            )}
+                          </Badge>
+                        </div>
+                        <p class="settings-provider-description font-mono">{backend.url}</p>
                       </div>
-                      <Show when={note(item.id)}>
-                        {(key) => <p class="settings-provider-description">{language.t(key())}</p>}
-                      </Show>
                     </div>
                   </div>
-                  <Button size="normal" variant="neutral" icon="plus" onClick={() => connect(item.id)}>
-                    {language.t("common.connect")}
-                  </Button>
-                </div>
-              )}
+                )
+              }}
             </For>
           </SettingsList>
-
-          <button type="button" class="settings-providers-view-all" onClick={() => connect()}>
-            {language.t("dialog.provider.viewAll")}
-          </button>
         </div>
       </div>
     </>

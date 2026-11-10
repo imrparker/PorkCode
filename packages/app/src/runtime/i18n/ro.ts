@@ -497,7 +497,6 @@ export const dict = {
   "settings.providers.section.connected": "Furnizori conectați",
   "settings.providers.connected.empty": "Niciun furnizor conectat",
   "settings.providers.connected.environmentDescription": "Conectat prin variabilele de mediu",
-  "settings.providers.section.popular": "Furnizori populari",
   "settings.providers.tag.environment": "Mediu",
   "settings.providers.tag.config": "Configurare",
   "settings.providers.tag.custom": "Personalizat",

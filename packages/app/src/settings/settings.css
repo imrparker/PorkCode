@@ -1324,23 +1324,6 @@
   }
 }
 
-.settings-providers-view-all {
-  margin-top: 20px;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  font-size: 13px;
-  font-weight: 530;
-  line-height: var(--line-height-compact);
-  color: var(--v2-text-text-accent);
-  cursor: pointer;
-  text-align: start;
-}
-
-.settings-providers-view-all:hover {
-  color: var(--v2-text-text-accent-hover);
-}
-
 .settings-tab-header.settings-tab-header--stacked {
   display: flex;
   flex-direction: column;

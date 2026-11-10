@@ -508,7 +508,6 @@ export const dict = {
   "settings.providers.section.connected": "جڑے ہوئے پرووائیڈر",
   "settings.providers.connected.empty": "کوئی پرووائیڈر نئیں جڑیا",
   "settings.providers.connected.environmentDescription": "تہاڈے ماحول دے متغیراں توں جڑیا ہویا اے",
-  "settings.providers.section.popular": "مقبول پرووائیڈر",
   "settings.providers.tag.environment": "ماحول",
   "settings.providers.tag.config": "ترتیب",
   "settings.providers.tag.custom": "مخصوص",

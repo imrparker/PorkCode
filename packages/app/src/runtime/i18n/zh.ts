@@ -523,7 +523,6 @@ export const dict = {
   "settings.providers.description": "可在此处配置提供商设置。",
   "settings.providers.section.connected": "已连接的提供商",
   "settings.providers.connected.empty": "没有已连接的提供商",
-  "settings.providers.section.popular": "热门提供商",
   "settings.providers.tag.environment": "环境",
   "settings.providers.tag.config": "配置",
   "settings.providers.tag.custom": "自定义",

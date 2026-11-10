@@ -526,7 +526,6 @@ export const dict = {
   "settings.providers.section.connected": "អ្នកផ្តល់សេវាដែលបានភ្ជាប់",
   "settings.providers.connected.empty": "គ្មានអ្នកផ្តល់សេវាដែលបានតភ្ជាប់ទេ។",
   "settings.providers.connected.environmentDescription": "បានភ្ជាប់ពីអថេរបរិស្ថានរបស់អ្នក។",
-  "settings.providers.section.popular": "អ្នកផ្តល់សេវាពេញនិយម",
   "settings.providers.tag.environment": "បរិស្ថាន",
   "settings.providers.tag.config": "កំណត់រចនាសម្ព័ន្ធ",
   "settings.providers.tag.custom": "ផ្ទាល់ខ្លួន",

@@ -488,7 +488,6 @@ export const dict = {
   "settings.providers.section.connected": "የተገናኙ አቅራቢዎች",
   "settings.providers.connected.empty": "ምንም የተገናኙ አቅራቢዎች የሉም",
   "settings.providers.connected.environmentDescription": "ከአካባቢዎ ተለዋዋጮች ጋር የተገናኘ",
-  "settings.providers.section.popular": "ታዋቂ አቅራቢዎች",
   "settings.providers.tag.environment": "አካባቢ",
   "settings.providers.tag.config": "ውቅር",
   "settings.providers.tag.custom": "ብጁ",

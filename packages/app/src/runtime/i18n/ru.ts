@@ -521,7 +521,6 @@ export const dict = {
   "settings.providers.description": "Настройки провайдеров будут доступны здесь.",
   "settings.providers.section.connected": "Подключённые провайдеры",
   "settings.providers.connected.empty": "Нет подключённых провайдеров",
-  "settings.providers.section.popular": "Популярные провайдеры",
   "settings.providers.tag.environment": "Среда",
   "settings.providers.tag.config": "Конфигурация",
   "settings.providers.tag.custom": "Пользовательский",

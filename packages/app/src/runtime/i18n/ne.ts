@@ -501,7 +501,6 @@ export const dict = {
   "settings.providers.section.connected": "जडान गरिएका प्रदायकहरू",
   "settings.providers.connected.empty": "जडान गरिएका प्रदायकहरू छैनन्",
   "settings.providers.connected.environmentDescription": "तपाईंको वातावरण चरबाट जडान गरिएको",
-  "settings.providers.section.popular": "लोकप्रिय प्रदायकहरू",
   "settings.providers.tag.environment": "वातावरण",
   "settings.providers.tag.config": "कन्फिग",
   "settings.providers.tag.custom": "अनुकूलन",

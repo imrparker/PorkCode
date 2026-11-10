@@ -511,7 +511,6 @@ export const dict = {
   "settings.providers.section.connected": "Csatlakozott szolgáltatók",
   "settings.providers.connected.empty": "Nincsenek csatlakoztatott szolgáltatók",
   "settings.providers.connected.environmentDescription": "A környezeti változókból csatlakozik",
-  "settings.providers.section.popular": "Népszerű szolgáltatók",
   "settings.providers.tag.environment": "Környezet",
   "settings.providers.tag.config": "Konfiguráció",
   "settings.providers.tag.custom": "Szokás",

@@ -495,7 +495,6 @@ export const dict = {
   "settings.providers.section.connected": "დაკავშირებული პროვაიდერები",
   "settings.providers.connected.empty": "დაკავშირებული პროვაიდერები არ არის",
   "settings.providers.connected.environmentDescription": "დაკავშირებულია თქვენი გარემოს ცვლადებიდან",
-  "settings.providers.section.popular": "პოპულარული პროვაიდერები",
   "settings.providers.tag.environment": "გარემო",
   "settings.providers.tag.config": "კონფიგურაცია",
   "settings.providers.tag.custom": "მორგებული",

@@ -495,7 +495,6 @@ export const dict = {
   "settings.providers.section.connected": "Sambandsveitarar",
   "settings.providers.connected.empty": "Ongin tilknýttur veitari",
   "settings.providers.connected.environmentDescription": "Samband frá tínum umhvørvisbreytum",
-  "settings.providers.section.popular": "Vælumtóktir veitarar",
   "settings.providers.tag.environment": "Umhvørvi",
   "settings.providers.tag.config": "Uppseting",
   "settings.providers.tag.custom": "Sersniðgivið",

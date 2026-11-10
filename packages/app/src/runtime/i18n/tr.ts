@@ -536,7 +536,6 @@ export const dict = {
   "settings.providers.description": "Sağlayıcı ayarları burada yapılandırılabilecek.",
   "settings.providers.section.connected": "Bağlı sağlayıcılar",
   "settings.providers.connected.empty": "Bağlı sağlayıcı yok",
-  "settings.providers.section.popular": "Popüler sağlayıcılar",
   "settings.providers.tag.environment": "Ortam",
   "settings.providers.tag.config": "Yapılandırma",
   "settings.providers.tag.custom": "Özel",

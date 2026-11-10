@@ -536,7 +536,6 @@ export const dict = {
   "settings.providers.section.connected": "Nhà cung cấp được kết nối",
   "settings.providers.connected.empty": "Không có nhà cung cấp được kết nối",
   "settings.providers.connected.environmentDescription": "Đã kết nối từ các biến môi trường của bạn",
-  "settings.providers.section.popular": "Nhà cung cấp phổ biến",
   "settings.providers.tag.environment": "Môi trường",
   "settings.providers.tag.config": "Cấu hình",
   "settings.providers.tag.custom": "Tùy chỉnh",

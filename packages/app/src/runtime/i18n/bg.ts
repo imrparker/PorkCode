@@ -499,7 +499,6 @@ export const dict = {
   "settings.providers.section.connected": "Свързани доставчици",
   "settings.providers.connected.empty": "Няма свързани доставчици",
   "settings.providers.connected.environmentDescription": "Свързан от променливите на вашата среда",
-  "settings.providers.section.popular": "Популярни доставчици",
   "settings.providers.tag.environment": "Околна среда",
   "settings.providers.tag.config": "Конфиг",
   "settings.providers.tag.custom": "По поръчка",

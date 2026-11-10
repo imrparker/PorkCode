@@ -695,7 +695,6 @@ export const dict = {
   "settings.providers.section.connected": "Anslutna leverantörer",
   "settings.providers.connected.empty": "Inga anslutna leverantörer",
   "settings.providers.connected.environmentDescription": "Anslutna via dina miljövariabler",
-  "settings.providers.section.popular": "Populära leverantörer",
   "settings.providers.tag.environment": "Miljö",
   "settings.providers.tag.config": "Konfiguration",
   "settings.providers.tag.custom": "Anpassad",

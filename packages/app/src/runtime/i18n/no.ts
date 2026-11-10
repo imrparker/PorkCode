@@ -659,7 +659,6 @@ export const dict = {
   "settings.providers.description": "Leverandørinnstillinger vil kunne konfigureres her.",
   "settings.providers.section.connected": "Tilkoblede leverandører",
   "settings.providers.connected.empty": "Ingen tilkoblede leverandører",
-  "settings.providers.section.popular": "Populære leverandører",
   "settings.providers.tag.environment": "Miljø",
   "settings.providers.tag.config": "Konfigurasjon",
   "settings.providers.tag.custom": "Tilpasset",

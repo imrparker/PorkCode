@@ -531,7 +531,6 @@ export const dict = {
   "settings.providers.section.connected": "ຜູ້ໃຫ້ບໍລິການເຊື່ອມຕໍ່",
   "settings.providers.connected.empty": "ບໍ່ມີຜູ້ໃຫ້ບໍລິການເຊື່ອມຕໍ່",
   "settings.providers.connected.environmentDescription": "ເຊື່ອມຕໍ່ຈາກຕົວແປສະພາບແວດລ້ອມຂອງທ່ານ",
-  "settings.providers.section.popular": "ຜູ້ໃຫ້ບໍລິການທີ່ນິຍົມ",
   "settings.providers.tag.environment": "ສະພາບແວດລ້ອມ",
   "settings.providers.tag.config": "ການຕັ້ງຄ່າ",
   "settings.providers.tag.custom": "ກຳນົດເອງ",

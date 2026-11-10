@@ -504,7 +504,6 @@ export const dict = {
   "settings.providers.section.connected": "ارائه دهندگان متصل",
   "settings.providers.connected.empty": "هیچ ارائه دهنده متصلی وجود ندارد",
   "settings.providers.connected.environmentDescription": "از متغیرهای محیط شما متصل شده است",
-  "settings.providers.section.popular": "ارائه دهندگان محبوب",
   "settings.providers.tag.environment": "محیط زیست",
   "settings.providers.tag.config": "پیکربندی",
   "settings.providers.tag.custom": "سفارشی",

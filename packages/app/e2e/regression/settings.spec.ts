@@ -42,6 +42,26 @@ function open(page: Page, input: Partial<WorkspaceInput> = {}) {
   })
 }
 
+// The Providers page no longer lists providers to connect; the connect dialog's picker frame is reached from the
+// model selector instead. With no connected models the chip opens the unpaid Select-model dialog, whose view-all
+// button shows that provider list. `show` disposes the dialogs it replaces, so a bare getByRole("dialog") matches
+// only the connect dialog once this returns.
+async function openIntegrationsDialog(page: Page, input: Partial<WorkspaceInput> = {}) {
+  const { settings } = await open(page, input)
+  await settings.getByRole("button", { name: "Back to app", exact: true }).click()
+  // Home has no tabs seeded; the header's New session opens a draft whose composer hosts the model selector.
+  await page.getByRole("banner").getByRole("button", { name: "New session", exact: true }).click()
+  await expect(page.locator('[data-component="composer-editor"]')).toBeEditable()
+  await page.locator('[data-component="composer"] [data-action="composer-model"]').click()
+  const models = page.getByRole("dialog", { name: "Select model", exact: true })
+  await expect(models).toBeVisible()
+  await models.getByRole("button", { name: "See 70+ more providers", exact: true }).click()
+  const dialog = page.getByRole("dialog")
+  await expect(dialog).toHaveCount(1)
+
+  return dialog
+}
+
 async function openProject(page: Page, name = "Settings demo") {
   const settings = page.getByTestId("settings-screen")
   await settings.getByRole("tab", { name: "Projects", exact: true }).click()
@@ -1449,20 +1469,21 @@ for (const row of ["configured", "disabled", "failure"] as const) {
 }
 
 // Zen and the Console account share the id `opencode`: the provider comes from models.dev, the
-// integration carries the account sign-in.
+// integration carries the account sign-in. The free catalog only counts as connected once a real
+// credential exists, and the row's tag reports which kind of credential it is.
 for (const row of [
-  { name: "a fresh install offers the Console sign-in", paid: false, connections: [], console: true },
+  { name: "a fresh install shows no connected providers", paid: false, connections: [], badge: undefined },
   {
-    name: "a stored Zen API key keeps the Console sign-in",
+    name: "a stored Zen API key connects the provider with its method",
     paid: true,
     connections: [{ type: "credential", id: "cred_v1", label: "API key", method: "key" }],
-    console: true,
+    badge: "API key",
   },
   {
-    name: "a Console account hides the sign-in row",
+    name: "a Console account connects the provider as an account",
     paid: true,
     connections: [{ type: "credential", id: "cred_account", label: "Clara Team", method: "oauth" }],
-    console: false,
+    badge: "Account",
   },
 ]) {
   test(`providers: ${row.name}`, async ({ page }) => {
@@ -1494,23 +1515,47 @@ for (const row of [
           ],
           connections: row.connections,
         },
-        { id: "opencode-go", name: "OpenCode Go", methods: [{ type: "key" }], connections: [] },
-        { id: "anthropic", name: "Anthropic", methods: [{ type: "key" }], connections: [] },
       ],
     })
 
     await settings.getByRole("tab", { name: "Providers", exact: true }).click()
-    await expect(settings.getByRole("heading", { name: "Popular providers" })).toBeVisible()
+    await expect(settings.getByRole("heading", { name: "Local backends" })).toBeVisible()
     const connected = settings.locator('[data-component="connected-providers-section"]')
 
-    if (row.paid) await expect(connected.getByText("OpenCode Zen", { exact: true })).toBeVisible()
+    if (row.badge === undefined) {
+      await expect(connected.getByText("No connected providers")).toBeVisible()
 
-    if (!row.paid) await expect(settings.getByText("No connected providers")).toBeVisible()
-    // Anthropic only exists in the integration fixture, so its row proves the integration list has loaded.
-    await expect(settings.getByText("Anthropic", { exact: true })).toBeVisible()
-    await expect(settings.getByText("OpenCode Console", { exact: true })).toHaveCount(row.console ? 1 : 0)
+      return
+    }
+
+    const zen = connected.locator(".settings-provider-row", { hasText: "OpenCode Zen" })
+    await expect(zen.locator('[data-component="tag"]')).toHaveText(row.badge)
   })
 }
+
+test("providers: local backends show their live detection state", async ({ page }) => {
+  const { settings } = await open(page, {
+    provider: {
+      all: [
+        {
+          id: "lmstudio",
+          name: "LM Studio",
+          models: { "qwen/qwq-32b": { id: "qwen/qwq-32b", name: "QwQ 32B", cost: { input: 0, output: 0 } } },
+        },
+        { id: "ollama", name: "Ollama", models: {} },
+      ],
+      connected: ["lmstudio"],
+      default: {},
+    },
+  })
+
+  await settings.getByRole("tab", { name: "Providers", exact: true }).click()
+  const board = settings.locator('[data-component="local-backends-section"]')
+  await expect(board.locator(".settings-provider-row", { hasText: "LM Studio" })).toContainText("Detected")
+  await expect(board.locator(".settings-provider-row", { hasText: "Ollama" })).toContainText("Waiting for server")
+  // vLLM is not in the catalog at all, but its row stays listed while it waits.
+  await expect(board.locator(".settings-provider-row", { hasText: "vLLM" })).toContainText("Waiting for server")
+})
 
 const consoleIntegrations = [
   {
@@ -1528,7 +1573,7 @@ const consoleIntegrations = [
 test("providers: OpenCode Go connects with its own methods, not the Console sign-in", async ({ page }) => {
   const attempts: string[] = []
 
-  const { settings } = await open(page, {
+  const dialog = await openIntegrationsDialog(page, {
     integrations: consoleIntegrations,
     onIntegrationOAuth: (input) => {
       attempts.push(input.integrationID)
@@ -1537,20 +1582,16 @@ test("providers: OpenCode Go connects with its own methods, not the Console sign
     },
   })
 
-  await settings.getByRole("tab", { name: "Providers", exact: true }).click()
-  await settings
-    .locator(".settings-provider-row", { hasText: "OpenCode Go" })
-    .getByRole("button", { name: "Connect", exact: true })
-    .click()
-  const dialog = page.getByRole("dialog", { name: "Connect OpenCode Go", exact: true })
-  await expect(dialog.getByPlaceholder("API key")).toBeVisible()
+  await dialog.locator('[data-provider-id="opencode-go"]').click()
+  const connect = page.getByRole("dialog", { name: "Connect OpenCode Go", exact: true })
+  await expect(connect.getByPlaceholder("API key")).toBeVisible()
   expect(attempts).toEqual([])
 })
 
 test("providers: a rejected API key shows the server error and can be sent again", async ({ page }) => {
   const keys: unknown[] = []
 
-  const { settings } = await open(page, {
+  const dialog = await openIntegrationsDialog(page, {
     integrations: [{ id: "openrouter", name: "OpenRouter", methods: [{ type: "key" }], connections: [] }],
     onConnectKey: (input) => {
       keys.push(input.body)
@@ -1559,18 +1600,14 @@ test("providers: a rejected API key shows the server error and can be sent again
     },
   })
 
-  await settings.getByRole("tab", { name: "Providers", exact: true }).click()
-  await settings
-    .locator(".settings-provider-row", { hasText: "OpenRouter" })
-    .getByRole("button", { name: "Connect", exact: true })
-    .click()
-  const dialog = page.getByRole("dialog", { name: "Connect OpenRouter", exact: true })
-  const submit = dialog.getByRole("button", { name: "Continue", exact: true })
-  await dialog.getByPlaceholder("API key").fill("sk-bad")
+  await dialog.locator('[data-provider-id="openrouter"]').click()
+  const connect = page.getByRole("dialog", { name: "Connect OpenRouter", exact: true })
+  const submit = connect.getByRole("button", { name: "Continue", exact: true })
+  await connect.getByPlaceholder("API key").fill("sk-bad")
   await submit.click()
 
-  await expect(dialog.getByRole("alert")).toHaveText("Invalid API key")
-  await expect(dialog.getByPlaceholder("API key")).toHaveValue("sk-bad")
+  await expect(connect.getByRole("alert")).toHaveText("Invalid API key")
+  await expect(connect.getByPlaceholder("API key")).toHaveValue("sk-bad")
   await expect(submit).toBeEnabled()
   expect(keys).toEqual([expect.objectContaining({ key: "sk-bad" })])
 })
@@ -1578,7 +1615,7 @@ test("providers: a rejected API key shows the server error and can be sent again
 test("providers: Back during a pending API key request does not report the provider as connected", async ({ page }) => {
   const keys: string[] = []
 
-  const { settings } = await open(page, {
+  const picker = await openIntegrationsDialog(page, {
     integrations: [
       {
         id: "openrouter",
@@ -1596,11 +1633,7 @@ test("providers: Back during a pending API key request does not report the provi
   })
 
   const held = await holdRoute(page, /\/api\/integration\/openrouter\/connect\/key(\?|$)/, { method: "POST" })
-  await settings.getByRole("tab", { name: "Providers", exact: true }).click()
-  await settings
-    .locator(".settings-provider-row", { hasText: "OpenRouter" })
-    .getByRole("button", { name: "Connect", exact: true })
-    .click()
+  await picker.locator('[data-provider-id="openrouter"]').click()
   const dialog = page.getByRole("dialog", { name: "Connect OpenRouter", exact: true })
   await dialog.getByRole("button", { name: "API key", exact: true }).click()
   await dialog.getByPlaceholder("API key").fill("sk-late")
@@ -1630,7 +1663,7 @@ test("providers: the connect dialog lists connected providers and manages their 
   const state = { active: "cred_work" }
   const activated: string[] = []
 
-  const { settings } = await open(page, {
+  const dialog = await openIntegrationsDialog(page, {
     integrations: () => [
       {
         id: "openai",
@@ -1658,9 +1691,6 @@ test("providers: the connect dialog lists connected providers and manages their 
     },
   })
 
-  await settings.getByRole("tab", { name: "Providers", exact: true }).click()
-  await settings.getByRole("button", { name: "Show more providers", exact: true }).click()
-  const dialog = page.getByRole("dialog")
   const openai = dialog.locator('[data-provider-id="openai"]')
   await expect(openai.locator('[data-slot="provider-connected"]')).toHaveText("Work")
   await expect(
@@ -1725,7 +1755,7 @@ test("providers: adding an account starts a lone method once", async ({ page, co
   await context.route("https://auth.example.test/**", (route) => route.fulfill({ body: "Sign in" }))
   const attempts: string[] = []
 
-  const { settings } = await open(page, {
+  const dialog = await openIntegrationsDialog(page, {
     integrations: [
       ...consoleIntegrations.filter((integration) => integration.id !== "opencode-go"),
       {
@@ -1748,9 +1778,6 @@ test("providers: adding an account starts a lone method once", async ({ page, co
     },
   })
 
-  await settings.getByRole("tab", { name: "Providers", exact: true }).click()
-  await settings.getByRole("button", { name: "Show more providers", exact: true }).click()
-  const dialog = page.getByRole("dialog")
   await dialog.locator('[data-provider-id="opencode-go"]').click()
   await dialog.getByRole("button", { name: "Add account", exact: true }).click()
   await expect(dialog.getByPlaceholder("API key")).toBeVisible()
@@ -1774,7 +1801,7 @@ test("providers: Back from a pending sign-in cancels it and lets a backdrop clic
   await context.route("https://auth.example.test/**", (route) => route.fulfill({ body: "Sign in" }))
   const cancelled: string[] = []
 
-  const { settings } = await open(page, {
+  const dialog = await openIntegrationsDialog(page, {
     integrations: [
       {
         id: "github-copilot",
@@ -1787,9 +1814,6 @@ test("providers: Back from a pending sign-in cancels it and lets a backdrop clic
     onIntegrationOAuthCancel: (attemptID) => cancelled.push(attemptID),
   })
 
-  await settings.getByRole("tab", { name: "Providers", exact: true }).click()
-  await settings.getByRole("button", { name: "Show more providers", exact: true }).click()
-  const dialog = page.getByRole("dialog")
   const popup = page.waitForEvent("popup")
   await dialog.locator('[data-provider-id="github-copilot"]').click()
   await popup
@@ -1805,7 +1829,7 @@ test("providers: Back from a pending sign-in cancels it and lets a backdrop clic
 })
 
 test("providers: Back from a Claude Agent check started by Add account returns to its accounts", async ({ page }) => {
-  const { settings } = await open(page, {
+  const dialog = await openIntegrationsDialog(page, {
     integrations: [
       {
         id: "claude-agent",
@@ -1817,9 +1841,6 @@ test("providers: Back from a Claude Agent check started by Add account returns t
   })
 
   const held = await holdRoute(page, /\/api\/integration\/claude-agent\/connect\/external(\?|$)/, { method: "POST" })
-  await settings.getByRole("tab", { name: "Providers", exact: true }).click()
-  await settings.getByRole("button", { name: "Show more providers", exact: true }).click()
-  const dialog = page.getByRole("dialog")
   await dialog.locator('[data-provider-id="claude-agent"]').click()
   await dialog.getByRole("button", { name: "Add account", exact: true }).click()
   await dialog.getByRole("button", { name: "Check again", exact: true }).click()

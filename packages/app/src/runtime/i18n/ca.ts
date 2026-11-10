@@ -499,7 +499,6 @@ export const dict = {
   "settings.providers.section.connected": "Proveïdors connectats",
   "settings.providers.connected.empty": "No hi ha proveïdors connectats",
   "settings.providers.connected.environmentDescription": "Connectat des de les vostres variables d'entorn",
-  "settings.providers.section.popular": "Proveïdors populars",
   "settings.providers.tag.environment": "Medi ambient",
   "settings.providers.tag.config": "Config",
   "settings.providers.tag.custom": "Personalitzat",

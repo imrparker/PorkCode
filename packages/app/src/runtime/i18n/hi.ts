@@ -502,7 +502,6 @@ export const dict = {
   "settings.providers.section.connected": "कनेक्टेड प्रोवाइडर",
   "settings.providers.connected.empty": "कोई कनेक्टेड प्रोवाइडर नहीं",
   "settings.providers.connected.environmentDescription": "आपके एनवायरनमेंट वेरिएबल से कनेक्ट किया गया",
-  "settings.providers.section.popular": "लोकप्रिय प्रोवाइडर",
   "settings.providers.tag.environment": "एनवायरनमेंट",
   "settings.providers.tag.config": "कॉन्फ़िगरेशन",
   "settings.providers.tag.custom": "कस्टम",

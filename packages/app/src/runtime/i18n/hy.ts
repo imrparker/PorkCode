@@ -497,7 +497,6 @@ export const dict = {
   "settings.providers.section.connected": "Կապված մատակարարներ",
   "settings.providers.connected.empty": "Կապված մատակարարներ չկան",
   "settings.providers.connected.environmentDescription": "Միացված է ձեր միջավայրի փոփոխականներից",
-  "settings.providers.section.popular": "Հանրաճանաչ մատակարարներ",
   "settings.providers.tag.environment": "Շրջակա միջավայր",
   "settings.providers.tag.config": "Կազմաձևում",
   "settings.providers.tag.custom": "Պատվիրված",

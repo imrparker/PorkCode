@@ -704,7 +704,6 @@ export const dict = {
   "settings.providers.section.connected": "Verbonden aanbieders",
   "settings.providers.connected.empty": "Geen verbonden aanbieders",
   "settings.providers.connected.environmentDescription": "Verbonden via je omgevingsvariabelen",
-  "settings.providers.section.popular": "Populaire aanbieders",
   "settings.providers.tag.environment": "Omgeving",
   "settings.providers.tag.config": "Configuratie",
   "settings.providers.tag.custom": "Aangepast",

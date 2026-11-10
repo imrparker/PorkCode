@@ -632,7 +632,6 @@ export const dict = {
   "settings.providers.section.connected": "Yhdistetyt palveluntarjoajat",
   "settings.providers.connected.empty": "Ei yhdistettyjä palveluntarjoajia",
   "settings.providers.connected.environmentDescription": "Yhdistetty ympäristömuuttujien kautta",
-  "settings.providers.section.popular": "Suositut palveluntarjoajat",
   "settings.providers.tag.environment": "Ympäristö",
   "settings.providers.tag.config": "Määritys",
   "settings.providers.tag.custom": "Mukautettu",

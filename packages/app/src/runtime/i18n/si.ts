@@ -497,7 +497,6 @@ export const dict = {
   "settings.providers.section.connected": "සම්බන්ධිත සැපයුම්කරුවන්",
   "settings.providers.connected.empty": "සම්බන්ධිත සපයන්නන් නැත",
   "settings.providers.connected.environmentDescription": "ඔබගේ පරිසර විචල්‍ය වලින් සම්බන්ධ කර ඇත",
-  "settings.providers.section.popular": "ජනප්‍රිය සැපයුම්කරුවන්",
   "settings.providers.tag.environment": "පරිසරය",
   "settings.providers.tag.config": "වින්යාසය",
   "settings.providers.tag.custom": "අභිරුචි",

@@ -687,7 +687,6 @@ export const dict = {
   "settings.providers.description": "Les paramètres des fournisseurs seront configurables ici.",
   "settings.providers.section.connected": "Fournisseurs connectés",
   "settings.providers.connected.empty": "Aucun fournisseur connecté",
-  "settings.providers.section.popular": "Fournisseurs populaires",
   "settings.providers.tag.environment": "Environnement",
   "settings.providers.tag.config": "Configuration",
   "settings.providers.tag.custom": "Personnalisé",

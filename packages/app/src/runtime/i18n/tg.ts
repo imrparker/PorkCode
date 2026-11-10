@@ -497,7 +497,6 @@ export const dict = {
   "settings.providers.section.connected": "Провайдерҳои пайвастшуда",
   "settings.providers.connected.empty": "Провайдерҳои пайвастшуда нест",
   "settings.providers.connected.environmentDescription": "Аз тағирёбандаҳои муҳити шумо пайваст карда шудааст",
-  "settings.providers.section.popular": "Провайдерҳои машҳур",
   "settings.providers.tag.environment": "Муҳити зист",
   "settings.providers.tag.config": "Конфигуратсия",
   "settings.providers.tag.custom": "Фармоишгар",

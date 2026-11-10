@@ -510,7 +510,6 @@ export const dict = {
   "settings.providers.section.connected": "མཐུད་ཡོད་པའི་བྱིན་མི་ཚུ།",
   "settings.providers.connected.empty": "མཐུད་ཡོད་པའི་བྱིན་མི་མེད།",
   "settings.providers.connected.environmentDescription": "ཁྱོད་ཀྱི་མཐའ་འཁོར་འགྱུར་ཅན་ཚུ་ལས་མཐུད་ཡོདཔ།",
-  "settings.providers.section.popular": "ཡོངས་གྲགས་ཅན་གྱི་བྱིན་མི་ཚུ།",
   "settings.providers.tag.environment": "མཐའ་འཁོར",
   "settings.providers.tag.config": "རིམ་སྒྲིག།",
   "settings.providers.tag.custom": "ལུགས་སྲོལ",

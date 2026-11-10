@@ -499,7 +499,6 @@ export const dict = {
   "settings.providers.section.connected": "সংযুক্ত প্রদানকারী",
   "settings.providers.connected.empty": "কোন সংযুক্ত প্রদানকারী",
   "settings.providers.connected.environmentDescription": "আপনার পরিবেশ ভেরিয়েবল থেকে সংযুক্ত",
-  "settings.providers.section.popular": "জনপ্রিয় প্রদানকারী",
   "settings.providers.tag.environment": "পরিবেশ",
   "settings.providers.tag.config": "কনফিগার",
   "settings.providers.tag.custom": "কাস্টম",

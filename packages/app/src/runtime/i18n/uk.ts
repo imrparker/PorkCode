@@ -587,7 +587,6 @@ export const dict = {
   "settings.providers.section.connected": "Підключені провайдери",
   "settings.providers.connected.empty": "Немає підключених провайдерів",
   "settings.providers.connected.environmentDescription": "Підключено зі змінних середовища",
-  "settings.providers.section.popular": "Популярні провайдери",
   "settings.providers.tag.environment": "Середовище",
   "settings.providers.tag.config": "Конфігурація",
   "settings.providers.tag.custom": "Користувацький",

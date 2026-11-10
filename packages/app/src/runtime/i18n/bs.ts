@@ -519,7 +519,6 @@ export const dict = {
   "settings.providers.description": "Postavke provajdera će se ovdje moći podešavati.",
   "settings.providers.section.connected": "Povezani provajderi",
   "settings.providers.connected.empty": "Nema povezanih provajdera",
-  "settings.providers.section.popular": "Popularni provajderi",
   "settings.providers.tag.environment": "Okruženje",
   "settings.providers.tag.config": "Konfiguracija",
   "settings.providers.tag.custom": "Prilagođeno",

@@ -529,7 +529,6 @@ export const dict = {
   "settings.providers.section.connected": "Penyedia yang disambungkan",
   "settings.providers.connected.empty": "Tiada penyedia yang disambungkan",
   "settings.providers.connected.environmentDescription": "Disambungkan daripada pembolehubah persekitaran anda",
-  "settings.providers.section.popular": "Penyedia popular",
   "settings.providers.tag.environment": "Persekitaran",
   "settings.providers.tag.config": "Konfigurasi",
   "settings.providers.tag.custom": "Tersuai",

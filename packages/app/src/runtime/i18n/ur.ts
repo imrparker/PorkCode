@@ -509,7 +509,6 @@ export const dict = {
   "settings.providers.section.connected": "منسلک فراہم کنندگان",
   "settings.providers.connected.empty": "کوئی منسلک فراہم کنندہ نہیں۔",
   "settings.providers.connected.environmentDescription": "آپ کے ماحول کے متغیرات سے جڑا ہوا ہے۔",
-  "settings.providers.section.popular": "مقبول فراہم کنندگان",
   "settings.providers.tag.environment": "ماحول",
   "settings.providers.tag.config": "ترتیب",
   "settings.providers.tag.custom": "حسب ضرورت",

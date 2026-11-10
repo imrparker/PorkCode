@@ -506,7 +506,6 @@ export const dict = {
   "settings.providers.section.connected": "Tengdar veitendur",
   "settings.providers.connected.empty": "Engar tengdar veitendur",
   "settings.providers.connected.environmentDescription": "Tengdur frá umhverfisbreytum þínum",
-  "settings.providers.section.popular": "Vinsælir veitendur",
   "settings.providers.tag.environment": "Umhverfi",
   "settings.providers.tag.config": "Uppsetning",
   "settings.providers.tag.custom": "Sérsniðin",

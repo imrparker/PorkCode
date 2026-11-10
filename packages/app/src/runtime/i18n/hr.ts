@@ -512,7 +512,6 @@ export const dict = {
   "settings.providers.section.connected": "Povezani pružatelji usluga",
   "settings.providers.connected.empty": "Nema povezanih pružatelja usluga",
   "settings.providers.connected.environmentDescription": "Povezano iz varijabli vaše okoline",
-  "settings.providers.section.popular": "Popularni pružatelji usluga",
   "settings.providers.tag.environment": "okoliš",
   "settings.providers.tag.config": "Konfiguracija",
   "settings.providers.tag.custom": "Običaj",
