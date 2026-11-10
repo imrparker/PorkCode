@@ -1,0 +1,113 @@
+#!/usr/bin/env bash
+set -euo pipefail
+APP=opencode
+
+MUTED='\033[0;2m'
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+NC='\033[0m' # No Color
+
+usage() {
+    cat <<EOF
+PorkCode Installer
+
+Installs a PorkCode CLI binary into ~/.opencode/bin. PorkCode does not host
+release downloads, so you must point it at a binary you built or obtained:
+
+Usage: install [options]
+
+Options:
+    -h, --help              Display this help message
+    -b, --binary <path>     Install from a local binary (required)
+        --no-modify-path    Don't modify shell config files (.zshrc, .bashrc, etc.)
+
+Examples:
+    ./install --binary /path/to/opencode
+    curl -fsSL https://raw.githubusercontent.com/imrparker/PorkCode/develop/install | bash -s -- --binary /path/to/opencode
+EOF
+}
+
+no_modify_path=false
+binary_path=""
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        -h|--help)
+            usage
+            exit 0
+            ;;
+        -v|--version)
+            echo -e "${RED}Error: PorkCode has no release server; use --binary <path>${NC}"
+            exit 1
+            ;;
+        -b|--binary)
+            if [[ -n "${2:-}" ]]; then
+                binary_path="$2"
+                shift 2
+            else
+                echo -e "${RED}Error: --binary requires a path argument${NC}"
+                exit 1
+            fi
+            ;;
+        --no-modify-path)
+            no_modify_path=true
+            shift
+            ;;
+        *)
+            echo -e "${RED}Unknown option: $1${NC}"
+            usage
+            exit 1
+            ;;
+    esac
+done
+
+if [[ -z "$binary_path" ]]; then
+    echo -e "${RED}Error: --binary <path> is required. Build the CLI with 'bun run script/build.ts' in packages/cli.${NC}"
+    exit 1
+fi
+
+if [[ ! -f "$binary_path" ]]; then
+    echo -e "${RED}Error: binary not found: $binary_path${NC}"
+    exit 1
+fi
+
+install_dir="$HOME/.opencode/bin"
+mkdir -p "$install_dir"
+
+target="$install_dir/$APP"
+tmp_target="${target}.new.$$"
+
+cp "$binary_path" "$tmp_target"
+chmod +x "$tmp_target"
+# Gatekeeper blocks downloaded binaries until the quarantine attribute is cleared.
+[[ "$(uname)" == "Darwin" ]] && xattr -d com.apple.quarantine "$tmp_target" 2>/dev/null || true
+mv -f "$tmp_target" "$target"
+
+echo -e "${GREEN}PorkCode CLI installed to $target${NC}"
+
+if $no_modify_path; then
+    exit 0
+fi
+
+path_line="export PATH=\"\$HOME/.opencode/bin:\$PATH\""
+marker="# added by PorkCode installer"
+
+add_to_rc() {
+    local rc="$1"
+    if [[ -f "$rc" ]] && grep -qF "$marker" "$rc"; then
+        return
+    fi
+    printf '\n%s\n%s\n' "$marker" "$path_line" >> "$rc"
+    echo -e "${MUTED}Added ~/.opencode/bin to PATH in $rc${NC}"
+}
+
+case "${SHELL:-}" in
+    */zsh) add_to_rc "$HOME/.zshrc" ;;
+    */bash) add_to_rc "$HOME/.bashrc" ;;
+    *)
+        # Without a recognizable shell, .profile covers most login shells.
+        add_to_rc "$HOME/.profile"
+        ;;
+esac
+
+echo -e "${MUTED}Restart your shell or re-source your profile, then run 'opencode'.${NC}"
