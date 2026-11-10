@@ -453,6 +453,26 @@ describe("ModelsDev Service", () => {
     }),
   )
 
+  it.effect("drops the upstream vendor's hosted providers from the catalog", () =>
+    Effect.gen(function* () {
+      // models.dev lists these with @ai-sdk/openai-compatible, so they would otherwise load.
+      const hosted = (id: string) => ({
+        id,
+        name: id,
+        env: [`${id.toUpperCase()}_API_KEY`],
+        models: {
+          m: sourceModel("m", {
+            api: { "chat-completions": { base_url: `https://${id}.test/v1`, sdk: { aisdk: "@ai-sdk/openai-compatible" } } },
+          }),
+        },
+      })
+      const snapshots = yield* ModelsDev.decodeSnapshot(
+        JSON.stringify({ opencode: hosted("opencode"), "opencode-go": hosted("opencode-go"), acme: fixture.acme }),
+      )
+      expect(snapshots.map((snapshot) => snapshot.info.id)).toEqual([Provider.ID.make("acme")])
+    }),
+  )
+
   it.effect("skips APIs whose opencode entrypoint this build doesn't have", () =>
     Effect.gen(function* () {
       const unknown = (path: string) => ({

@@ -154,12 +154,16 @@ type Route = {
 // only happens when no baseURL is set. The catalog's URL for them is a template or SDK default.
 const BUILDS_OWN_URL = new Set(["aisdk:@jerome-benoit/sap-ai-provider-v2", "aisdk:watsonx-ai-provider"])
 
+// PorkCode never surfaces the upstream vendor's hosted service, even when the community catalog
+// lists it; those IDs alias to loadable packages, so filtering here is what keeps them out.
+const EXCLUDED_PROVIDERS = new Set(["opencode", "opencode-go"])
+
 const normalize = Effect.fnUntraced(function* (catalog: Record<string, unknown>) {
   const failed: { readonly model: string; readonly issue: unknown }[] = []
   const unknown = new Set<string>()
   const snapshots = Object.values(isV1(catalog) ? toV2(catalog) : catalog).flatMap((value) => {
     const item = Option.getOrUndefined(decodeProvider(value))
-    if (!item) return []
+    if (!item || EXCLUDED_PROVIDERS.has(item.id)) return []
     const providerID = Provider.ID.make(item.id)
     const sources = Object.entries(item.models).flatMap(([key, value]) => {
       const decoded = decodeModel(value)
