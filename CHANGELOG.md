@@ -9,7 +9,7 @@ PorkCode is based on opencode `dev` at commit `73c95abac2`, imported as this rep
 ### Added
 
 - **Windows installer build.** `packages/desktop` now packages a signed-off (unsigned) NSIS installer branded end to end: artifact `porkcode-desktop-win-x64.exe`, product name PorkCode, publisher imrparker, appId `com.imrparker.porkcode`, and a placeholder "P" monogram icon set replacing upstream's logo. Build with `OPENCODE_CHANNEL=prod`: CLI first (`packages/cli`, `--single --baseline`), then desktop `bun run build` + the two-step `script/pack.ts`. (`e250474142`, `703b66a0ac`)
-- **Model auto-discovery now works against authenticated local backends.** The LM Studio, Ollama, and vLLM plugins poll your backend's model endpoint (`/api/v1/models`, `/api/tags`, `/v1/models`) every 30 seconds and register whatever it serves — no `opencode.jsonc` edits when you load, unload, or add a model. Upstream only authenticated those polls with an API key written in the config file; PorkCode also uses keys stored through `/connect`, so discovery against a password-protected LM Studio no longer fails with `invalid_api_key`, and switching the stored credential re-authenticates live without a restart. (`3b9fc900b8`)
+- **Model auto-discovery for local backends.** The LM Studio, Ollama, and vLLM plugins poll your backend's model endpoint (`/api/v1/models`, `/api/tags`, `/v1/models`) every 30 seconds and register whatever it serves — no `opencode.jsonc` edits when you load, unload, or add a model.
 - **LM Studio lists only loaded models.** Unloaded models would fail or stall when selected, so they are hidden; a model appears in the picker within one poll interval after you load it, and its context length comes from the running instance.
 
 ### Removed
@@ -35,6 +35,7 @@ PorkCode is based on opencode `dev` at commit `73c95abac2`, imported as this rep
 
 ### Fixed
 
+- **Broken `/models` discovery against authenticated backends.** Upstream's model checks never passed the API key stored through `/connect` — only a key hand-written in the config file was sent — so every poll of a password-protected backend (e.g. LM Studio with an API key set) errored with `invalid_api_key` and the model list stayed empty. PorkCode passes the stored key on discovery requests and re-authenticates live when the credential switches, no restart. (`3b9fc900b8`)
 - Desktop production builds work again: the fork's removal of the root `install` script had broken the embedded installer asset (`desktop-cli.ts` imports it as raw text), and `@opencode/script` crashed on the deleted `.github/TEAM_MEMBERS`. Restored an offline-only PorkCode `install` script (installs a local binary to `~/.opencode/bin`, no hosted downloads) and made the team roster optional. (`049e16104a`, `c0c5df37bc`)
 - llama.cpp context-overflow responses are classified correctly and title generation pauses after one instead of failing repeatedly. (`ce33e461a1`)
 - Desktop honors an explicit `XDG_STATE_HOME` behind an opt-in flag rather than always relocating state. (`25ff95e004`)
