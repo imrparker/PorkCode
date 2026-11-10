@@ -73,9 +73,15 @@ export function createLocalProviderPlugin<Discovered>(input: {
         }
         const loaded = { models: [] as readonly Discovered[], hash: "[]" }
 
+        // Keep the integration registered even while the backend is stopped: it is what lists the
+        // backend in the provider picker and accepts a stored API key or a configured base URL before
+        // anything answers on the port. Detection still only adds models.
         yield* ctx.integration.transform((integrations) => {
-          if (loaded.models.length === 0) return
-          integrations.remove(input.providerID)
+          integrations.update(input.providerID, (integration) => (integration.name = input.name))
+          integrations.method.update({
+            integrationID: input.providerID,
+            method: { type: "key", label: `${input.name} API key` },
+          })
         })
 
         yield* ctx.provider.transform((providers) => {

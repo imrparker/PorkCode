@@ -58,6 +58,8 @@ export interface MockServerConfig {
   onCredentialUpdate?: (credentialID: string, body: { label?: string }) => void
   // Runs on POST /api/integration/:id/connect/key; returning `{ error }` rejects the key with a 400 and that message.
   onConnectKey?: (input: { integrationID: string; body: unknown }) => void | { error: string }
+  // Runs on PATCH /api/experimental/config with the request body; returning `{ error }` rejects the patch with a 400 and that message.
+  onConfigUpdate?: (body: unknown) => void | { error: string }
   // Terminal shells the settings offer (`/api/config/shell`).
   shells?: unknown[]
   // Background shell commands (`GET /api/shell`).
@@ -942,7 +944,14 @@ function mockHandlers(
             canonical: projectSeed(config)?.canonical ?? config.directory,
           }),
         configShells: () => Effect.succeed(config.shells ?? []),
-        configUpdate: () => noContent,
+        configUpdate: (ctx) =>
+          Effect.suspend(() => {
+            const rejected = config.onConfigUpdate?.(ctx.payload)
+
+            if (rejected) return Effect.fail(new MockBadRequest({ message: rejected.error }))
+
+            return noContent
+          }),
         websearchProviders: () =>
           Effect.sync(() => ({ location: location(config), data: resolve(config.websearchProviders ?? []) })),
         worktreeList: () =>

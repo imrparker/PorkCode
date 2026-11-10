@@ -10,7 +10,19 @@ import { showToast } from "@/shell/notifications/toast"
 import { useProviders } from "@/providers/catalog/providers"
 import { consoleProviderGroup } from "@/providers/catalog/console"
 import { useIntegrations } from "@/providers/catalog/integrations"
-import { createEffect, createMemo, createSignal, on, untrack, type Component, For, type JSX, Show } from "solid-js"
+import {
+  createEffect,
+  createMemo,
+  createResource,
+  createSignal,
+  on,
+  onCleanup,
+  untrack,
+  type Component,
+  For,
+  type JSX,
+  Show,
+} from "solid-js"
 import { useLanguage } from "@/runtime/i18n/language"
 import { useServerSDK } from "@/runtime/server/client"
 import { formatServerError } from "@/runtime/server/errors"
@@ -21,6 +33,7 @@ import { SettingsList } from "@/settings/list"
 import { activeProviderAccount, providerAccounts, type ProviderAccount } from "./accounts"
 import { AccountNameInput } from "./account-name"
 import { useProviderAccountActions } from "./account-actions"
+import { DialogLocalBackendEdit } from "./local-edit"
 import {
   availableProviders,
   connectedProviders,
@@ -61,6 +74,36 @@ export const SettingsProviders: Component<{
   const [consoleExpanded, setConsoleExpanded] = createSignal(false)
   const [pageState, setPageState] = createSignal(createSettingsProvidersState<ProviderItem>())
   const accountView = createMemo(() => providerAccountView(pageState()))
+
+  // Local backend rows show the configured server address instead of the built-in default; config
+  // documents arrive lowest to highest priority, so the last definition wins. Settings can be open
+  // without an active workspace route, so the source stays defined and falls back to base config.
+  const [configEntries, { refetch: refetchConfig }] = createResource(
+    () => props.directory ?? "",
+    (directory) => serverSdk.api.config.get(directory ? { location: { directory } } : undefined),
+  )
+  onCleanup(
+    serverSdk.event.on("config.updated", () => {
+      void refetchConfig()
+    }),
+  )
+
+  const configuredBaseUrl = (id: string) => {
+    if (configEntries.state !== "ready" && configEntries.state !== "refreshing") return undefined
+
+    for (let index = configEntries.latest.length - 1; index >= 0; index -= 1) {
+      const entry = configEntries.latest[index]
+      if (!entry || entry.type !== "document") continue
+      const value = entry.info.providers?.[id]?.settings?.baseURL
+      if (typeof value === "string" && value.trim()) return value.trim()
+    }
+
+    return undefined
+  }
+
+  const storedKeyID = (id: string) =>
+    integrations.list().find((item) => item.id === id)?.connections.find((connection) => connection.type === "credential")
+      ?.id
 
   const dispatch = (event: SettingsProvidersEvent<ProviderItem>) => {
     const result = transitionSettingsProviders(untrack(pageState), event)
@@ -594,9 +637,31 @@ export const SettingsProviders: Component<{
                             )}
                           </Badge>
                         </div>
-                        <p class="settings-provider-description font-mono">{backend.url}</p>
+                        <p class="settings-provider-description font-mono">
+                          {configuredBaseUrl(backend.id) ?? backend.url}
+                        </p>
                       </div>
                     </div>
+                    <Button
+                      size="normal"
+                      variant="ghost-muted"
+                      onClick={() =>
+                        dialog.show(() => (
+                          <DialogLocalBackendEdit
+                            backend={{
+                              id: backend.id,
+                              name: backend.name,
+                              defaultUrl: backend.url,
+                              baseUrl: configuredBaseUrl(backend.id),
+                              keyCredentialID: storedKeyID(backend.id),
+                            }}
+                            directory={props.directory}
+                          />
+                        ))
+                      }
+                    >
+                      {language.t("common.edit")}
+                    </Button>
                   </div>
                 )
               }}

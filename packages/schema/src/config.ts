@@ -117,7 +117,15 @@ export class Info extends Schema.Class<Info>("Config.Info")({
 }) {}
 
 export const Patch = Schema.Struct({
-  shell: Schema.NullOr(Schema.String),
+  shell: Schema.NullOr(Schema.String).pipe(optional),
+  providers: Schema.Record(
+    Schema.String,
+    Schema.Struct({
+      baseURL: Schema.NullOr(Schema.String).annotate({
+        description: "Server address written to providers.<id>.settings.baseURL; null removes the override",
+      }),
+    }).annotate({ identifier: "Config.PatchProvider" }),
+  ).pipe(optional),
 }).annotate({ identifier: "Config.Patch" })
 export interface Patch extends Schema.Schema.Type<typeof Patch> {}
 

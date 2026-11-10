@@ -216,6 +216,66 @@ describe("Config", () => {
     ),
   )
 
+  it.live("patches provider baseURL overrides in the global config document", () =>
+    Effect.acquireDisposable(Effect.promise(() => tmpdir())).pipe(
+      Effect.flatMap((tmp) => {
+        const global = path.join(tmp.path, "global")
+        const project = path.join(tmp.path, "project")
+        const filepath = path.join(global, "opencode.jsonc")
+        return Effect.promise(async () => {
+          await fs.mkdir(project, { recursive: true })
+          await fs.mkdir(global, { recursive: true })
+          await fs.writeFile(
+            filepath,
+            '{\n  "shell": "/bin/zsh",\n  "providers": {\n    "ollama": {\n      "settings": {\n        "baseURL": "http://localhost:11434"\n      }\n    }\n  }\n}\n',
+          )
+        }).pipe(
+          Effect.andThen(
+            Effect.gen(function* () {
+              const config = yield* Config.Service
+              yield* config.update!({ providers: { lmstudio: { baseURL: "http://192.168.0.40:1234/v1" } } })
+              // A providers-only patch must leave the shell and other providers intact.
+              const written = JSON.parse(yield* Effect.promise(() => fs.readFile(filepath, "utf8")))
+              expect(written).toEqual({
+                shell: "/bin/zsh",
+                providers: {
+                  ollama: { settings: { baseURL: "http://localhost:11434" } },
+                  lmstudio: { settings: { baseURL: "http://192.168.0.40:1234/v1" } },
+                },
+              })
+
+              yield* config.update!({ providers: { ollama: { baseURL: null } } })
+              const pruned = JSON.parse(yield* Effect.promise(() => fs.readFile(filepath, "utf8")))
+              expect(pruned.providers.lmstudio).toEqual({ settings: { baseURL: "http://192.168.0.40:1234/v1" } })
+              expect(JSON.stringify(pruned.providers.ollama ?? null)).not.toContain("baseURL")
+            }).pipe(Effect.provide(testLayer(project, global))),
+          ),
+        )
+      }),
+    ),
+  )
+
+  it.live("creates the global config document when patching a provider for the first time", () =>
+    Effect.acquireDisposable(Effect.promise(() => tmpdir())).pipe(
+      Effect.flatMap((tmp) => {
+        const global = path.join(tmp.path, "global")
+        const project = path.join(tmp.path, "project")
+        return Effect.promise(() => fs.mkdir(project, { recursive: true })).pipe(
+          Effect.andThen(
+            Effect.gen(function* () {
+              const config = yield* Config.Service
+              yield* config.update!({ providers: { vllm: { baseURL: "http://10.0.0.9:8000/v1" } } })
+              const written = JSON.parse(
+                yield* Effect.promise(() => fs.readFile(path.join(global, "opencode.jsonc"), "utf8")),
+              )
+              expect(written).toEqual({ providers: { vllm: { settings: { baseURL: "http://10.0.0.9:8000/v1" } } } })
+            }).pipe(Effect.provide(testLayer(project, global))),
+          ),
+        )
+      }),
+    ),
+  )
+
   // Filesystem sandboxes deny reads outside the project. Simulate a denied discovery root with a
   // symlink into an unsearchable directory, which makes realpath fail with EACCES.
   itWithPermissions("treats unreadable discovery roots as absent", () =>

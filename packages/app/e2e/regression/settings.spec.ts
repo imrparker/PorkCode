@@ -1557,6 +1557,77 @@ test("providers: local backends show their live detection state", async ({ page 
   await expect(board.locator(".settings-provider-row", { hasText: "vLLM" })).toContainText("Waiting for server")
 })
 
+test("providers: a configured local backend shows its saved server address on the row", async ({ page }) => {
+  const { settings } = await open(page, {
+    provider: { all: [], connected: [], default: {} },
+    configEntries: [
+      { type: "document", path: "/home/test/.config/opencode/opencode.jsonc", info: { shell: "/bin/zsh" } },
+      {
+        type: "document",
+        path: `${directory}/opencode.json`,
+        info: { providers: { lmstudio: { settings: { baseURL: "http://192.168.0.40:1234/v1" } } } },
+      },
+      { type: "directory", path: "/home/test/.config/opencode" },
+    ],
+  })
+
+  await settings.getByRole("tab", { name: "Providers", exact: true }).click()
+  const board = settings.locator('[data-component="local-backends-section"]')
+  // The higher-priority project document overrides the built-in address...
+  await expect(board.locator(".settings-provider-row", { hasText: "LM Studio" })).toContainText(
+    "http://192.168.0.40:1234/v1",
+  )
+  // ...while rows without an override keep showing their default.
+  await expect(board.locator(".settings-provider-row", { hasText: "Ollama" })).toContainText("http://127.0.0.1:11434")
+})
+
+test("providers: editing a local backend saves its server address and API key", async ({ page }) => {
+  const keys: string[] = []
+  const { settings } = await open(page, {
+    provider: { all: [], connected: [], default: {} },
+    onConnectKey: (input) => {
+      keys.push(input.integrationID)
+    },
+  })
+
+  await settings.getByRole("tab", { name: "Providers", exact: true }).click()
+  const row = settings
+    .locator('[data-component="local-backends-section"]')
+    .locator(".settings-provider-row", { hasText: "LM Studio" })
+  await expect(row).toContainText("http://127.0.0.1:1234")
+
+  await row.getByRole("button", { name: "Edit", exact: true }).click()
+  const dialog = page.getByRole("dialog", { name: "Configure LM Studio", exact: true })
+  await expect(dialog).toBeVisible()
+  await expect(dialog.getByLabel("Server address")).toHaveAttribute("placeholder", "http://127.0.0.1:1234")
+
+  // A malformed address blocks the save until it is fixed.
+  const url = dialog.getByLabel("Server address")
+  await url.fill("not a server")
+  await expect(dialog.getByRole("alert")).toContainText("Enter a valid http(s) server address")
+  await expect(dialog.getByRole("button", { name: "Save", exact: true })).toBeDisabled()
+
+  // Register the network waits before submitting; responses prove each handler ran.
+  const patch = page.waitForResponse(
+    (response) =>
+      response.request().method() === "PATCH" && new URL(response.url()).pathname === "/api/experimental/config",
+  )
+  const connectKey = page.waitForResponse((response) => {
+    const path = new URL(response.url()).pathname
+    return response.request().method() === "POST" && path === "/api/integration/lmstudio/connect/key"
+  })
+  await url.fill("http://192.168.0.40:1234/v1")
+  await dialog.getByLabel("API key").fill("lm-test-key")
+  await dialog.getByRole("button", { name: "Save", exact: true }).click()
+
+  expect((await patch).request().postDataJSON()).toEqual({
+    providers: { lmstudio: { baseURL: "http://192.168.0.40:1234/v1" } },
+  })
+  expect((await connectKey).request().postDataJSON()).toEqual({ key: "lm-test-key" })
+  expect(keys).toEqual(["lmstudio"])
+  await expect(dialog).toHaveCount(0)
+})
+
 const consoleIntegrations = [
   {
     id: "opencode",
