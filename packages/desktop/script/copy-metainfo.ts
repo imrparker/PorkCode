@@ -4,11 +4,13 @@ const arg = process.argv[2]
 
 const channel = arg === "dev" || arg === "beta" || arg === "prod" ? arg : resolveChannel()
 
-const appId = channel === "prod" ? "ai.opencode.desktop" : `ai.opencode.desktop.${channel}`
+// Keep in sync with APP_IDS in electron-builder.config.ts; importing that module would run the
+// whole packaging config (and require the target CLI) just to name a file.
+const appId = channel === "prod" ? "com.imrparker.porkcode" : `com.imrparker.porkcode.${channel}`
 
-const productName = channel === "prod" ? "OpenCode" : `OpenCode ${channel.charAt(0).toUpperCase() + channel.slice(1)}`
+const productName = channel === "prod" ? "PorkCode" : `PorkCode ${channel.charAt(0).toUpperCase() + channel.slice(1)}`
 
-const summary = `Open source AI coding agent${channel !== "prod" ? ` (${channel})` : ""}`
+const summary = `Open source AI coding agent for custom providers${channel !== "prod" ? ` (${channel})` : ""}`
 
 const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
@@ -20,13 +22,14 @@ const xml = `<?xml version="1.0" encoding="UTF-8"?>
   <name>${productName}</name>
   <summary>${summary}</summary>
 
-  <developer id="ly.anoma">
-    <name>Anomaly Innovations Inc.</name>
+  <developer id="com.imrparker">
+    <name>imrparker</name>
   </developer>
 
   <description>
     <p>
-      OpenCode is an open source agent that helps you write and run code with any AI model.
+      PorkCode is an open source coding agent that runs only against providers you configure
+      yourself, such as OpenAI-compatible or Anthropic-compatible endpoints and local backends.
     </p>
   </description>
 
@@ -34,15 +37,9 @@ const xml = `<?xml version="1.0" encoding="UTF-8"?>
 
   <content_rating type="oars-1.1" />
 
-  <url type="bugtracker">https://github.com/anomalyco/opencode/issues</url>
-  <url type="homepage">https://opencode.ai</url>
-  <url type="vcs-browser">https://github.com/anomalyco/opencode</url>
-
-  <screenshots>
-    <screenshot type="default">
-      <image>https://raw.githubusercontent.com/anomalyco/opencode/b75d4d1c5ec449585d515c756fc81f080a157a9a/packages/web/src/assets/lander/screenshot.png</image>
-    </screenshot>
-  </screenshots>
+  <url type="bugtracker">https://github.com/imrparker/PorkCode/issues</url>
+  <url type="homepage">https://github.com/imrparker/PorkCode</url>
+  <url type="vcs-browser">https://github.com/imrparker/PorkCode</url>
 </component>
 `
 

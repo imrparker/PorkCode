@@ -9,9 +9,9 @@ import { CLI_BINARIES, getCurrentCli, nodePtyPackage } from "./script/utils"
 
 const packageDir = path.dirname(fileURLToPath(import.meta.url))
 
-// The Electron 42 packaging update briefly installed Linux launchers/icons under
-// "opencode-desktop". Keep that hidden desktop entry around so existing GNOME/KDE
-// pins still resolve after the canonical app id changes back to ai.opencode.desktop.
+// Upstream's Electron 42 packaging era installed Linux launchers/icons under
+// "opencode-desktop". The entry is kept for compatibility; PorkCode installs are
+// branded com.imrparker.porkcode and never relied on it.
 const legacyDesktopEntry = path.join(packageDir, "resources", "linux", "opencode-desktop.desktop")
 
 const legacyDesktopEntryFpm = `${legacyDesktopEntry}=/usr/share/applications/opencode-desktop.desktop`
@@ -40,21 +40,20 @@ function resolveChannel() {
   return "dev"
 }
 
-const APP_IDS = {
-  dev: "ai.opencode.desktop.dev",
-  beta: "ai.opencode.desktop.beta",
-  prod: "ai.opencode.desktop",
+export const APP_IDS = {
+  dev: "com.imrparker.porkcode.dev",
+  beta: "com.imrparker.porkcode.beta",
+  prod: "com.imrparker.porkcode",
 } as const
 
 // libappimage (used by AppImageLauncher) resolves the .desktop entry inside an
 // AppImage by globbing `*.desktop` at the squashfs root. If the main
-// executable itself ends in `.desktop` (prod appId `ai.opencode.desktop`), the
-// ELF binary matches the glob and is parsed as a desktop entry, so
-// integration fails with `Malformed desktop entry: Unexpected char '\x7f' at 0`
-// (0x7F is the first byte of the ELF magic).
+// executable itself ends in `.desktop`, the ELF binary matches the glob and is
+// parsed as a desktop entry, so integration fails with
+// `Malformed desktop entry: Unexpected char '\x7f' at 0` (0x7F is the first byte of the ELF magic).
 // https://github.com/anomalyco/opencode/issues/51867
 // Strip a trailing `.desktop` so the executable can never collide with the
-// desktop-entry glob. Beta/dev appIds end in `.beta`/`.dev` and are unaffected.
+// desktop-entry glob. PorkCode appIds end in `.porkcode`/`.dev`/`.beta`, so this is a no-op today.
 function linuxExecutableName(appId: string): string {
   return appId.replace(/\.desktop$/, "")
 }
@@ -64,14 +63,14 @@ const getBase = (appId: string): Configuration => {
   const desktopName = `${appId}.desktop`
 
   return {
-    artifactName: "opencode-desktop-${os}-${arch}.${ext}",
+    artifactName: "porkcode-desktop-${os}-${arch}.${ext}",
     directories: {
       output: "dist",
       buildResources: "resources",
     },
     // Linux launchers are .desktop files, so this is the desktop file name,
-    // not just the app id. For prod, app id "ai.opencode.desktop" becomes
-    // "ai.opencode.desktop.desktop".
+    // not just the app id. For prod, app id "com.imrparker.porkcode" becomes
+    // "com.imrparker.porkcode.desktop".
     // https://developer.gnome.org/documentation/guidelines/maintainer/integrating.html
     // https://www.electron.build/docs/linux/
     // Release builds take their version from OPENCODE_VERSION instead of rewriting package.json.
