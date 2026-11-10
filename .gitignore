@@ -30,6 +30,7 @@ target
 .direnv/
 
 # Local dev files
+packages/cli/.bun-cache/
 opencode-dev
 RELEASE_REVIEW.md
 logs/
