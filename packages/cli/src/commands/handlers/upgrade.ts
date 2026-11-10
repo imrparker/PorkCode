@@ -12,6 +12,11 @@ export default Runtime.handler(
   Effect.fn("cli.upgrade")(
     function* (input) {
       intro("Upgrade")
+      if (!Updater.updatesEnabled) {
+        log.warn("PorkCode does not publish update feeds. Update by pulling the repository and rebuilding.")
+        outro("Done")
+        return
+      }
       const updater = yield* Updater.Service
       const method = Option.getOrUndefined(input.method) ?? (yield* updater.method())
       if (!method)

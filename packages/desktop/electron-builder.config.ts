@@ -227,7 +227,8 @@ export function getConfig() {
         productName: "PorkCode Dev",
         publish: {
           provider: "generic",
-          url: "https://opencode.ai/update/api/dev/desktop/opencode/",
+          // PorkCode publishes no update feed; repoint these at a generic feed you operate.
+          url: "https://github.com/imrparker/PorkCode/releases/download/desktop-dev/",
           channel: "latest",
         },
         deb: { fpm: [...previewCompressionFpm("deb"), metainfoFpm(appId)] },
@@ -246,7 +247,7 @@ export function getConfig() {
         protocols: { name: "PorkCode Beta", schemes: ["opencode"] },
         publish: {
           provider: "generic",
-          url: "https://opencode.ai/update/api/beta/desktop/opencode/",
+          url: "https://github.com/imrparker/PorkCode/releases/download/desktop-beta/",
           channel: "latest",
         },
         deb: { fpm: [...previewCompressionFpm("deb"), metainfoFpm(appId)] },
@@ -270,7 +271,7 @@ export function getConfig() {
         dmg: { icon: "resources/icons/icon.icns" },
         publish: {
           provider: "generic",
-          url: "https://opencode.ai/update/api/latest/desktop/opencode/",
+          url: "https://github.com/imrparker/PorkCode/releases/download/desktop-latest/",
           channel: "latest",
         },
         deb: { fpm: [metainfoFpm(appId), legacyDesktopEntryFpm] },

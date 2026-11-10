@@ -544,7 +544,8 @@ export const layer = (options?: Options) =>
       )
 
       const source = options?.url || defaultSource
-      const fetch = options?.fetch ?? true
+      // Offline by default: fetch only when explicitly enabled or a catalog URL was configured.
+      const fetch = options?.fetch ?? Boolean(options?.url)
       const userAgent = App.useragent(app)
       const key = cacheKey(source)
       const metaKey = `${key}:meta`

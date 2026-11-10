@@ -5,7 +5,8 @@ import { Dialog } from "@opencode/ui/dialog"
 import { usePlugin, type DialogHandle, type SetupContext } from "@opencode/plugin/gui"
 import type definition from "./index"
 
-const CHANGELOG_URL = "https://opencode.ai/changelog.json"
+// PorkCode publishes no hosted changelog; What's New stays empty until this points at a feed you operate.
+const CHANGELOG_URL = ""
 
 export type Highlight = {
   title: string
@@ -57,6 +58,7 @@ export async function loadWhatsNewHighlights(input: {
   readonly current: string
   readonly signal: AbortSignal
 }): Promise<readonly Highlight[]> {
+  if (!CHANGELOG_URL) return []
   const response = await fetch(CHANGELOG_URL, { signal: input.signal, headers: { Accept: "application/json" } })
 
   if (!response.ok) throw new Error(`The changelog request failed with ${response.status}`)

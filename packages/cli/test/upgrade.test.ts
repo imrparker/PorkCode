@@ -98,6 +98,8 @@ async function cli(args: string[], env: Record<string, string> = {}, entry = "fi
           XDG_CACHE_HOME: path.join(root, "cache"),
           XDG_STATE_HOME: path.join(root, "state"),
           OPENCODE_DISABLE_AUTOUPDATE: "1",
+          // The fork gates the upgrade command behind an opt-in; these tests exercise that flow directly.
+          OPENCODE_ENABLE_AUTOUPDATE: "1",
           ...env,
         },
         stdout: "pipe",

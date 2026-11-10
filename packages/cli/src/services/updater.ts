@@ -13,6 +13,10 @@ import { errorMessage } from "../util/error"
 
 export const methods = ["curl", "npm", "pnpm", "bun", "yarn", "vp", "brew", "winget"] as const
 
+// PorkCode does not publish update feeds; pull the repository and rebuild to upgrade.
+// Set OPENCODE_ENABLE_AUTOUPDATE=1 to re-enable checks against a feed you operate.
+export const updatesEnabled = ["1", "true"].includes((process.env.OPENCODE_ENABLE_AUTOUPDATE ?? "").toLowerCase())
+
 export type Method = (typeof methods)[number]
 export type RunResult = { readonly type: "available" | "installed"; readonly version: string }
 export type CheckResult = RunResult | { readonly type: "unavailable"; readonly message: string }
@@ -168,7 +172,7 @@ const make = Effect.gen(function* () {
         Effect.orElseSucceed(() => undefined),
       ),
     )
-    return values.findLast((value) => value !== undefined) ?? "notify"
+    return values.findLast((value) => value !== undefined) ?? "disable"
   })
 
   const exec = Effect.fnUntraced(function* (command: string[], timeout: Duration.Input = "30 seconds") {
@@ -532,9 +536,9 @@ const make = Effect.gen(function* () {
   })
 
   const inspect = Effect.fnUntraced(function* () {
-    if (OPENCODE_LOCAL || ["1", "true"].includes(process.env.OPENCODE_DISABLE_AUTOUPDATE?.toLowerCase() ?? "")) {
+    if (!updatesEnabled || OPENCODE_LOCAL || ["1", "true"].includes(process.env.OPENCODE_DISABLE_AUTOUPDATE?.toLowerCase() ?? "")) {
       yield* Effect.logInfo("update check skipped", {
-        reason: OPENCODE_LOCAL ? "local-install" : "disabled",
+        reason: !updatesEnabled ? "no-update-feed" : OPENCODE_LOCAL ? "local-install" : "disabled",
         version: OPENCODE_VERSION,
         channel: OPENCODE_CHANNEL,
       })
