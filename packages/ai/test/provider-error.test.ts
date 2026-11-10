@@ -38,6 +38,26 @@ describe("provider error classification", () => {
     expect(isContextOverflow("413 status code (no body)")).toBe(true)
   })
 
+  test("classifies llama.cpp engine overflows as context overflow despite the server code", () => {
+    // LM Studio wraps llama.cpp's full-context rejection in an engine error whose code is 500, which the
+    // OpenAI Chat protocol forwards as the status; compaction fixes it, retrying the same prompt does not.
+    const message = "Context size has been exceeded."
+    expect(isContextOverflow(message)).toBe(true)
+    for (const status of [undefined, 400, 500]) {
+      const reason = classifyProviderFailure({
+        message,
+        ...(status === undefined ? {} : { status }),
+        rawBody: JSON.stringify({ code: 500, message, type: "server_error" }),
+      })
+      expect(reason).toMatchObject({ _tag: "InvalidRequest", classification: "context-overflow" })
+    }
+    expect(isRetryable(new AIError({ reason: classifyProviderFailure({ message, status: 500 }) }))).toBe(false)
+    // A throttle keeps its retryability even with the same engine wrapper.
+    const throttled = classifyProviderFailure({ message, status: 429 })
+    expect(throttled._tag).toBe("RateLimit")
+    expect(isRetryable(new AIError({ reason: throttled }))).toBe(true)
+  })
+
   test("classifies generic request size failures separately from context overflow", () => {
     const failures = [
       classifyProviderFailure({ message: "request too large", status: 413 }),

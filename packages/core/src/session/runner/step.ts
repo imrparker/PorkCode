@@ -57,6 +57,8 @@ interface Input {
   readonly recoverContinuation: boolean
   /** The runner owns compaction policy; the attempt invokes it only before durable output. */
   readonly recoverOverflow: Effect.Effect<boolean>
+  /** Runs when the provider rejects the prompt as too long, so the runner stops concurrent side requests. */
+  readonly overflowObserved: Effect.Effect<void>
 }
 
 const TOOLS_INTERRUPTED = { type: "aborted", message: "Tool execution interrupted" } as const
@@ -163,17 +165,18 @@ export const make = Effect.gen(function* () {
         if (Exit.isFailure(joined)) yield* interruptTools
         const tools = classifyToolExits(joined, toolRuns)
 
-        if (
-          !publisher.record().outputStarted &&
-          isContextOverflowFailure(streamFailure) &&
-          (yield* restore(input.recoverOverflow))
-        ) {
-          yield* Effect.logWarning("provider rejected the request as too long; compacting", {
-            sessionID: input.sessionID,
-            model: input.model.ref,
-            message: streamFailure?.message,
-          })
-          return Outcome.Compacted()
+        if (isContextOverflowFailure(streamFailure)) {
+          // Tell the runner before any recovery so it stops launching concurrent side requests (title generation)
+          // against a model that just reported its context is full.
+          yield* restore(input.overflowObserved)
+          if (!publisher.record().outputStarted && (yield* restore(input.recoverOverflow))) {
+            yield* Effect.logWarning("provider rejected the request as too long; compacting", {
+              sessionID: input.sessionID,
+              model: input.model.ref,
+              message: streamFailure?.message,
+            })
+            return Outcome.Compacted()
+          }
         }
 
         const recorded = publisher.record()

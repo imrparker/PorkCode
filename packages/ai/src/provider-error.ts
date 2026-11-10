@@ -40,6 +40,8 @@ const patterns = [
   // Hugging Face Text Generation Inference, e.g. Together
   /`inputs` tokens \+ `max_new_tokens` must be <= \d+/i,
   /context window exceeds limit/i,
+  // llama.cpp and LM Studio report a full context as code 500 `Context size has been exceeded.`.
+  /context size has been exceeded/i,
   // LiteLLM's ContextWindowExceededError
   /context window exceeded/i,
   /exceeded model token limit/i,
@@ -222,14 +224,17 @@ export function classifyProviderFailure(input: ProviderFailure): AIError["reason
   const text = [input.message, body].filter((value) => value.length > 0).join("\n")
   const clientScoped = input.status === undefined || (input.status >= 400 && input.status < 500)
 
+  // Overflow decides on any status except a throttle. Local engines report genuine overflows as server errors:
+  // llama.cpp and LM Studio reject with code 500 `Context size has been exceeded.`, which the OpenAI Chat
+  // protocol forwards as the error's status, and retrying that request can never succeed. 429 bodies are
+  // throttles even when their wording matches an overflow phrase, e.g. Cerebras's "too many tokens processed".
   if (
-    clientScoped &&
+    input.status !== 429 &&
+    !codes.includes("throttlingexception") &&
     (codes.includes("context_length_exceeded") ||
       codes.includes("model_context_window_exceeded") ||
       codes.includes("request_too_large") ||
-      // 429 bodies are throttles even when their wording matches an overflow phrase, e.g. Cerebras's
-      // "too many tokens processed". Text matching stays on for 4xx and mid-stream errors without a status.
-      (input.status !== 429 && !codes.includes("throttlingexception") && isContextOverflow(text)))
+      isContextOverflow(text))
   )
     return new InvalidRequestError({ ...details, classification: "context-overflow" })
   if (input.status === 413 || isPayloadTooLarge(text))

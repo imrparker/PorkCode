@@ -322,6 +322,7 @@ export async function session(snapshots: "on" | "off", ttft: number) {
           retry: () => Effect.succeed({ retry: false as const }),
           recoverContinuation: false,
           recoverOverflow: Effect.succeed(false),
+          overflowObserved: Effect.void,
         })
       }
     }).pipe(

@@ -59,6 +59,9 @@ const layer = Layer.effect(
     const steps = yield* SessionStep.make
     // Title generation starts once input is visible and must not delay model execution.
     const titles = yield* FiberMap.make<SessionSchema.ID, void, never>()
+    // Sessions whose provider rejected a prompt as too long. Concurrent title generation stays off until a
+    // compaction recovers capacity, so an engine that just reported a full context never takes two requests at once.
+    const overflowed = new Set<SessionSchema.ID>()
 
     // Each drain is one turn and starts its own trace, whatever fiber woke it.
     const drain = Effect.fn("SessionRunner.drain", { root: true })(function* (input: DrainInput) {
@@ -169,6 +172,7 @@ const layer = Layer.effect(
                   })
                   return yield* Effect.failCause(compacted.cause)
                 }
+                overflowed.delete(sessionID)
                 force = false
                 continue
               }
@@ -195,10 +199,13 @@ const layer = Layer.effect(
                   )
                   // A control admitted during context preparation owns this boundary.
                   if (promoted === undefined) return undefined
-                  if (promoted > 0 && !selected.session.parentID && SessionTitle.isUntitled(selected.session))
-                    yield* FiberMap.run(titles, sessionID, title.generate(sessionID), {
-                      onlyIfMissing: true,
-                    })
+                  if (
+                    promoted > 0 &&
+                    !selected.session.parentID &&
+                    SessionTitle.isUntitled(selected.session) &&
+                    !overflowed.has(sessionID)
+                  )
+                    yield* FiberMap.run(titles, sessionID, title.generate(sessionID), { onlyIfMissing: true })
                   if (promoted > 0) step = 1
                   return { _tag: "Ready" as const, context: yield* context.load(selected) }
                 }),
@@ -246,6 +253,7 @@ const layer = Layer.effect(
         const compacted = yield* compaction.compact({ reason: "auto", context: loaded, estimate })
         if (compacted.status === "failed") return yield* new StepFailedError({ error: compacted.error })
         if (compacted.status === "completed") {
+          overflowed.delete(sessionID)
           assistantMessageID = SessionMessage.ID.create()
           continue
         }
@@ -313,6 +321,10 @@ const layer = Layer.effect(
                   .pipe(Effect.map((result) => result.status === "completed"))
               : Effect.succeed(false),
           ),
+          overflowObserved: Effect.sync(() => void overflowed.add(sessionID)).pipe(
+            // Interrupt an in-flight title request so it stops competing for the engine's remaining capacity.
+            Effect.andThen(FiberMap.remove(titles, sessionID)),
+          ),
         })
         retryAttempt = undefined
         const completed = yield* SessionStep.Outcome.$match(outcome, {
@@ -375,6 +387,7 @@ const layer = Layer.effect(
           }),
           Compacted: Effect.fnUntraced(function* () {
             recoverOverflow = false
+            overflowed.delete(sessionID)
             assistantMessageID = SessionMessage.ID.create()
           }),
           RecoverFull: Effect.fnUntraced(function* () {

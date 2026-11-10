@@ -1108,6 +1108,61 @@ describe("SessionRunnerLLM", () => {
     expect((yield* s.session.get(sessionID)).title).toBe("Generated title")
   })
 
+  scenario("interrupts concurrent title generation when the provider rejects the prompt as too long", function* (s) {
+    yield* prepareTitleGeneration
+
+    const titleInterrupted = yield* Deferred.make<void>()
+    yield* s.admit("First prompt")
+    // The title request blocks until the main step's overflow rejection interrupts it; the compaction summary
+    // and the retried answer then run alone against the model.
+    yield* s.llm.push(
+      Stream.never.pipe(Stream.ensuring(Deferred.succeed(titleInterrupted, undefined))),
+      TestLLM.failAfter(
+        providerRejected({ message: "Context size has been exceeded.", classification: "context-overflow" }),
+      ),
+      TestLLM.text("## Objective\n- Recovered", "summary"),
+      TestLLM.text("Recovered", "recovered"),
+    )
+    yield* s.resume
+
+    expect(s.requests).toHaveLength(4)
+    expect(s.requests[0]?.system.map((part) => part.text)).toContain("Generate a title.")
+    yield* Deferred.await(titleInterrupted)
+    expect((yield* s.session.get(sessionID)).title).toBeUndefined()
+  })
+
+  scenario("holds title generation back until an overflow recovers", function* (s) {
+    yield* prepareTitleGeneration
+
+    // Every request is rejected as too long, so the session stays over capacity whatever order they arrive in.
+    const overflow = providerRejected({ message: "Context size has been exceeded.", classification: "context-overflow" })
+    yield* s.llm.serve(() => Stream.fail(overflow))
+    yield* s.admit("First prompt")
+    expect((yield* s.resume.pipe(Effect.exit))._tag).toBe("Failure")
+
+    // The next prompt runs without a concurrent title request while the session is still rejected as too long.
+    let responses = 0
+    const answer = (request: LLMRequest) =>
+      request.system.some((part) => part.text.includes("Generate a title."))
+        ? TestLLM.text("Generated title", `text-title-${++responses}`)
+        : TestLLM.text("Recovered", `recovered-${++responses}`)
+    yield* s.llm.serve(answer)
+    const before = s.requests.length
+    yield* s.admit("Second prompt")
+    yield* s.resume
+    expect(s.requests).toHaveLength(before + 1)
+
+    // A compaction that completes restores title generation from the next prompt.
+    yield* s.session.compact({ sessionID })
+    yield* s.resume
+    const renamed = yield* watchRename(sessionID)
+    yield* s.admit("Third prompt")
+    yield* s.resume
+    yield* Fiber.join(renamed)
+
+    expect((yield* s.session.get(sessionID)).title).toBe("Generated title")
+  })
+
   scenario("advertises and executes a location registered tool", function* (s) {
     const registry = yield* Tool.Service
     const contexts: Tool.Context[] = []
