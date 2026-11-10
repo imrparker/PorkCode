@@ -16,6 +16,8 @@ export type Platform = {
 export type Dependencies = {
   readonly currentVersion: string
   readonly platform?: Platform
+  /** Run a check at startup and every ten minutes; false leaves the machine manual-only until something calls check(). */
+  readonly autoCheck?: boolean
   /** Prepares the app to quit, then runs the handoff; resets the quitting state if the handoff fails. */
   readonly restart: (handoff: Effect.Effect<void, unknown>) => Effect.Effect<void, unknown>
   readonly persistence: {
@@ -204,17 +206,20 @@ export const make = Effect.fn("Updater.make")(function* (dependencies: Dependenc
 
   init.effects.forEach(perform)
   yield* Effect.addFinalizer(() => Effect.sync(() => dispatch({ type: "disposed" })))
-  const starting = yield* check.pipe(Effect.forkScoped)
-  yield* Effect.gen(function* () {
-    yield* Effect.sleep("10 minutes")
-    yield* check
-  }).pipe(Effect.forever, Effect.forkScoped)
+  // PorkCode ships offline by default: with autoCheck off no network check runs at startup or on the timer.
+  // The menu's manual check and the crash page still drive this same machine on demand.
+  const starting = dependencies.autoCheck === false ? undefined : yield* check.pipe(Effect.forkScoped)
+  if (dependencies.autoCheck !== false)
+    yield* Effect.gen(function* () {
+      yield* Effect.sleep("10 minutes")
+      yield* check
+    }).pipe(Effect.forever, Effect.forkScoped)
 
   return {
     check,
     install,
     state: () => current.view,
-    started: Fiber.join(starting).pipe(Effect.orDie),
+    started: starting === undefined ? Effect.void : Fiber.join(starting).pipe(Effect.orDie),
   }
 })
 
