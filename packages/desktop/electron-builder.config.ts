@@ -107,6 +107,12 @@ const getBase = (appId: string): Configuration => {
         to: "",
         filter: ["opencode-cli", "opencode-cli.exe", "opencode-cli.version"],
       },
+      // The window icon loads at runtime from <resources>/icons/icon.ico (appearance.ts); without this the
+      // packaged app falls back to a blank icon on Windows.
+      {
+        from: "resources/icons/",
+        to: "icons",
+      },
     ],
     afterPack: async (context) => {
       const arch = Arch[context.arch]
@@ -173,7 +179,7 @@ const getBase = (appId: string): Configuration => {
       target: ["dmg", "zip"],
     },
     protocols: {
-      name: "OpenCode",
+      name: "PorkCode",
       schemes: ["opencode"],
     },
     win: {
@@ -237,7 +243,7 @@ export function getConfig() {
         ...base,
         appId,
         productName: "PorkCode Beta",
-        protocols: { name: "OpenCode Beta", schemes: ["opencode"] },
+        protocols: { name: "PorkCode Beta", schemes: ["opencode"] },
         publish: {
           provider: "generic",
           url: "https://opencode.ai/update/api/beta/desktop/opencode/",
@@ -256,7 +262,7 @@ export function getConfig() {
         ...base,
         appId,
         productName: "PorkCode",
-        protocols: { name: "OpenCode", schemes: ["opencode"] },
+        protocols: { name: "PorkCode", schemes: ["opencode"] },
         // An Icon Composer package compiles to Assets.car, which macOS 26 and later draw the app icon from
         // (Dock, Finder, system dialogs and the system icon styles). Older macOS keeps using the ICNS.
         mac: { ...base.mac, icon: "resources/icons/icon.icon" },

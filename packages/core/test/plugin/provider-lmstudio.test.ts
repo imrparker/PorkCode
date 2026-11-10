@@ -30,7 +30,7 @@ describe("LMStudioPlugin", () => {
     expect(ProviderPlugins.map((item) => item.id)).toContain("opencode.provider.lmstudio")
   })
 
-  it.live("discovers local language models with their capabilities and effective context", () =>
+  it.live("discovers loaded local language models with their capabilities and effective context", () =>
     Effect.acquireUseRelease(
       Effect.sync(() =>
         Bun.serve({
@@ -52,7 +52,7 @@ describe("LMStudioPlugin", () => {
                   key: "deepseek-r1",
                   display_name: "DeepSeek R1",
                   architecture: "deepseek",
-                  loaded_instances: [],
+                  loaded_instances: [{ config: { context_length: 131_072 } }],
                   max_context_length: 131_072,
                   capabilities: { vision: false, trained_for_tool_use: false },
                 },
@@ -60,14 +60,21 @@ describe("LMStudioPlugin", () => {
                   type: "llm",
                   key: "unknown-context",
                   display_name: "Unknown Context",
-                  loaded_instances: [],
+                  loaded_instances: [{ config: { context_length: 0 } }],
                   max_context_length: 0,
+                },
+                {
+                  type: "llm",
+                  key: "unloaded-model",
+                  display_name: "Unloaded Model",
+                  loaded_instances: [],
+                  max_context_length: 65_536,
                 },
                 {
                   type: "embedding",
                   key: "nomic-embed",
                   display_name: "Nomic Embed",
-                  loaded_instances: [],
+                  loaded_instances: [{ config: { context_length: 2048 } }],
                   max_context_length: 2048,
                 },
               ],
@@ -106,16 +113,27 @@ describe("LMStudioPlugin", () => {
           expect(yield* modelState.get(providerID, Model.ID.make("unknown-context"))).toMatchObject({
             limit: { context: 200_000, output: 32_000 },
           })
+          expect(yield* modelState.get(providerID, Model.ID.make("unloaded-model"))).toBeUndefined()
           expect(yield* modelState.get(providerID, Model.ID.make("nomic-embed"))).toBeUndefined()
         }),
       (server) => Effect.promise(() => server.stop(true)),
     ),
   )
 
-  it.live("refreshes the catalog when LM Studio models change", () =>
+  it.live("reflects models as LM Studio loads and unloads them", () =>
     Effect.acquireUseRelease(
       Effect.sync(() => {
-        const models: Array<Record<string, unknown>> = []
+        const models: Array<Record<string, unknown>> = [
+          {
+            type: "llm",
+            key: "qwen/qwen3-coder",
+            display_name: "Qwen 3 Coder",
+            architecture: "qwen3",
+            loaded_instances: [],
+            max_context_length: 65_536,
+            capabilities: { vision: false, trained_for_tool_use: true },
+          },
+        ]
         return {
           models,
           server: Bun.serve({ port: 0, fetch: () => Response.json({ models }) }),
@@ -127,17 +145,10 @@ describe("LMStudioPlugin", () => {
           const modelState = yield* Model.Service
           const providerID = Provider.ID.make("lmstudio")
           yield* addPlugin(server.url.origin, "5 millis")
-          expect(yield* providers.get(providerID)).toBeUndefined()
 
-          models.push({
-            type: "llm",
-            key: "qwen/qwen3-coder",
-            display_name: "Qwen 3 Coder",
-            architecture: "qwen3",
-            loaded_instances: [],
-            max_context_length: 65_536,
-            capabilities: { vision: false, trained_for_tool_use: true },
-          })
+          // Downloaded but not loaded: the catalog stays empty until an instance is loaded.
+          expect(yield* providers.get(providerID)).toBeUndefined()
+          models[0].loaded_instances = [{ config: { context_length: 65_536 } }]
           expect(
             yield* eventually(
               modelState.get(providerID, Model.ID.make("qwen/qwen3-coder")),
@@ -145,7 +156,7 @@ describe("LMStudioPlugin", () => {
             ),
           ).toMatchObject({ name: "Qwen 3 Coder" })
 
-          models.splice(0)
+          models[0].loaded_instances = []
           yield* eventually(providers.get(providerID), (provider) => provider === undefined)
         }),
       ({ server }) => Effect.promise(() => server.stop(true)),
@@ -158,13 +169,6 @@ describe("LMStudioPlugin", () => {
       Effect.acquireUseRelease(
         Effect.sync(() => {
           const requests: Array<{ authorization: string | null; path: string }> = []
-          const model = (key: string) => ({
-            type: "llm",
-            key,
-            display_name: key,
-            loaded_instances: [],
-            max_context_length: 32_768,
-          })
           return {
             requests,
             initial: Bun.serve({ port: 0, fetch: () => Response.json({ models: [model("initial-model")] }) }),
@@ -238,15 +242,7 @@ describe("LMStudioPlugin", () => {
             fetch: () => {
               requests.count++
               return Response.json({
-                models: [
-                  {
-                    type: "llm",
-                    key: "shared-model",
-                    display_name: "Shared Model",
-                    loaded_instances: [],
-                    max_context_length: 32_768,
-                  },
-                ],
+                models: [model("shared-model")],
               })
             },
           }),
@@ -270,15 +266,7 @@ describe("LMStudioPlugin", () => {
   it.live("replaces the credential-gated Models.dev catalog when discovery succeeds", () =>
     Effect.acquireUseRelease(
       Effect.sync(() => {
-        const models = [
-          {
-            type: "llm",
-            key: "discovered-model",
-            display_name: "Discovered Model",
-            loaded_instances: [],
-            max_context_length: 32_768,
-          },
-        ]
+        const models = [model("discovered-model")]
         return { models, server: Bun.serve({ port: 0, fetch: () => Response.json({ models }) }) }
       }),
       ({ models, server }) =>
@@ -475,7 +463,13 @@ describe("LMStudioPlugin", () => {
 })
 
 function model(key: string) {
-  return { type: "llm", key, display_name: key, loaded_instances: [], max_context_length: 32_768 }
+  return {
+    type: "llm",
+    key,
+    display_name: key,
+    loaded_instances: [{ config: { context_length: 32_768 } }],
+    max_context_length: 32_768,
+  }
 }
 
 function configuration(baseURL: string, apiKey: string | null) {

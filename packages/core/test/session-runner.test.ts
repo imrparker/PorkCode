@@ -6823,8 +6823,8 @@ describe("SessionRunnerLLM", () => {
     expect(yield* recordedEventTypes(sessionID)).not.toContain("session.retry.scheduled.1")
   })
 
-  scenario("records OpenCode Console's Go usage limit 429 as a typed step failure without retrying", function* (s) {
-    // The exact refusal Console sends a Go subscriber at a limit.
+  scenario("records a Go usage limit 429 as a quota step failure without retrying", function* (s) {
+    // A hosted free-tier/Go style refusal; the fork surfaces it as an ordinary quota error.
     const body = JSON.stringify({
       type: "error",
       error: { type: "GoUsageLimitError", message: "Go usage limit exceeded" },
@@ -6849,9 +6849,8 @@ describe("SessionRunnerLLM", () => {
         type: "session.step.failed.1",
         data: {
           error: {
-            type: "provider.go-limit",
-            message:
-              "OpenCode Go 5 hour usage limit reached. Switch to a free model, or turn on Extra Usage on the Go page in OpenCode Console to keep going.",
+            type: "provider.quota",
+            message: "Go usage limit exceeded",
             status: 429,
             response: { body },
             retryAfterMs: 3_600_000,

@@ -29,8 +29,10 @@ export const make = createLocalProviderPlugin({
   discover: (client) =>
     Effect.gen(function* () {
       const response = yield* client.getJson("/api/v1/models", Response)
+      // LM Studio lists every downloaded model, but only loaded instances can serve requests; unloaded ones would
+      // fail or stall on a load round-trip. The poll picks models up within the interval once they are loaded.
       return response.models
-        .filter((model) => model.type === "llm" && model.key.length > 0)
+        .filter((model) => model.type === "llm" && model.key.length > 0 && model.loaded_instances.length > 0)
         .toSorted((a, b) => a.key.localeCompare(b.key))
     }),
   model: (item) => ({
@@ -39,10 +41,7 @@ export const make = createLocalProviderPlugin({
     family: item.architecture,
     tools: item.capabilities?.trained_for_tool_use,
     vision: item.capabilities?.vision,
-    context:
-      item.loaded_instances.length === 0
-        ? item.max_context_length
-        : Math.min(...item.loaded_instances.map((instance) => instance.config.context_length)),
+    context: Math.min(...item.loaded_instances.map((instance) => instance.config.context_length)),
   }),
 })
 

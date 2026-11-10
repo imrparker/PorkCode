@@ -127,6 +127,8 @@ test("shared packaging defaults", async () => {
   expect(config.files).toContain("!resources/opencode-cli*")
   expect(config.extraResources).toEqual([
     { from: "resources/", to: "", filter: ["opencode-cli", "opencode-cli.exe", "opencode-cli.version"] },
+    // The window icon loads at runtime from <resources>/icons/icon.ico.
+    { from: "resources/icons/", to: "icons" },
   ])
 })
 

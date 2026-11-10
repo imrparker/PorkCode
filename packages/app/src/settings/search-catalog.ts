@@ -20,8 +20,6 @@ export const clientSettings: Entry<SettingsRootTab>[] = [
   { tab: "appearance", label: "settings.general.section.appearance" },
   { tab: "notifications", label: "settings.tab.notifications" },
   { tab: "shortcuts", label: "settings.shortcuts.title", keywords: "keybind keyboard hotkey" },
-  { tab: "about", label: "settings.tab.about", keywords: "version license credits" },
-  { tab: "experimental", label: "settings.tab.experimental", keywords: "experiments preview beta" },
   { tab: "general", label: "settings.general.row.language.title", target: "settings-language" },
   {
     tab: "general",
@@ -103,34 +101,6 @@ export const clientSettings: Entry<SettingsRootTab>[] = [
     label: "settings.general.row.showCustomAgents.title",
     target: "settings-show-custom-agents",
     section: "settings.general.section.general",
-  },
-  {
-    tab: "experimental",
-    label: "settings.experimental.row.newIcons.title",
-    target: "settings-new-icons",
-    description: "settings.experimental.row.newIcons.description",
-    keywords: "icons iconography glyphs redesign",
-  },
-  {
-    tab: "experimental",
-    label: "settings.experimental.row.foldUserMessages.title",
-    target: "settings-fold-user-messages",
-    description: "settings.experimental.row.foldUserMessages.description",
-    keywords: "fold collapse long messages prompts read more",
-  },
-  {
-    tab: "experimental",
-    label: "settings.experimental.row.newQuestionUI.title",
-    target: "settings-new-question-ui",
-    description: "settings.experimental.row.newQuestionUI.description",
-    keywords: "question answers keyboard dock redesign",
-  },
-  {
-    tab: "experimental",
-    label: "settings.experimental.row.sidebarOrganize.title",
-    target: "settings-sidebar-organize",
-    description: "settings.experimental.row.sidebarOrganize.description",
-    keywords: "vertical side tabs projects recents organize sidebar",
   },
   {
     tab: "appearance",

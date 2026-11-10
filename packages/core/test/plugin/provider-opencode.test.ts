@@ -52,7 +52,7 @@ const consoleDocument = (config: Config.Interface) =>
         entries.find((entry): entry is ConfigIntegration.Document => entry instanceof ConfigIntegration.Document),
       ),
     )
-const consoleSearch = { id: WebSearch.ID.make("opencode"), name: "OpenCode Web Search" }
+const consoleSearch = { id: WebSearch.ID.make("opencode"), name: "PorkCode Web Search" }
 // A Console skill archive as the plugin downloads it: the version's files, with SKILL.md carrying the frontmatter.
 const skillBundle = {
   slug: "deploy",
@@ -148,7 +148,7 @@ describe("OpencodePlugin", () => {
         {
           id: Integration.MethodID.make("device"),
           type: "oauth",
-          label: "OpenCode Console account",
+          label: "PorkCode Console account",
           form: [
             { key: "server", type: "string", format: "uri", hidden: true, default: "https://opencode.ai/console" },
           ],
@@ -270,7 +270,7 @@ describe("OpencodePlugin", () => {
             if (orgID === "org-missing") {
               expect(status).toMatchObject({
                 status: "failed",
-                message: "OpenCode organization not found: org-missing",
+                message: "PorkCode organization not found: org-missing",
               })
               expect(yield* credentials.list(integrationID)).toEqual([])
               expect(config).toEqual([])
@@ -384,7 +384,7 @@ describe("OpencodePlugin", () => {
         })
         .pipe(Effect.flip)
       expect(error).toBeInstanceOf(Integration.AuthorizationError)
-      expect(String(error.cause)).toContain("Invalid OpenCode server URL: expected HTTP(S)")
+      expect(String(error.cause)).toContain("Invalid PorkCode server URL: expected HTTP(S)")
     }),
   )
 
@@ -1103,7 +1103,7 @@ describe("OpencodePlugin", () => {
 
           expect((yield* integrations.get(Integration.ID.make("opencode")))?.connections[0]?.status).toEqual({
             status: "needs_auth",
-            message: "Reconnect OpenCode Console to continue",
+            message: "Reconnect PorkCode Console to continue",
           })
           expect((yield* credentials.get(credential.id))?.value).toMatchObject({ refresh: "revoked" })
         }),
@@ -1170,7 +1170,7 @@ describe("OpencodePlugin", () => {
           yield* addPlugin().pipe(inProcess(server))
           yield* drain
 
-          expect(yield* status()).toEqual({ status: "needs_auth", message: "Reconnect OpenCode Console to continue" })
+          expect(yield* status()).toEqual({ status: "needs_auth", message: "Reconnect PorkCode Console to continue" })
           expect((yield* credentials.get(credential.id))?.value).toMatchObject({ access: "revoked" })
 
           state.revoked = false
@@ -1258,7 +1258,7 @@ describe("OpencodePlugin", () => {
           yield* addPlugin()
           expect(yield* websearch.providers()).toContainEqual({
             id: WebSearch.ID.make("opencode"),
-            name: "OpenCode Web Search",
+            name: "PorkCode Web Search",
           })
           expect(yield* websearch.providers()).toContainEqual(consoleSearch)
           expect(yield* websearch.query({ query: "effect web search", providerID: consoleSearch.id })).toEqual(
@@ -1647,7 +1647,7 @@ describe("OpencodePlugin", () => {
       const loaded = Effect.all([discovery.list(), skills.get(Skill.ID.make("deploy"))]).pipe(
         Effect.map(([files, skill]) => ({
           instructions: Array.isArray(files)
-            ? files.filter((file) => file.path.startsWith("OpenCode Console")).map((file) => file.content)
+            ? files.filter((file) => file.path.startsWith("PorkCode Console")).map((file) => file.content)
             : [],
           skill: skill?.description,
         })),
@@ -1705,7 +1705,7 @@ describe("OpencodePlugin", () => {
         .pipe(
           Effect.map((files) =>
             Array.isArray(files)
-              ? files.filter((file) => file.path.startsWith("OpenCode Console")).map((file) => file.content)
+              ? files.filter((file) => file.path.startsWith("PorkCode Console")).map((file) => file.content)
               : [],
           ),
         )
@@ -1768,7 +1768,7 @@ describe("OpencodePlugin", () => {
       const files = yield* discovery.list()
       expect(
         Array.isArray(files)
-          ? files.filter((file) => file.path.startsWith("OpenCode Console")).map((file) => file.content)
+          ? files.filter((file) => file.path.startsWith("PorkCode Console")).map((file) => file.content)
           : [],
       ).toEqual(["Use tabs."])
     }),
@@ -2423,7 +2423,7 @@ describe("OpencodePlugin with a Console config", () => {
           const websearch = yield* WebSearch.Service
           const config = yield* Config.Test
           const bus = yield* Bus.Service
-          const opencode = { id: WebSearch.ID.make("opencode"), name: "OpenCode Web Search" }
+          const opencode = { id: WebSearch.ID.make("opencode"), name: "PorkCode Web Search" }
           // Config.testLayer does not announce integration changes the way config reloads do.
           const announced = (expected: typeof opencode | undefined) =>
             bus

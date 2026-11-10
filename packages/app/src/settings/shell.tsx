@@ -11,7 +11,6 @@ import { DialogServer } from "@/servers/connect/dialog"
 import { LocationProvider } from "@/workspaces/location"
 import { SettingsGeneral } from "./general/general"
 import { SettingsAppearance } from "./appearance/appearance"
-import { experimentalSettingsAvailable, SettingsExperimental } from "./experimental/experimental"
 import { SettingsKeybinds } from "./keybinds/keybinds"
 import { SettingsNotifications } from "./notifications/notifications"
 import { SettingsProviders } from "./providers/providers"
@@ -25,7 +24,6 @@ import { SettingsWorkspaces } from "./workspaces/workspaces"
 import { useWorkspacesPrefetch } from "./workspaces/queries"
 import { SettingsProjects } from "./workspaces/projects"
 import { SettingsExtensions } from "./providers/extensions"
-import { SettingsAbout } from "./about/about"
 import { SettingsServerDataScope } from "./server-scope"
 import { SettingsNavigation, type SettingsNavGroup } from "./navigation"
 import { SettingsProjectGeneral } from "./workspaces/project"
@@ -59,12 +57,6 @@ const serverPages = {
   projects: { title: "settings.projects.title", description: "settings.projects.description" },
   workspaces: { title: "settings.tab.workspaces", description: "settings.workspaces.description" },
 } as const
-
-const experimentalTab = [
-  { value: "experimental", icon: pageIcons.experimental, label: "settings.tab.experimental" },
-] as const
-
-const aboutTab = [{ value: "about", icon: pageIcons.about, label: "settings.tab.about" }] as const
 
 const nestedProjectTabs = [
   { value: "general", icon: pageIcons.projects, label: "settings.general.section.general" },
@@ -186,13 +178,6 @@ function RootSettings() {
 
   const prefetchWorkspaces = useWorkspacesPrefetch(reachable)
   const activeDirectory = useSettingsDirectory(reachable)
-  createEffect(() => {
-    const view = surface.view()
-
-    if (view.type !== "root") return
-
-    if (view.tab === "experimental" && !experimentalSettingsAvailable) surface.open("general")
-  })
 
   const selectServer = (server: ServerConnection.Any) => surface.selectServer(ServerConnection.key(server))
 
@@ -204,35 +189,30 @@ function RootSettings() {
       .filter((item) => item.value.group === group)
       .map((item) => ({ value: item.value.id, icon: item.value.icon ?? pageIcons.extensions, label: item.value.title }))
 
-  const groups = createMemo<SettingsNavGroup[]>(() => [
-    {
-      items: serverTabs.map((item) => ({
-        ...item,
-        label: language.t(item.label),
-        onPrefetch: item.value === "workspaces" ? prefetchWorkspaces : undefined,
-      })),
-    },
-    {
-      items: [
-        ...rootClientTabs.map((item) => ({ ...item, label: language.t(item.label) })),
-        ...pluginTabs(),
-        {
-          value: "servers",
-          icon: pageIcons.servers,
-          label: language.t(multiple() ? "settings.tab.servers" : pageLabels.servers),
-        },
-      ],
-    },
-    {
-      items: [
-        ...pluginTabs("about"),
-        ...(experimentalSettingsAvailable
-          ? experimentalTab.map((item) => ({ ...item, label: language.t(item.label) }))
-          : []),
-        ...aboutTab.map((item) => ({ ...item, label: language.t(item.label) })),
-      ],
-    },
-  ])
+  const groups = createMemo<SettingsNavGroup[]>(() =>
+    [
+      {
+        items: serverTabs.map((item) => ({
+          ...item,
+          label: language.t(item.label),
+          onPrefetch: item.value === "workspaces" ? prefetchWorkspaces : undefined,
+        })),
+      },
+      {
+        items: [
+          ...rootClientTabs.map((item) => ({ ...item, label: language.t(item.label) })),
+          ...pluginTabs(),
+          {
+            value: "servers",
+            icon: pageIcons.servers,
+            label: language.t(multiple() ? "settings.tab.servers" : pageLabels.servers),
+          },
+        ],
+      },
+      // Without the forked build's Experimental and About pages, only plugin "about"-group pages remain here.
+      { items: [...pluginTabs("about")] },
+    ].filter((group) => group.items.length > 0),
+  )
 
   const change = (value: string) => {
     if (value === "workspaces") setState("worktreeFilterReset", (current) => current + 1)
@@ -260,12 +240,6 @@ function RootSettings() {
         <SettingsKeybinds active={surface.view().tab === "shortcuts"} />
       </Tabs.Content>
       <PluginSettingsPages />
-      <Tabs.Content value="experimental" class="settings-panel">
-        <SettingsExperimental />
-      </Tabs.Content>
-      <Tabs.Content value="about" class="settings-panel settings-about">
-        <SettingsAbout active={surface.view().tab === "about"} />
-      </Tabs.Content>
       <Show
         when={reachable()}
         keyed

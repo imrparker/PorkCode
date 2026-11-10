@@ -11,8 +11,6 @@ export type SettingsRootTab =
   | "models"
   | "extensions"
   | "servers"
-  | "experimental"
-  | "about"
 
 declare const pluginTab: unique symbol
 
@@ -56,8 +54,6 @@ const rootTabs: Record<SettingsRootTab, true> = {
   models: true,
   extensions: true,
   servers: true,
-  experimental: true,
-  about: true,
 }
 
 const projectTabs: Record<SettingsProjectTab, true> = {

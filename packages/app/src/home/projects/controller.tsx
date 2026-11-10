@@ -2,7 +2,6 @@ import { useDirectoryPicker } from "@/workspaces/selection/picker"
 import { useServerActionsController } from "@/servers/registry/controller"
 import { useSettingsCommand } from "@/settings/command"
 import { useLanguage } from "@/runtime/i18n/language"
-import { usePlatform } from "@/runtime/platform/platform"
 import { ServerConnection } from "@/runtime/server/registry"
 import { isServerFailed } from "@/runtime/server/health-machine"
 import { homeProjectDirectories } from "@/shell/layout/helpers"
@@ -18,8 +17,6 @@ export const HomeServersSchema = Schema.Struct({
 })
 
 export function createHomeProjectsController(home: HomeController) {
-  const platform = usePlatform()
-
   const pickDirectory = useDirectoryPicker()
 
   const language = useLanguage()
@@ -101,7 +98,6 @@ export function createHomeProjectsController(home: HomeController) {
     },
     utility: {
       settings: openSettings,
-      help: () => platform.openExternal("https://opencode.ai/desktop-feedback"),
     },
   }
 }
