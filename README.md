@@ -80,13 +80,18 @@ Tests live per package; run them from a package directory, e.g. `cd packages/cor
 The desktop app bundles the CLI and packages into a per-user NSIS installer. Build the CLI first, then the app, then wrap it:
 
 ```powershell
-# 1. CLI binary (the desktop bundles the win-x64 baseline variant)
+# 1. CLI binary (the desktop bundles the win-x64 baseline variant).
+#    OPENCODE_VERSION gives release semantics: channel "latest", so the daemon
+#    registers in the shared service.json that every client discovers. Building
+#    with OPENCODE_CHANNEL=prod instead would hide the service from all clients.
 cd packages\cli
+$env:OPENCODE_VERSION = "2.2.5"
 bun run script/build.ts --single --baseline
 
-# 2. Desktop app against that CLI
+# 2. Desktop app against that CLI (prod is correct for the APP packaging channel)
 cd ..\desktop
 $env:OPENCODE_CHANNEL = "prod"
+Remove-Item Env:OPENCODE_VERSION -ErrorAction SilentlyContinue
 bun run build
 
 # 3. Unpacked app, then the NSIS installer around it
