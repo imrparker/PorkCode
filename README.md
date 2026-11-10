@@ -75,6 +75,29 @@ bun run check
 
 Tests live per package; run them from a package directory, e.g. `cd packages/core && bun run test`. App e2e tests (Playwright) run with `bun run test:e2e:built` from `packages/app`.
 
+## Building the Windows installer
+
+The desktop app bundles the CLI and packages into a per-user NSIS installer. Build the CLI first, then the app, then wrap it:
+
+```powershell
+# 1. CLI binary (the desktop bundles the win-x64 baseline variant)
+cd packages\cli
+bun run script/build.ts --single --baseline
+
+# 2. Desktop app against that CLI
+cd ..\desktop
+$env:OPENCODE_CHANNEL = "prod"
+bun run build
+
+# 3. Unpacked app, then the NSIS installer around it
+bun run script/pack.ts
+Copy-Item dist\win-unpacked $env:TEMP\porkcode-app -Recurse
+$env:OPENCODE_DESKTOP_APP = "$env:TEMP\porkcode-app"
+bun run script/pack.ts
+```
+
+The result is `dist/desktop/porkcode-desktop-win-x64.exe` at the repository root. It is unsigned, so SmartScreen shows a warning on first run ("More info → Run anyway"); installers are not committed to git — attach them to a GitHub Release if you want to distribute them.
+
 ## Attribution and license
 
 PorkCode is derived from [OpenCode](https://github.com/anomalyco/opencode) by the opencode project, used under the MIT License. This repository keeps a fresh history that starts at an import of upstream `dev` at commit [`73c95abac2`](https://github.com/anomalyco/opencode/commit/73c95abac21dfe308f649f10b7c7df549ef94c59); every later commit is a PorkCode change. The original copyright notice is kept in [LICENSE](LICENSE).
