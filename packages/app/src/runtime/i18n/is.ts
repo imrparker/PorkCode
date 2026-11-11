@@ -156,7 +156,6 @@ export const dict = {
   "dialog.model.manage.description": "Sérsníddu hvaða gerðir birtast í gerðavalinu.",
   "dialog.model.unpaid.freeModels.title": "Ókeypis gerðir frá PorkCode",
   "dialog.model.unpaid.addMore.title": "Bættu við fleiri gerðum frá vinsælum veitendum",
-  "dialog.model.unpaid.viewMoreProviders": "Sjáðu 70+ þjónustuveitendur í viðbót",
   "dialog.provider.viewAll": "Sýna fleiri veitendur",
   "provider.connect.title": "Tengdu {{provider}}",
   "provider.connect.method.apiKey": "API lykill",

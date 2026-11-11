@@ -169,7 +169,6 @@ export const dict = {
   "dialog.model.manage.description": "Prilagodite, kateri modeli se prikažejo v izbirniku modelov.",
   "dialog.model.unpaid.freeModels.title": "Brezplačne modele ponuja PorkCode",
   "dialog.model.unpaid.addMore.title": "Dodajte več modelov priljubljenih ponudnikov",
-  "dialog.model.unpaid.viewMoreProviders": "Oglejte si več kot 70 ponudnikov",
   "dialog.provider.viewAll": "Pokaži več ponudnikov",
   "provider.connect.title": "Povežite {{provider}}",
   "provider.connect.method.apiKey": "Ključ API",

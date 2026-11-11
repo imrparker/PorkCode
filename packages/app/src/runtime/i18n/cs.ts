@@ -143,7 +143,6 @@ export const dict = {
   "dialog.model.manage.description": "Upravte, které modely se zobrazí ve voliči modelů.",
   "dialog.model.unpaid.freeModels.title": "Bezplatné modely poskytované PorkCode",
   "dialog.model.unpaid.addMore.title": "Přidejte další modely od oblíbených poskytovatelů",
-  "dialog.model.unpaid.viewMoreProviders": "Zobrazit více než 70 dalších poskytovatelů",
   "dialog.provider.viewAll": "Zobrazit další poskytovatele",
   "provider.connect.title": "Připojit {{provider}}",
   "provider.connect.method.apiKey": "API klíč",

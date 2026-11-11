@@ -144,7 +144,6 @@ export const dict = {
   "dialog.model.manage.description": "Προσαρμογή των μοντέλων που εμφανίζονται στον επιλογέα μοντέλων.",
   "dialog.model.unpaid.freeModels.title": "Δωρεάν μοντέλα παρέχονται από PorkCode",
   "dialog.model.unpaid.addMore.title": "Προσθήκη περισσότερων μοντέλων από δημοφιλείς παρόχους",
-  "dialog.model.unpaid.viewMoreProviders": "Δείτε 70+ ακόμη παρόχους",
   "dialog.provider.viewAll": "Εμφάνιση περισσότερων παρόχων",
   "provider.connect.title": "Σύνδεση {{provider}}",
   "provider.connect.method.apiKey": "API κλειδί",

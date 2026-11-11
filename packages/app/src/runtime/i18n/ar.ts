@@ -148,7 +148,6 @@ export const dict = {
   "dialog.model.manage.description": "تخصيص النماذج التي تظهر في محدد النماذج.",
   "dialog.model.unpaid.freeModels.title": "نماذج مجانية مقدمة من PorkCode",
   "dialog.model.unpaid.addMore.title": "إضافة المزيد من النماذج من موفرين مشهورين",
-  "dialog.model.unpaid.viewMoreProviders": "عرض أكثر من 70 موفرًا إضافيًا",
   "dialog.provider.viewAll": "عرض المزيد من الموفرين",
   "provider.connect.title": "الاتصال بـ {{provider}}",
   "provider.connect.method.apiKey": "مفتاح API",

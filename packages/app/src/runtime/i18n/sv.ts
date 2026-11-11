@@ -342,7 +342,6 @@ export const dict = {
   "dialog.model.manage.description": "Anpassa vilka modeller som visas i modellväljaren.",
   "dialog.model.unpaid.freeModels.title": "Gratis modeller tillhandahålls av PorkCode",
   "dialog.model.unpaid.addMore.title": "Lägg till fler modeller från populära leverantörer",
-  "dialog.model.unpaid.viewMoreProviders": "Se fler än 70 leverantörer",
   "dialog.provider.viewAll": "Visa fler leverantörer",
   "provider.connect.title": "Anslut {{provider}}",
   "provider.connect.method.apiKey": "API-nyckel",

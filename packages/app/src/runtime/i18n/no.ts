@@ -352,7 +352,6 @@ export const dict = {
 
   "dialog.model.unpaid.freeModels.title": "Gratis modeller levert av PorkCode",
   "dialog.model.unpaid.addMore.title": "Legg til flere modeller fra populære leverandører",
-  "dialog.model.unpaid.viewMoreProviders": "Se over 70 flere leverandører",
 
   "dialog.provider.viewAll": "Vis flere leverandører",
 

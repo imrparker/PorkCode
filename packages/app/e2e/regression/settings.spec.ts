@@ -55,7 +55,7 @@ async function openIntegrationsDialog(page: Page, input: Partial<WorkspaceInput>
   await page.locator('[data-component="composer"] [data-action="composer-model"]').click()
   const models = page.getByRole("dialog", { name: "Select model", exact: true })
   await expect(models).toBeVisible()
-  await models.getByRole("button", { name: "See 70+ more providers", exact: true }).click()
+  await models.getByRole("button", { name: "See more providers", exact: true }).click()
   const dialog = page.getByRole("dialog")
   await expect(dialog).toHaveCount(1)
 

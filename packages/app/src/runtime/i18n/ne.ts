@@ -148,7 +148,6 @@ export const dict = {
   "dialog.model.manage.description": "मोडेल चयनकर्तामा कुन मोडेलहरू देखा पर्दछ अनुकूलित गर्नुहोस्।",
   "dialog.model.unpaid.freeModels.title": "PorkCode द्वारा प्रदान गरिएको नि:शुल्क मोडेलहरू",
   "dialog.model.unpaid.addMore.title": "लोकप्रिय प्रदायकहरूबाट थप मोडेलहरू थप्नुहोस्",
-  "dialog.model.unpaid.viewMoreProviders": "70+ थप प्रदायकहरू हेर्नुहोस्",
   "dialog.provider.viewAll": "थप प्रदायकहरू देखाउनुहोस्",
   "provider.connect.title": "जडान गर्नुहोस् {{provider}}",
   "provider.connect.method.apiKey": "API कुञ्जी",

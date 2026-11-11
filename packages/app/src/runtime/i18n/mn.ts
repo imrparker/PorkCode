@@ -144,7 +144,6 @@ export const dict = {
   "dialog.model.manage.description": "Загвар сонгогч дээр ямар загвар гарч ирэхийг тохируулна уу.",
   "dialog.model.unpaid.freeModels.title": "PorkCode өгсөн үнэгүй загварууд",
   "dialog.model.unpaid.addMore.title": "Алдартай үйлчилгээ үзүүлэгчээс илүү олон загварыг нэмнэ үү",
-  "dialog.model.unpaid.viewMoreProviders": "Өөр 70 гаруй үйлчилгээ үзүүлэгчийг харна уу",
   "dialog.provider.viewAll": "Илүү олон үйлчилгээ үзүүлэгчийг харуулах",
   "provider.connect.title": "Холбох {{provider}}",
   "provider.connect.method.apiKey": "API түлхүүр",

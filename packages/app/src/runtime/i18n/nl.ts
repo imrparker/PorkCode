@@ -348,7 +348,6 @@ export const dict = {
   "dialog.model.manage.description": "Pas aan welke modellen in de modelkiezer verschijnen.",
   "dialog.model.unpaid.freeModels.title": "Gratis modellen geleverd door PorkCode",
   "dialog.model.unpaid.addMore.title": "Voeg meer modellen toe van populaire aanbieders",
-  "dialog.model.unpaid.viewMoreProviders": "Bekijk nog 70+ aanbieders",
   "dialog.provider.viewAll": "Toon meer aanbieders",
   "provider.connect.title": "Verbinding maken met {{provider}}",
   "provider.connect.method.apiKey": "API-sleutel",

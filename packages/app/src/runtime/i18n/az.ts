@@ -145,7 +145,6 @@ export const dict = {
   "dialog.model.manage.description": "Model seçicisində hansı modellərin görünəcəyini fərdiləşdir.",
   "dialog.model.unpaid.freeModels.title": "PorkCode tərəfindən təqdim olunan pulsuz modellər",
   "dialog.model.unpaid.addMore.title": "Populyar provayderlərdən daha çox model əlavə edin",
-  "dialog.model.unpaid.viewMoreProviders": "Daha 70+ provayderə baxın",
   "dialog.provider.viewAll": "Daha çox provayder göstər",
   "provider.connect.title": "{{provider}} provayderini qoş",
   "provider.connect.method.apiKey": "API açarı",

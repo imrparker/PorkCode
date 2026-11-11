@@ -144,7 +144,6 @@ export const dict = {
   "dialog.model.manage.description": "Model saýlaýjysynda haýsy modelleriň peýda bolýandygyny düzüň.",
   "dialog.model.unpaid.freeModels.title": "PorkCode tarapyndan mugt modeller",
   "dialog.model.unpaid.addMore.title": "Meşhur üpjün edijilerden has köp model goşuň",
-  "dialog.model.unpaid.viewMoreProviders": "Moreene-de 70+ üpjün edijä serediň",
   "dialog.provider.viewAll": "Has köp üpjün edijini görkeziň",
   "provider.connect.title": "{{provider}} birikdiriň",
   "provider.connect.method.apiKey": "API açary",

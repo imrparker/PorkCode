@@ -156,7 +156,6 @@ export const dict = {
 
   "dialog.model.unpaid.freeModels.title": "Бесплатные модели от PorkCode",
   "dialog.model.unpaid.addMore.title": "Добавьте больше моделей от популярных провайдеров",
-  "dialog.model.unpaid.viewMoreProviders": "Посмотреть ещё более 70 провайдеров",
 
   "dialog.provider.viewAll": "Показать больше провайдеров",
 

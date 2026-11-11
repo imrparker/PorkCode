@@ -297,7 +297,6 @@ export const dict = {
   "dialog.model.manage.description": "Personalizza quali modelli appaiono nel selettore del modello.",
   "dialog.model.unpaid.freeModels.title": "Modelli gratuiti forniti da PorkCode",
   "dialog.model.unpaid.addMore.title": "Aggiungi altri modelli dai provider più diffusi",
-  "dialog.model.unpaid.viewMoreProviders": "Scopri oltre 70 provider",
   "dialog.provider.viewAll": "Mostra altri provider",
   "provider.connect.title": "Connetti {{provider}}",
   "provider.connect.method.apiKey": "Chiave API",

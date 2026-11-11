@@ -151,7 +151,6 @@ export const dict = {
   "dialog.model.manage.description": "اپنی مرضی کے مطابق بنائیں کہ کون سے ماڈل ماڈل سلیکٹر میں نظر آتے ہیں۔",
   "dialog.model.unpaid.freeModels.title": "PorkCode کے ذریعہ فراہم کردہ مفت ماڈلز",
   "dialog.model.unpaid.addMore.title": "مشہور فراہم کنندگان سے مزید ماڈلز شامل کریں۔",
-  "dialog.model.unpaid.viewMoreProviders": "مزید 70 فراہم کنندگان دیکھیں",
   "dialog.provider.viewAll": "مزید فراہم کنندگان دکھائیں۔",
   "provider.connect.title": "\u2068{{provider}}\u2069 سے منسلک ہوں",
   "provider.connect.title.anthropicProMax": "Anthropic کے ساتھ لاگ ان کریں",

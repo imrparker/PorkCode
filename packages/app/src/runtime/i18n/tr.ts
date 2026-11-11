@@ -168,7 +168,6 @@ export const dict = {
 
   "dialog.model.unpaid.freeModels.title": "PorkCode tarafından sunulan ücretsiz modeller",
   "dialog.model.unpaid.addMore.title": "Popüler sağlayıcılardan daha fazla model ekleyin",
-  "dialog.model.unpaid.viewMoreProviders": "70'ten fazla sağlayıcı daha görüntüle",
 
   "dialog.provider.viewAll": "Daha fazla sağlayıcı göster",
 

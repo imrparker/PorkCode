@@ -143,7 +143,6 @@ export const dict = {
   "dialog.model.manage.description": "მოარგეთ რომელი მოდელები გამოჩნდება მოდელის ამომრჩეველში.",
   "dialog.model.unpaid.freeModels.title": "უფასო მოდელები მოწოდებულია PorkCode",
   "dialog.model.unpaid.addMore.title": "დაამატე მეტი მოდელები პოპულარული პროვაიდერებისგან",
-  "dialog.model.unpaid.viewMoreProviders": "იხილეთ 70+ სხვა პროვაიდერი",
   "dialog.provider.viewAll": "აჩვენე მეტი პროვაიდერი",
   "provider.connect.title": "დაკავშირება {{provider}}",
   "provider.connect.method.apiKey": "API გასაღები",

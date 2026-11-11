@@ -150,7 +150,6 @@ export const dict = {
   "dialog.model.manage.description": "モデルセレクターに表示するモデルをカスタマイズします。",
   "dialog.model.unpaid.freeModels.title": "PorkCodeが提供する無料モデル",
   "dialog.model.unpaid.addMore.title": "人気のプロバイダーからモデルを追加",
-  "dialog.model.unpaid.viewMoreProviders": "その他70以上のプロバイダーを見る",
   "dialog.provider.viewAll": "さらにプロバイダーを表示",
   "provider.connect.title": "{{provider}}を接続",
   "provider.connect.title.anthropicProMax": "Anthropicにログイン",

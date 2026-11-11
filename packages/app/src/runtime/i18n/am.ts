@@ -143,7 +143,6 @@ export const dict = {
   "dialog.model.manage.description": "በሞዴል መራጭ ውስጥ የትኞቹ ሞዴሎች እንደሚታዩ አብጅ።",
   "dialog.model.unpaid.freeModels.title": "ነጻ ሞዴሎች በPorkCode",
   "dialog.model.unpaid.addMore.title": "ተጨማሪ ሞዴሎችን ከታዋቂ አቅራቢዎች ያክሉ",
-  "dialog.model.unpaid.viewMoreProviders": "ከ70+ በላይ አቅራቢዎችን ይመልከቱ",
   "dialog.provider.viewAll": "ተጨማሪ አቅራቢዎችን አሳይ",
   "provider.connect.title": "{{provider}} አገናኝ",
   "provider.connect.method.apiKey": "API ቁልፍ",

@@ -156,7 +156,6 @@ export const dict = {
   "dialog.model.manage.description": "Tinkinkite, kurie modeliai rodomi modelio parinkiklyje.",
   "dialog.model.unpaid.freeModels.title": "Nemokami PorkCode modeliai",
   "dialog.model.unpaid.addMore.title": "Pridėkite daugiau populiarių tiekėjų modelių",
-  "dialog.model.unpaid.viewMoreProviders": "Žr. daugiau nei 70 tiekėjų",
   "dialog.provider.viewAll": "Rodyti daugiau teikėjų",
   "provider.connect.title": "Prijunkite {{provider}}",
   "provider.connect.method.apiKey": "API raktas",

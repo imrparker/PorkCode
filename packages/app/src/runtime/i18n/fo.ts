@@ -143,7 +143,6 @@ export const dict = {
   "dialog.model.manage.description": "Tillaga hvørji modell síggjast í modellveljaranum.",
   "dialog.model.unpaid.freeModels.title": "Ókeypis modellir veitt av PorkCode",
   "dialog.model.unpaid.addMore.title": "Legg fleiri modellir til frá vælumtóktum veitarum",
-  "dialog.model.unpaid.viewMoreProviders": "Sí 70+ fleiri veitarar",
   "dialog.provider.viewAll": "Vís fleiri veitarar",
   "provider.connect.title": "Samband {{provider}}",
   "provider.connect.method.apiKey": "API lykil",

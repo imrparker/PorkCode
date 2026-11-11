@@ -143,7 +143,6 @@ export const dict = {
   "dialog.model.manage.description": "Personalizează ce modele apar în selectorul de modele.",
   "dialog.model.unpaid.freeModels.title": "Modele gratuite oferite de PorkCode",
   "dialog.model.unpaid.addMore.title": "Adaugă mai multe modele de la furnizori populari",
-  "dialog.model.unpaid.viewMoreProviders": "Vezi peste 70 de furnizori",
   "dialog.provider.viewAll": "Afișează mai mulți furnizori",
   "provider.connect.title": "Conectează {{provider}}",
   "provider.connect.method.apiKey": "Cheie API",

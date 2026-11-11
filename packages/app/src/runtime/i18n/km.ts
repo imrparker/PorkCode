@@ -145,7 +145,6 @@ export const dict = {
   "dialog.model.manage.description": "ប្ដូរម៉ូដែលដែលបង្ហាញក្នុងឧបករណ៍ជ្រើសរើសម៉ូដែលតាមបំណង។",
   "dialog.model.unpaid.freeModels.title": "ម៉ូដែលឥតគិតថ្លៃដែលផ្តល់ដោយ PorkCode",
   "dialog.model.unpaid.addMore.title": "បន្ថែមម៉ូដែលជាច្រើនទៀតពីអ្នកផ្តល់សេវាពេញនិយម",
-  "dialog.model.unpaid.viewMoreProviders": "មើលអ្នកផ្តល់សេវា 70+ ទៀត។",
   "dialog.provider.viewAll": "បង្ហាញអ្នកផ្តល់សេវាបន្ថែម",
   "provider.connect.title": "ភ្ជាប់ {{provider}}",
   "provider.connect.title.anthropicProMax": "ចូលដោយប្រើ Anthropic",

@@ -145,7 +145,6 @@ export const dict = {
   "dialog.model.manage.description": "Sesuaikan model yang dipaparkan dalam pemilih model.",
   "dialog.model.unpaid.freeModels.title": "Model percuma yang disediakan oleh PorkCode",
   "dialog.model.unpaid.addMore.title": "Tambah lebih banyak model daripada penyedia popular",
-  "dialog.model.unpaid.viewMoreProviders": "Lihat 70+ lagi penyedia",
   "dialog.provider.viewAll": "Tunjukkan lebih banyak penyedia",
   "provider.connect.title": "Sambungkan {{provider}}",
   "provider.connect.title.anthropicProMax": "Log masuk dengan Anthropic",

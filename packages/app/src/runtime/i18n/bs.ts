@@ -156,7 +156,6 @@ export const dict = {
 
   "dialog.model.unpaid.freeModels.title": "Besplatni modeli koje obezbjeđuje PorkCode",
   "dialog.model.unpaid.addMore.title": "Dodaj još modela od popularnih provajdera",
-  "dialog.model.unpaid.viewMoreProviders": "Pogledaj još više od 70 provajdera",
 
   "dialog.provider.viewAll": "Prikaži više provajdera",
 

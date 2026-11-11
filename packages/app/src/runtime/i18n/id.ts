@@ -159,7 +159,6 @@ export const dict = {
 
   "dialog.model.unpaid.freeModels.title": "Model gratis disediakan oleh PorkCode",
   "dialog.model.unpaid.addMore.title": "Tambahkan lebih banyak model dari penyedia populer",
-  "dialog.model.unpaid.viewMoreProviders": "Lihat 70+ penyedia lainnya",
 
   "dialog.provider.viewAll": "Tampilkan lebih banyak penyedia",
 

@@ -183,7 +183,6 @@ export const dict = {
 
   "dialog.model.unpaid.freeModels.title": "Безкоштовні моделі від PorkCode",
   "dialog.model.unpaid.addMore.title": "Додати більше моделей від популярних провайдерів",
-  "dialog.model.unpaid.viewMoreProviders": "Переглянути ще понад 70 провайдерів",
 
   "dialog.provider.viewAll": "Показати більше провайдерів",
 

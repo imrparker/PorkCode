@@ -150,7 +150,6 @@ export const dict = {
   "dialog.model.manage.description": "ماڈل سلیکٹر وچ کیہڑے ماڈل دکھائی دیندے نیں، اپنی مرضی دے مطابق بناؤ۔",
   "dialog.model.unpaid.freeModels.title": "PorkCode دے ذریعہ فراہم کردہ مفت ماڈل",
   "dialog.model.unpaid.addMore.title": "مقبول پرووائیڈراں توں ہور ماڈل شامل کرو",
-  "dialog.model.unpaid.viewMoreProviders": "70+ ہور پرووائیڈر ویکھو",
   "dialog.provider.viewAll": "ہور پرووائیڈر وکھاؤ",
   "provider.connect.title": "\u2068{{provider}}\u2069 نال جڑو",
   "provider.connect.title.anthropicProMax": "Anthropic دے نال لاگ ان کرو",

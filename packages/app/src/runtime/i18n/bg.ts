@@ -144,7 +144,6 @@ export const dict = {
   "dialog.model.manage.description": "Персонализирайте кои модели да се показват в селектора на модели.",
   "dialog.model.unpaid.freeModels.title": "Безплатни модели, предоставени от PorkCode",
   "dialog.model.unpaid.addMore.title": "Добавете още модели от популярни доставчици",
-  "dialog.model.unpaid.viewMoreProviders": "Вижте още 70+ доставчици",
   "dialog.provider.viewAll": "Показване на още доставчици",
   "provider.connect.title": "Свържете {{provider}}",
   "provider.connect.method.apiKey": "API ключ",

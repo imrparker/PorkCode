@@ -143,7 +143,6 @@ export const dict = {
   "dialog.model.manage.description": "Pielāgojiet, kuri modeļi tiek rādīti modeļu atlasītājā.",
   "dialog.model.unpaid.freeModels.title": "Bezmaksas modeļi no PorkCode",
   "dialog.model.unpaid.addMore.title": "Pievienot vairāk modeļu no populāriem nodrošinātājiem",
-  "dialog.model.unpaid.viewMoreProviders": "Skatīt vēl 70+ nodrošinātājus",
   "dialog.provider.viewAll": "Rādīt vairāk nodrošinātāju",
   "provider.connect.title": "Savienot {{provider}}",
   "provider.connect.method.apiKey": "API atslēga",
