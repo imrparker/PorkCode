@@ -25,6 +25,7 @@ PorkCode is based on opencode `dev` at commit `73c95abac2`, imported as this rep
 
 ### Replaced
 
+- **Model picker's "See 70+ more providers" link is now "See more providers".** Upstream's number described its hosted vendor catalog; PorkCode's list is the local backends plus whatever you configure. The stale translations of that string were removed from all 62 non-English locales so they fall back to the corrected English until language review lands new copy. (`4c0c750`)
 - **Fork-native versioning.** All packages moved from the inherited upstream `2.2.5` to PorkCode's own `0.0.1`; the installer metadata, updater comparison base, and service registration all report it. (`aeacd0b`)
 - **Model catalog source is now [models.dev](https://models.dev)** and the bundled snapshot ships empty, so nothing is fetched until you opt in. (`16a9be29b4`)
 - The upstream vendor's own hosted providers (`opencode`, `opencode-go`) are blocklisted from the community catalog — they would otherwise load as generic compatible providers against endpoints this fork does not serve. (`20de04a385`)
