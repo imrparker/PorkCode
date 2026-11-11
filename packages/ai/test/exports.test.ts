@@ -16,7 +16,7 @@ import {
 import { AI } from "@opencode/ai"
 import { Speech, SpeechClient, SpeechEvent, TranscriptionClient, Video, VideoClient } from "@opencode/ai/experimental"
 import { Route, Protocol, RequestExecutor, WebSocketTransport } from "@opencode/ai/route"
-import { AnthropicCompatible, OpenAICompatible, OpenAICompatibleResponses } from "@opencode/ai/providers"
+import { AnthropicCompatible, OpenAICompatible } from "@opencode/ai/providers"
 import {
   AnthropicMessages,
   OpenAIChat,
