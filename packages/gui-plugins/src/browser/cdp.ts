@@ -48,6 +48,7 @@ export function createCdp(contents: WebContents) {
       method: Method,
       callback: (params: ProtocolMapping.Events[Method][0], sessionID?: string) => void,
     ) {
+      // SAFETY: registered on Electron's debugger message event filtered to `method`, so params carry that method's CDP payload type.
       const handler = (params: unknown, sessionID?: string) =>
         callback(params as ProtocolMapping.Events[Method][0], sessionID)
 
