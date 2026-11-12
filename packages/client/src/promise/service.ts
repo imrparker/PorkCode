@@ -49,8 +49,18 @@ export async function ensure(options: EnsureOptions = {}): Promise<Endpoint> {
 
   try {
     while (true) {
-      if (Date.now() >= deadline)
+      if (Date.now() >= deadline) {
+        // A clean exit records no failure, so name the last attempt when nothing registered;
+        // reap snapshotted its stderr before releaseAll dropped it.
+        const exit = pool.lastExit()
+        if (exit !== undefined)
+          console.warn("Background service startup attempts exited without registering", {
+            code: exit.code,
+            signal: exit.signal,
+            stderr: exit.stderr,
+          })
         throw pool.failure() ?? new Error("Timed out waiting for the background service to start")
+      }
       const registration = await registered(options.file, timing.requestTimeout)
       if (registration.timedOut && registration.info !== undefined) {
         timeouts = {

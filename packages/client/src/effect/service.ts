@@ -121,8 +121,18 @@ export const ensure = Effect.fn("service.ensure")(function* (options: EnsureOpti
     }),
     Effect.ensuring(Effect.sync(() => pool.releaseAll())),
   )
-  if (Option.isNone(found))
+  if (Option.isNone(found)) {
+    // A clean exit records no failure, so name the last attempt when nothing registered; reap snapshotted its
+    // stderr before the ensuring finalizer released the contenders.
+    const exit = pool.lastExit()
+    if (exit !== undefined)
+      yield* Effect.logWarning("Background service startup attempts exited without registering", {
+        code: exit.code,
+        signal: exit.signal,
+        stderr: exit.stderr,
+      })
     return yield* Effect.fail(pool.failure() ?? new Error("Timed out waiting for the background service to start"))
+  }
   return found.value.endpoint
 })
 

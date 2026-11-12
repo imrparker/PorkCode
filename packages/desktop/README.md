@@ -28,8 +28,10 @@ Both read the same environment as every other release package:
 | `OPENCODE_TARGET`  | `darwin-arm64`, `darwin-x64`, `windows-arm64`, `windows-x64`, `linux-x64`, `linux-arm64`. Defaults to the host. |
 
 The CLI is placed outside `app.asar` in the application's resources directory, and packaging fails if it is missing.
-`bun run build` uses `packages/cli/dist` when that holds the target's CLI. Otherwise `dev` (and `local`, unset or unrecognized)
-downloads the published dev CLI, `beta` downloads the beta CLI, and `prod`/`latest` fail.
+`bun run build` bundles only the CLI that `packages/cli/dist` holds for the target, and checks that the bundled executable
+was built with `OPENCODE_CHANNEL=porkcode`: a published upstream CLI carries an upstream channel, so it registers in
+upstream's `service.json` on upstream's port and a packaged PorkCode times out waiting for its own registration file.
+Set `OPENCODE_DESKTOP_ALLOW_UPSTREAM_CLI=1` to bundle one anyway.
 
 `bun dev` is separate from packaging: it uses local renderer/server mode, the dev app identity, and the CLI source by
 default. `bun dev --download-server <version>` instead downloads that CLI version for local development.

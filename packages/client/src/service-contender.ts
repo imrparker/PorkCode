@@ -9,6 +9,13 @@ export type ServiceContender = {
   readonly release: () => void
 }
 
+/** How the most recent finished startup attempt ended, for diagnostics when no service ever registers. */
+export type ContenderExit = {
+  readonly code: number | null
+  readonly signal: NodeJS.Signals | null
+  readonly stderr: string
+}
+
 const stderrLimit = 8 * 1024
 
 export function spawnServiceContender(
@@ -61,11 +68,17 @@ export function spawnServiceContender(
 export function contenderPool(timing: EnsureTiming) {
   const contenders = new Set<ServiceContender>()
   let failure: Error | undefined
+  let lastExit: ContenderExit | undefined
   let spawnDelay = timing.spawnDelay
   let lastSpawn = 0
   return {
     /** The first startup failure seen since the last eviction. */
     failure: () => failure,
+    /**
+     * How the most recent collected attempt ended. A clean exit records no failure, so this is the only
+     * evidence left when attempts keep exiting without a service ever registering.
+     */
+    lastExit: () => lastExit,
     /** A registered service answered, so the next attempt waits the base delay again. */
     serviceAnswered() {
       spawnDelay = timing.spawnDelay
@@ -92,6 +105,11 @@ export function contenderPool(timing: EnsureTiming) {
     reap() {
       const finished = [...contenders].filter(contenderFinished)
       failure ??= finished.map(contenderFailure).find((error) => error !== undefined)
+      // Keep the most recent attempt's exit as evidence of a startup that never registered; callers read it
+      // after releaseAll drops the captured stderr.
+      const exited = finished.at(-1)
+      if (exited !== undefined)
+        lastExit = { code: exited.child.exitCode, signal: exited.child.signalCode, stderr: exited.stderr() }
       if (finished.some((item) => item.child.exitCode === 0))
         spawnDelay = Math.min(spawnDelay * 2, timing.maxSpawnDelay)
       finished.forEach((item) => contenders.delete(item))

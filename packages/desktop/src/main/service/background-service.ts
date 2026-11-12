@@ -80,7 +80,7 @@ const ensure = Effect.fn("BackgroundService.ensure")(function* (mode: Background
 
       return run(setup.cli.version)
     }),
-  )
+  ).pipe(Effect.tapError(() => diagnoseStartup(setup)))
 
   const ready = yield* adopt(setup, service, false)
 
@@ -95,6 +95,25 @@ const ensure = Effect.fn("BackgroundService.ensure")(function* (mode: Background
     )
 
   return ready.credentials
+})
+
+// A daemon that never registers usually belongs to another channel and writes a different registration file, so this
+// app waits on one that will never appear. Ask the bundled CLI where it would keep its database — once per run, and
+// only after a connection already failed, because the answer costs a spawn of the executable.
+let diagnosed = false
+
+const diagnoseStartup = Effect.fn("BackgroundService.diagnoseStartup")(function* (
+  setup: Effect.Success<ReturnType<typeof prepare>>,
+) {
+  if (diagnosed) return
+  diagnosed = true
+
+  const fs = yield* FileSystem.FileSystem
+  const file = setup.file ?? setup.client.fallback()
+  const registered = yield* fs.exists(file).pipe(Effect.orElseSucceed(() => false))
+  const database = yield* DesktopCli.describePaths(setup.cli.command)
+
+  yield* Effect.logWarning("v2 CLI background service did not register", { file, registered, database })
 })
 
 const prepare = Effect.fn("BackgroundService.prepare")(function* (mode: BackgroundServiceMachine.ConnectMode) {

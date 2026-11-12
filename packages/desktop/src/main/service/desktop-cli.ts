@@ -193,6 +193,19 @@ const run = Effect.fn("DesktopCli.run")(function* (binary: string, args: string[
   return stdout
 })
 
+// Where the CLI would keep its database names the channel it was compiled for. A background service that never
+// registers usually belongs to another one, so this turns a bare startup timeout into a named cause. `debug paths db`
+// answers without touching a running server; failures stay in the returned text because this only diagnoses.
+export const describePaths = Effect.fn("DesktopCli.describePaths")(function* (command: readonly string[]) {
+  const [binary, ...args] = command
+
+  if (binary === undefined) return "no CLI executable"
+
+  return yield* run(binary, [...args, "debug", "paths", "db"]).pipe(
+    Effect.catch((error) => Effect.succeed(`the bundled CLI could not answer: ${String(error)}`)),
+  )
+})
+
 // The installer runs `opencode --version`, which can take several seconds on first run while Gatekeeper scans it.
 const INSTALL_TIMEOUT_MS = 60_000
 

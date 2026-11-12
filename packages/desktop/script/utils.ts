@@ -137,3 +137,47 @@ export function windowsify(path: string) {
 
   return `${path}${process.platform === "win32" ? ".exe" : ""}`
 }
+
+// The channel the fork's bundled CLI must be built with. A CLI from any other channel registers in upstream's
+// service.json on upstream's port, so a packaged PorkCode spawns it, watches it exit against an installed OpenCode
+// service, and times out waiting for its own registration file (SERVICE_FILE in src/main/constants.ts). Keep in
+// sync with the OPENCODE_CHANNEL define in packages/cli.
+export const FORK_CLI_CHANNEL = "porkcode"
+
+function forkCliDatabaseName(channel = FORK_CLI_CHANNEL) {
+  return `opencode-${channel.replace(/[^a-zA-Z0-9._-]/g, "-")}.db`
+}
+
+// A reported database belongs to the fork CLI only when it is that channel's own file. Upstream builds answer
+// `opencode.db`; another channel or an OPENCODE_DB override answers something else. Separators are normalized
+// because the executable prints its platform's paths and build hosts run Windows, Linux and macOS alike.
+export function isForkCliDatabase(reported: string, channel = FORK_CLI_CHANNEL) {
+  const normalized = reported.trim().replaceAll("\\", "/")
+
+  return (normalized.split("/").at(-1) ?? "") === forkCliDatabaseName(channel)
+}
+
+// The channel is baked into the executable and reaches no artifact a build could read, so ask the bundled binary
+// where it would keep its database. `debug paths db` prints one path without touching a running service; the two
+// overrides that also move the database are removed so the answer reflects the compiled-in channel alone.
+export async function verifyBundledCliChannel(dest = windowsify("resources/opencode-cli")) {
+  const result = Bun.spawnSync({
+    cmd: [dest, "debug", "paths", "db"],
+    env: { ...process.env, OPENCODE_DB: undefined, OPENCODE_DISABLE_CHANNEL_DB: undefined },
+    stderr: "pipe",
+  })
+
+  if (result.exitCode !== 0)
+    throw new Error(`Bundled CLI at ${dest} failed to report its paths: ${result.stderr.toString().trim()}`)
+
+  const database = result.stdout.toString().trim()
+
+  if (!isForkCliDatabase(database))
+    throw new Error(
+      `Bundled CLI at ${dest} is not a PorkCode build: it uses database ${database || "(none reported)"}, expected ` +
+        `${forkCliDatabaseName()}. Build the CLI with OPENCODE_CHANNEL=${FORK_CLI_CHANNEL} first ` +
+        "(README: Building the Windows installer).",
+    )
+
+  console.log(`Bundled CLI channel verified: ${database}`)
+}

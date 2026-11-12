@@ -32,6 +32,22 @@ test("remembers the first startup failure and reports it once no attempt is left
   expect(pool.reap()?.message).toContain("first failure")
 })
 
+test("a clean exit records no failure but still reports how it ended", async () => {
+  const pool = contenderPool({ ...defaultEnsureTiming, spawnDelay: 0 })
+  expect(pool.lastExit()).toBeUndefined()
+
+  // The silent case behind a startup timeout with nothing logged: the attempt finds another service at its
+  // own port and exits 0, so no failure is ever recorded.
+  const exiting = spawn('console.error("another service holds this port"); process.exit(0)')
+  pool.add(exiting)
+  await finished(exiting)
+  expect(pool.reap()).toBeUndefined()
+  pool.releaseAll()
+
+  // The snapshot outlives releaseAll, which drops the contender's captured stderr.
+  expect(pool.lastExit()).toMatchObject({ code: 0, signal: null, stderr: "another service holds this port" })
+})
+
 test("evicting a replaced owner forgets its failure and restarts the spawn clock", async () => {
   const pool = contenderPool({ ...defaultEnsureTiming, spawnDelay: 60_000 })
   const owner = running()
