@@ -261,9 +261,6 @@ export const dict = {
   "dialog.provider.empty": "Palveluntarjoajia ei löytynyt",
   "dialog.provider.group.popular": "Suositut",
   "dialog.provider.tag.recommended": "Suositeltu",
-  "dialog.provider.opencode.note": "Kuratoituja malleja, kuten Claude, GPT, Gemini ja muita",
-  "dialog.provider.opencode.tagline": "Luotettavat optimoidut mallit",
-  "dialog.provider.opencodeGo.tagline": "Edullinen tilaus kaikille",
   "dialog.provider.copilot.note": "AI-malleja koodausapuun GitHub Copilotin kautta",
   "dialog.provider.openai.note": "GPT-mallit nopeisiin, suorituskykyisiin yleisiin tekoälytehtäviin",
   "dialog.provider.google.note": "Gemini-mallit nopeisiin, jäsenneltyihin vastauksiin",
@@ -374,7 +371,6 @@ export const dict = {
   "dialog.project.edit.color.select": "Valitse väri {{color}}",
   "dialog.project.edit.worktree.startup": "Työtilan käynnistysskripti",
   "dialog.project.edit.worktree.startup.placeholder": "esim. bun install",
-  "dialog.usageExceeded.dontShowAgain": "Älä näytä uudelleen",
 
   "toast.permissions.autoaccept.on.title": "Käyttöoikeudet hyväksytään automaattisesti",
   "toast.permissions.autoaccept.on.description": "Lupapyynnöt hyväksytään automaattisesti",

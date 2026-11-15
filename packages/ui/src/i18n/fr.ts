@@ -113,13 +113,6 @@ export const dict = {
   "ui.sessionTurn.retry.attempt": "tentative n°{{attempt}}",
   "ui.sessionTurn.retry.attemptLine": "{{line}} - tentative n°{{attempt}}",
   "ui.sessionTurn.retry.geminiHot": "Gemini est en surchauffe",
-  "ui.sessionTurn.error.freeUsageExceeded": "Limite d'utilisation gratuite dépassée",
-  "ui.sessionTurn.error.addCredits": "Ajouter des crédits",
-
-  "dialog.usageExceeded.freeTier.title": "Limite gratuite atteinte",
-  "dialog.usageExceeded.freeTier.description":
-    "Abonnez-vous à PorkCode Go pour 10 $ US par mois et accédez de manière fiable aux meilleurs modèles à code source ouvert.",
-  "dialog.usageExceeded.freeTier.actionLabel": "S'abonner",
 
   "ui.sessionTurn.status.delegating": "Délégation du travail",
   "ui.sessionTurn.status.planning": "Planification des prochaines étapes",

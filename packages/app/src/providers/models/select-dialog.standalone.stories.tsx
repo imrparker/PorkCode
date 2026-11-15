@@ -61,27 +61,27 @@ const models: StoryModel[] = [
   makeModel({
     id: "kimi-k3",
     name: "Kimi K3",
-    providerID: "opencode-go",
-    providerName: "OpenCode Go",
+    providerID: "openrouter",
+    providerName: "OpenRouter",
     family: "kimi",
     inputCost: 1,
     outputCost: 3,
     variants: { fast: {}, thinking: {} },
   }),
   makeModel({
-    id: "big-pickle",
-    name: "Big Pickle",
-    providerID: "opencode",
-    providerName: "OpenCode Zen",
-    family: "pickle",
+    id: "llama-4-scout",
+    name: "Llama 4 Scout",
+    providerID: "ollama",
+    providerName: "Ollama",
+    family: "llama",
     inputCost: 0,
     outputCost: 0,
   }),
   makeModel({
     id: "claude-opus-5-5",
     name: "Claude Opus 5.5",
-    providerID: "opencode",
-    providerName: "OpenCode Zen",
+    providerID: "anthropic",
+    providerName: "Anthropic",
     family: "claude-opus",
     inputCost: 5,
     outputCost: 25,
@@ -105,7 +105,7 @@ function SelectorStory(props: { favorite?: boolean }) {
   const dialog = useDialog()
 
   const [store, setStore] = createStore<{ current: string; favorite: string[]; variant?: string }>({
-    current: "opencode:claude-opus-5-5",
+    current: "anthropic:claude-opus-5-5",
     favorite: props.favorite ? ["anthropic:claude-sonnet-5"] : [],
   })
 

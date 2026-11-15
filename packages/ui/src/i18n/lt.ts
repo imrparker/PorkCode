@@ -67,12 +67,6 @@ export const dict = {
   "ui.sessionTurn.retry.attempt": "bandymas #{{attempt}}",
   "ui.sessionTurn.retry.attemptLine": "{{line}} – bandymas #{{attempt}}",
   "ui.sessionTurn.retry.geminiHot": "Gemini šiuo metu per daug apkrautas",
-  "ui.sessionTurn.error.freeUsageExceeded": "Viršytas nemokamas naudojimas",
-  "ui.sessionTurn.error.addCredits": "Pridėkite kreditų",
-  "dialog.usageExceeded.freeTier.title": "Pasiektas nemokamas limitas",
-  "dialog.usageExceeded.freeTier.description":
-    "Prenumeruokite PorkCode Go už 10 USD per mėnesį ir gaukite patikimą prieigą prie geriausių atvirojo kodo modelių.",
-  "dialog.usageExceeded.freeTier.actionLabel": "Prenumeruoti",
   "ui.sessionTurn.status.delegating": "Darbų delegavimas",
   "ui.sessionTurn.status.planning": "Kitų žingsnių planavimas",
   "ui.sessionTurn.status.gatheringContext": "Tyrinėjant",

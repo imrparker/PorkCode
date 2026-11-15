@@ -3,8 +3,8 @@ import path from "node:path"
 import { PORKCODE_VERSION } from "../src/version"
 import type { FormFields } from "@opencode/client"
 
-const consoleForm = [
-  { type: "string", key: "server", hidden: true, format: "uri", default: "https://opencode.ai/console" },
+const hiddenServerForm = [
+  { type: "string", key: "server", hidden: true, format: "uri", default: "https://gateway.example.test/api" },
 ] satisfies FormFields
 
 describe("auth command", () => {
@@ -27,15 +27,15 @@ describe("auth command", () => {
     expect(auth.stdout).toContain("switch the active account for an integration")
     expect(auth.stdout).not.toMatch(/^  connect\s/m)
     expect(list.exitCode).toBe(0)
-    expect(list.stdout).toContain("opencode auth list [flags]")
+    expect(list.stdout).toContain("porkcode auth list [flags]")
     expect(list.stdout).toContain("--format")
     expect(login.exitCode).toBe(0)
-    expect(login.stdout).toContain("opencode auth login [flags] [<target>]")
+    expect(login.stdout).toContain("porkcode auth login [flags] [<target>]")
     expect(login.stdout).toContain("Integration ID, name, or well-known provider URL")
     expect(login.stdout).toContain("--method")
     expect(login.stdout).toContain("--answer")
     expect(logout.exitCode).toBe(0)
-    expect(logout.stdout).toContain("opencode auth logout [flags] [<target>] [<credential>]")
+    expect(logout.stdout).toContain("porkcode auth logout [flags] [<target>] [<credential>]")
   })
 
   test("lists stored and environment connections", async () => {
@@ -75,22 +75,16 @@ describe("auth command", () => {
     expect(requests.indexOf("/api/model/default")).toBeLessThan(requests.indexOf("/api/integration"))
   })
 
-  test("lists OpenCode Go before Zen and preserves the remaining integration order", async () => {
+  test("lists integrations in server order and skips ones with no connections", async () => {
+    const listed = [
+      { id: "openrouter", name: "OpenRouter" },
+      { id: "anthropic", name: "Anthropic" },
+      { id: "groq", name: "Groq" },
+    ].map((integration) => ({ ...integration, methods: [], connections: [{ type: "env", name: "TEST_API_KEY" }] }))
     using server = authServer((request, url) => {
       if (url.pathname === "/api/integration") {
-        return Response.json(
-          located(
-            [
-              { id: "opencode", name: "OpenCode Zen" },
-              { id: "anthropic", name: "Anthropic" },
-              { id: "opencode-go", name: "OpenCode Go" },
-            ].map((integration) => ({
-              ...integration,
-              methods: [],
-              connections: [{ type: "env", name: "TEST_API_KEY" }],
-            })),
-          ),
-        )
+        const withoutConnections = { id: "ollama", name: "Ollama", methods: [], connections: [] }
+        return Response.json(located([listed[0]!, withoutConnections, ...listed.slice(1)]))
       }
       return new Response("Not found", { status: 404 })
     })
@@ -102,7 +96,7 @@ describe("auth command", () => {
         .trim()
         .split("\n")
         .map((line) => line.split(/\s{2,}/)[0]),
-    ).toEqual(["OpenCode Go", "OpenCode Zen", "Anthropic"])
+    ).toEqual(["OpenRouter", "Anthropic", "Groq"])
   })
 
   test("runs command authentication without interactive input", async () => {
@@ -144,18 +138,18 @@ describe("auth command", () => {
   test.each([
     { id: "openai", method: "browser", form: undefined, args: [], answer: undefined },
     {
-      id: "opencode",
+      id: "gateway",
       method: "device",
-      form: consoleForm,
+      form: hiddenServerForm,
       args: [],
-      answer: { server: "https://opencode.ai/console" },
+      answer: { server: "https://gateway.example.test/api" },
     },
     {
-      id: "opencode",
+      id: "gateway",
       method: "device",
-      form: consoleForm,
-      args: ["--answer", "server=https://staging.example.com/console"],
-      answer: { server: "https://staging.example.com/console" },
+      form: hiddenServerForm,
+      args: ["--answer", "server=https://staging.example.test/api"],
+      answer: { server: "https://staging.example.test/api" },
     },
     {
       id: "company",

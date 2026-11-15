@@ -40,14 +40,14 @@ describe("sortModelOptions", () => {
   test("keeps ungrouped results free-first regardless of provider", () => {
     const sorted = sortModelOptions(
       [
-        { providerID: "opencode-go", title: "Go model" },
-        { providerID: "opencode", title: "Free Zen model", free: true },
+        { providerID: "groq", title: "Groq model" },
+        { providerID: "opencode", title: "Free hosted model", free: true },
         { providerID: "anthropic", title: "Anthropic model" },
       ],
       false,
     )
 
-    expect(sorted.map((model) => model.title)).toEqual(["Free Zen model", "Go model", "Anthropic model"])
+    expect(sorted.map((model) => model.title)).toEqual(["Free hosted model", "Groq model", "Anthropic model"])
   })
 
   test("orders provider groups by provider name and keeps the server's order within each", () => {
@@ -82,7 +82,7 @@ describe("sortModelOptions", () => {
     const options = serverOrder.map((title, index) => ({
       value: { providerID: "opencode", modelID: title.toLowerCase().replaceAll(" ", "-") },
       providerID: "opencode",
-      providerName: "OpenCode Zen",
+      providerName: "OpenCode",
       releaseDate: index === 0 ? 1000 : 5000 - index,
       title,
       free: true,

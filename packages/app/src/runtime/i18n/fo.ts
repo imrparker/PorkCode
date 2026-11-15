@@ -128,9 +128,6 @@ export const dict = {
   "dialog.provider.empty": "Eingin veitari funnin",
   "dialog.provider.group.popular": "Vælumtókt",
   "dialog.provider.tag.recommended": "Viðmælt",
-  "dialog.provider.opencode.note": "Kuraterað modell íroknað Claude, GPT, Gemini og fleiri",
-  "dialog.provider.opencode.tagline": "Álítandi optimerað modell",
-  "dialog.provider.opencodeGo.tagline": "Lágkostnaðarhald fyri øll",
   "dialog.provider.copilot.note": "AI modellir til koduhjálp umvegis GitHub Copilot",
   "dialog.provider.openai.note": "GPT modellir til skjótar, førar almennar AI uppgávur",
   "dialog.provider.google.note": "Gemini modellir til skjót, strukturerað svar",
@@ -568,7 +565,6 @@ export const dict = {
   "workspace.status.dirty": "Ósamanlagdar broytingar funnar í hesum workspace.",
   "workspace.delete.confirm": 'Strika workspace "{{name}}"?',
   "workspace.delete.button": "Strika workspace",
-  "dialog.usageExceeded.dontShowAgain": "Vís ikki aftur",
   "provider.disconnect.toast.noCredentials.description":
     "Eingi trúnaðarupplýsingar, ið kunnu strikast, funnar fyri {{provider}}.",
   "provider.disconnect.toast.failed.description": "Tað eydnaðist ikki at slíta sambandið við {{provider}}.",

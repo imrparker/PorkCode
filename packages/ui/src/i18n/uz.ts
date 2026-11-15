@@ -67,12 +67,6 @@ export const dict = {
   "ui.sessionTurn.retry.attempt": "#{{attempt}} harakat qiling",
   "ui.sessionTurn.retry.attemptLine": "{{line}} - urinish #{{attempt}}",
   "ui.sessionTurn.retry.geminiHot": "Gemini hozir haddan tashqari yuklangan",
-  "ui.sessionTurn.error.freeUsageExceeded": "Bepul foydalanish chegarasidan oshib ketdi",
-  "ui.sessionTurn.error.addCredits": "Kredit qo'shing",
-  "dialog.usageExceeded.freeTier.title": "Bepul chegaraga yetdi",
-  "dialog.usageExceeded.freeTier.description":
-    "Oyiga $10 evaziga eng yaxshi ochiq kodli modellarga ishonchli kirish uchun PorkCode Go ga obuna bo'ling.",
-  "dialog.usageExceeded.freeTier.actionLabel": "Obuna boʻling",
   "ui.sessionTurn.status.delegating": "Ishni topshirish",
   "ui.sessionTurn.status.planning": "Keyingi qadamlarni rejalashtirish",
   "ui.sessionTurn.status.gatheringContext": "Tadqiq qilish",

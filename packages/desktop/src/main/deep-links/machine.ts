@@ -1,15 +1,11 @@
-import { consoleReturnWindow } from "../lifecycle/deep-link"
-
 export type DeepLinkWindow = { readonly status: "loading" } | { readonly status: "ready"; readonly clientID: number }
 
-// `target` is the window a console return names; a link without one, or whose window is gone, opens in the
-// preferred window.
+// A link opens in the preferred window.
 export type DeepLink =
-  | { readonly status: "queued"; readonly url: string; readonly target: string | undefined }
+  | { readonly status: "queued"; readonly url: string }
   | {
       readonly status: "delivered"
       readonly url: string
-      readonly target: string | undefined
       readonly clientID: number
       readonly attempt: number
     }
@@ -53,8 +49,8 @@ export function transitionDeepLinks(state: DeepLinkState, event: DeepLinkEvent):
   switch (event.type) {
     case "links.received": {
       if (event.urls.length === 0) return unchanged(state)
-      const links = event.urls.map((url): DeepLink => ({ status: "queued", url, target: consoleReturnWindow(url) }))
-      const focus = links.find((link) => link.target && state.windows[link.target])?.target ?? preferredWindowID(state)
+      const links = event.urls.map((url): DeepLink => ({ status: "queued", url }))
+      const focus = preferredWindowID(state)
       const next = drain({ ...state, links: [...state.links, ...links] })
 
       return {
@@ -129,14 +125,14 @@ export function transitionDeepLinks(state: DeepLinkState, event: DeepLinkEvent):
   }
 }
 
-// The window an untargeted link opens in: the focused one, else the first open one.
+// The window a link opens in: the focused one, else the first open one.
 function preferredWindowID(state: DeepLinkState) {
   return state.focusedWindowID ?? Object.keys(state.windows)[0]
 }
 
 // The ready window and renderer a link goes to now, if any.
-function recipientOf(state: DeepLinkState, link: DeepLink) {
-  const windowID = link.target && state.windows[link.target] ? link.target : preferredWindowID(state)
+function recipientOf(state: DeepLinkState) {
+  const windowID = preferredWindowID(state)
   const window = windowID ? state.windows[windowID] : undefined
 
   if (!windowID || window?.status !== "ready") return
@@ -148,7 +144,7 @@ function recipientOf(state: DeepLinkState, link: DeepLink) {
 function drain(state: DeepLinkState): DeepLinkTransition {
   const routed = state.links.map((link) => ({
     link,
-    recipient: link.status === "queued" ? recipientOf(state, link) : undefined,
+    recipient: link.status === "queued" ? recipientOf(state) : undefined,
   }))
 
   const recipients = routed.flatMap((item) => (item.recipient ? [item.recipient] : []))
@@ -171,7 +167,6 @@ function drain(state: DeepLinkState): DeepLinkTransition {
     return {
       status: "delivered",
       url: item.link.url,
-      target: item.link.target,
       clientID: batch.clientID,
       attempt: batch.attempt,
     }
@@ -187,9 +182,7 @@ function drain(state: DeepLinkState): DeepLinkTransition {
 function requeue(links: readonly DeepLink[], clientID: number) {
   return links.map(
     (link): DeepLink =>
-      link.status === "delivered" && link.clientID === clientID
-        ? { status: "queued", url: link.url, target: link.target }
-        : link,
+      link.status === "delivered" && link.clientID === clientID ? { status: "queued", url: link.url } : link,
   )
 }
 

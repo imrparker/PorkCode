@@ -504,13 +504,7 @@ export function ActiveSessionComposerRegion(props: {
     const label = modelLabels().get(composerModelLabelKey(ref.providerID, ref.id))
 
     return {
-      provider: label
-        ? label.provider
-        : composerProviderName(
-            ref.providerID,
-            providers.all(),
-            providers.connected().map((provider) => provider.id),
-          ),
+      provider: label ? label.provider : composerProviderName(ref.providerID, providers.all()),
       name: label?.model ?? ref.id,
       variant: ref.variant,
     }

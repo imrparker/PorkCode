@@ -133,9 +133,6 @@ export const dict = {
   "dialog.provider.empty": "لم يتم العثور على موفرين",
   "dialog.provider.group.popular": "شائع",
   "dialog.provider.tag.recommended": "موصى به",
-  "dialog.provider.opencode.note": "نماذج مختارة تتضمن Claude و GPT و Gemini والمزيد",
-  "dialog.provider.opencode.tagline": "نماذج موثوقة ومحسنة",
-  "dialog.provider.opencodeGo.tagline": "اشتراك منخفض التكلفة للجميع",
   "dialog.provider.copilot.note": "نماذج ذكاء اصطناعي للمساعدة في البرمجة عبر GitHub Copilot",
   "dialog.provider.openai.note": "نماذج GPT لمهام الذكاء الاصطناعي العامة السريعة والمتقدمة",
   "dialog.provider.google.note": "نماذج Gemini لاستجابات سريعة ومنظمة",
@@ -253,7 +250,6 @@ export const dict = {
   "dialog.project.edit.color.select": "اختر لون {{color}}",
   "dialog.project.edit.worktree.startup": "برنامج نصي لبدء تشغيل مساحة العمل",
   "dialog.project.edit.worktree.startup.placeholder": "مثال: bun install",
-  "dialog.usageExceeded.dontShowAgain": "عدم الإظهار مرة أخرى",
 
   "toast.permissions.autoaccept.on.title": "يتم قبول الأذونات تلقائيًا",
   "toast.permissions.autoaccept.on.description": "ستتم الموافقة على طلبات الأذونات تلقائيًا",

@@ -58,15 +58,13 @@ export namespace TimelineRow {
   }> {}
 
   /**
-   * `free-limit` marks OpenCode Zen's daily free allowance running out and `go-limit` an OpenCode Go subscription's
-   * usage limit. `budget-limit` marks an OpenCode Console budget
-   * on all spend pausing paid models, and `model-budget-limit` one pausing only the models it covers. `resetAt` is when
-   * the allowance or budget comes back, if known.
+   * `budget-limit` marks a monthly budget on all spend pausing paid models, and `model-budget-limit` one pausing only
+   * the models it covers. `resetAt` is when the budget comes back, if known.
    */
   export class Error extends Data.TaggedClass("Error")<{
     userMessageID: string
     text: string
-    kind?: "free-limit" | "go-limit" | "budget-limit" | "model-budget-limit"
+    kind?: "budget-limit" | "model-budget-limit"
     resetAt?: number
   }> {}
 
@@ -213,7 +211,7 @@ export type TimelineRowMap = {
   Error: {
     userMessageID: string
     text: string
-    kind?: "free-limit" | "go-limit" | "budget-limit" | "model-budget-limit"
+    kind?: "budget-limit" | "model-budget-limit"
     resetAt?: number
   }
   CompactionQueued: { userMessageID: string; inboxID: string }

@@ -134,9 +134,6 @@ export const dict = {
   "dialog.provider.empty": "Không tìm thấy nhà cung cấp nào",
   "dialog.provider.group.popular": "Phổ biến",
   "dialog.provider.tag.recommended": "Đề xuất",
-  "dialog.provider.opencode.note": "Các mô hình được tuyển chọn, gồm Claude, GPT, Gemini và nhiều mô hình khác",
-  "dialog.provider.opencode.tagline": "Các mô hình tối ưu hóa đáng tin cậy",
-  "dialog.provider.opencodeGo.tagline": "Đăng ký chi phí thấp cho mọi người",
   "dialog.provider.anthropic.note": "Truy cập trực tiếp các mô hình Claude bằng khóa API",
   "dialog.provider.copilot.note": "Các mô hình AI hỗ trợ lập trình qua GitHub Copilot",
   "dialog.provider.openai.note": "Các mô hình GPT nhanh và mạnh mẽ cho tác vụ AI đa dụng",
@@ -255,7 +252,6 @@ export const dict = {
   "dialog.project.edit.color.select": "Chọn màu {{color}}",
   "dialog.project.edit.worktree.startup": "Tập lệnh khởi động không gian làm việc",
   "dialog.project.edit.worktree.startup.placeholder": "ví dụ: bun install",
-  "dialog.usageExceeded.dontShowAgain": "Không hiển thị lại",
 
   "toast.permissions.autoaccept.on.title": "Tự động chấp nhận quyền",
   "toast.permissions.autoaccept.on.description": "Yêu cầu quyền sẽ được tự động phê duyệt",

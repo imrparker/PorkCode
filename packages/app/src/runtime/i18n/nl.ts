@@ -333,9 +333,6 @@ export const dict = {
   "dialog.provider.empty": "Geen aanbieders gevonden",
   "dialog.provider.group.popular": "Populair",
   "dialog.provider.tag.recommended": "Aanbevolen",
-  "dialog.provider.opencode.note": "Samengestelde modellen, waaronder Claude, GPT, Gemini en meer",
-  "dialog.provider.opencode.tagline": "Betrouwbare geoptimaliseerde modellen",
-  "dialog.provider.opencodeGo.tagline": "Goedkoop abonnement voor iedereen",
   "dialog.provider.copilot.note": "AI-modellen voor codeerondersteuning via GitHub Copilot",
   "dialog.provider.openai.note": "GPT-modellen voor snelle, capabele algemene AI-taken",
   "dialog.provider.google.note": "Gemini-modellen voor snelle, gestructureerde reacties",
@@ -446,7 +443,6 @@ export const dict = {
   "dialog.project.edit.color.select": "Kleur {{color}} selecteren",
   "dialog.project.edit.worktree.startup": "Opstartscript voor werkruimte",
   "dialog.project.edit.worktree.startup.placeholder": "bijv. bun install",
-  "dialog.usageExceeded.dontShowAgain": "Niet meer weergeven",
 
   "toast.permissions.autoaccept.on.title": "Machtigingen automatisch accepteren",
   "toast.permissions.autoaccept.on.description": "Toestemmingsverzoeken worden automatisch goedgekeurd",

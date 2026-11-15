@@ -278,9 +278,6 @@ export const dict = {
   "dialog.provider.empty": "Keine Anbieter gefunden",
   "dialog.provider.group.popular": "Beliebt",
   "dialog.provider.tag.recommended": "Empfohlen",
-  "dialog.provider.opencode.note": "Kuratierte Modelle inklusive Claude, GPT, Gemini und mehr",
-  "dialog.provider.opencode.tagline": "Zuverlässige, optimierte Modelle",
-  "dialog.provider.opencodeGo.tagline": "Kostengünstiges Abo für alle",
   "dialog.provider.copilot.note": "KI-Modelle zur Programmierunterstützung über GitHub Copilot",
   "dialog.provider.openai.note": "GPT-Modelle für schnelle, leistungsfähige allgemeine KI-Aufgaben",
   "dialog.provider.google.note": "Gemini-Modelle für schnelle, strukturierte Antworten",
@@ -390,7 +387,6 @@ export const dict = {
   "dialog.project.edit.color.select": "{{color}}-Farbe auswählen",
   "dialog.project.edit.worktree.startup": "Startup-Skript für Arbeitsbereich",
   "dialog.project.edit.worktree.startup.placeholder": "z. B. bun install",
-  "dialog.usageExceeded.dontShowAgain": "Nicht mehr anzeigen",
 
   "toast.permissions.autoaccept.on.title": "Berechtigungen werden automatisch akzeptiert",
   "toast.permissions.autoaccept.on.description": "Berechtigungsanfragen werden automatisch genehmigt",

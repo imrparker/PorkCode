@@ -161,9 +161,6 @@ export const dict = {
   "dialog.provider.empty": "未找到提供商",
   "dialog.provider.group.popular": "热门",
   "dialog.provider.tag.recommended": "推荐",
-  "dialog.provider.opencode.note": "精选模型，包括 Claude、GPT、Gemini 等",
-  "dialog.provider.opencode.tagline": "可靠的优化模型",
-  "dialog.provider.opencodeGo.tagline": "适合所有人的低成本订阅",
   "dialog.provider.anthropic.note": "通过 API 密钥直接使用 Claude 模型",
   "dialog.provider.copilot.note": "通过 GitHub Copilot 使用辅助编程 AI 模型",
   "dialog.provider.openai.note": "适合快速处理各类 AI 任务的 GPT 模型",
@@ -293,8 +290,6 @@ export const dict = {
   "dialog.project.edit.color.select": "选择颜色：{{color}}",
   "dialog.project.edit.worktree.startup": "工作区启动脚本",
   "dialog.project.edit.worktree.startup.placeholder": "例如 bun install",
-
-  "dialog.usageExceeded.dontShowAgain": "不再显示",
 
   "toast.permissions.autoaccept.on.title": "正在自动接受权限",
   "toast.permissions.autoaccept.on.description": "权限请求将被自动批准",

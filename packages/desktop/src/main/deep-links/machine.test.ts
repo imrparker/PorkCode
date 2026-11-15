@@ -7,11 +7,9 @@ import {
   type DeepLinkState,
 } from "./machine"
 
-const oauth = "opencode://console/authorized?window=a"
-
-const oauthB = "opencode://console/authorized?window=b"
-
 const project = "opencode://open?project=/repo"
+
+const otherProject = "opencode://open?project=/other"
 
 // Folds events through the machine and keeps the commands of each step.
 function replay(events: readonly DeepLinkEvent[], from = createDeepLinkState()) {
@@ -35,11 +33,11 @@ describe("deep link delivery", () => {
     const live = replay([
       ...ready("a", 1),
       { type: "window.focused", windowID: "a" },
-      { type: "links.received", urls: [oauth, project] },
+      { type: "links.received", urls: [project, otherProject] },
     ])
 
     expect(live.commands.at(-1)).toEqual([
-      { type: "links.deliver", windowID: "a", clientID: 1, attempt: 1, urls: [oauth, project] },
+      { type: "links.deliver", windowID: "a", clientID: 1, attempt: 1, urls: [project, otherProject] },
       { type: "window.focus", windowID: "a" },
     ])
 
@@ -61,40 +59,24 @@ describe("deep link delivery", () => {
   test("queues a link until the first window is ready", () => {
     const result = replay([{ type: "links.received", urls: [project] }, { type: "window.opened", windowID: "a" }])
     expect(result.commands.flat()).toEqual([])
-    expect(result.state.links).toEqual([{ status: "queued", url: project, target: undefined }])
+    expect(result.state.links).toEqual([{ status: "queued", url: project }])
 
     expect(transitionDeepLinks(result.state, { type: "window.ready", windowID: "a", clientID: 1 }).commands).toEqual([
       { type: "links.deliver", windowID: "a", clientID: 1, attempt: 1, urls: [project] },
     ])
   })
 
-  test("waits for the window a console return names instead of the focused one", () => {
-    const result = replay([
-      { type: "window.opened", windowID: "a" },
-      ...ready("b", 2),
-      { type: "window.focused", windowID: "b" },
-      { type: "links.received", urls: [oauth] },
-    ])
-
-    expect(result.commands.at(-1)).toEqual([{ type: "window.focus", windowID: "a" }])
-
-    expect(transitionDeepLinks(result.state, { type: "window.ready", windowID: "a", clientID: 1 }).commands).toEqual([
-      { type: "links.deliver", windowID: "a", clientID: 1, attempt: 1, urls: [oauth] },
-    ])
-  })
-
-  test("splits one arrival into a batch and attempt per window", () => {
+  test("delivers every arriving link in one batch to the preferred window", () => {
     const result = replay([
       ...ready("b", 2),
       ...ready("c", 3),
       { type: "window.focused", windowID: "c" },
-      { type: "links.received", urls: [project, oauthB] },
+      { type: "links.received", urls: [project, otherProject] },
     ])
 
     expect(result.commands.at(-1)).toEqual([
-      { type: "links.deliver", windowID: "c", clientID: 3, attempt: 1, urls: [project] },
-      { type: "links.deliver", windowID: "b", clientID: 2, attempt: 2, urls: [oauthB] },
-      { type: "window.focus", windowID: "b" },
+      { type: "links.deliver", windowID: "c", clientID: 3, attempt: 1, urls: [project, otherProject] },
+      { type: "window.focus", windowID: "c" },
     ])
   })
 
@@ -129,16 +111,16 @@ describe("deep link delivery", () => {
     })
   })
 
-  test("sends links for a closed window to the focused one, as before", () => {
+  test("delivers a queued link to the remaining window when the queued-for one closes", () => {
     const result = replay([
       { type: "window.opened", windowID: "a" },
       ...ready("b", 2),
-      { type: "links.received", urls: [oauth] },
+      { type: "links.received", urls: [project] },
       { type: "window.closed", windowID: "a" },
     ])
 
     expect(result.commands.at(-1)).toEqual([
-      { type: "links.deliver", windowID: "b", clientID: 2, attempt: 1, urls: [oauth] },
+      { type: "links.deliver", windowID: "b", clientID: 2, attempt: 1, urls: [project] },
     ])
   })
 

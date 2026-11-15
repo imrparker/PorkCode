@@ -129,9 +129,6 @@ export const dict = {
   "dialog.provider.empty": "រកមិនឃើញអ្នកផ្តល់សេវាទេ។",
   "dialog.provider.group.popular": "ពេញនិយម",
   "dialog.provider.tag.recommended": "បានណែនាំ",
-  "dialog.provider.opencode.note": "ម៉ូដែលដែលបានជ្រើសរើសរួមមាន Claude, GPT, Gemini និងច្រើនទៀត",
-  "dialog.provider.opencode.tagline": "ម៉ូដែលដែលបានកែលម្អដែលអាចទុកចិត្តបាន។",
-  "dialog.provider.opencodeGo.tagline": "ការជាវតម្លៃទាបសម្រាប់អ្នករាល់គ្នា",
   "dialog.provider.anthropic.note": "ចូលប្រើម៉ូដែល Claude ដោយផ្ទាល់តាមរយៈសោ API",
   "dialog.provider.copilot.note": "ម៉ូដែល AI សម្រាប់ជំនួយការសរសេរកូដតាមរយៈ GitHub Copilot",
   "dialog.provider.openai.note": "ម៉ូដែល GPT សម្រាប់កិច្ចការ AI ទូទៅដែលមានល្បឿនលឿន និងមានសមត្ថភាព",
@@ -598,7 +595,6 @@ export const dict = {
   "workspace.status.error": "មិនអាចផ្ទៀងផ្ទាត់ស្ថានភាព git បានទេ។",
   "workspace.status.dirty": "បានរកឃើញការផ្លាស់ប្តូរដែលមិនរួមបញ្ចូលគ្នានៅក្នុងកន្លែងធ្វើការនេះ។",
   "workspace.delete.button": "លុបកន្លែងធ្វើការ",
-  "dialog.usageExceeded.dontShowAgain": "កុំបង្ហាញម្តងទៀត",
   "desktop.menu.installCli": "ដំឡើង CLI...",
   "desktop.cli.installed.title": "បានដំឡើង CLI",
   "desktop.cli.installed.message":

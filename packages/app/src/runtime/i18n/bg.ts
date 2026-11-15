@@ -129,9 +129,6 @@ export const dict = {
   "dialog.provider.empty": "Няма намерени доставчици",
   "dialog.provider.group.popular": "Популярни",
   "dialog.provider.tag.recommended": "Препоръчва се",
-  "dialog.provider.opencode.note": "Подбрани модели, включително Claude, GPT, Gemini и други",
-  "dialog.provider.opencode.tagline": "Надеждни оптимизирани модели",
-  "dialog.provider.opencodeGo.tagline": "Абонамент на ниска цена за всеки",
   "dialog.provider.copilot.note": "AI модели за помощ при кодиране чрез GitHub Copilot",
   "dialog.provider.openai.note": "GPT модели за бързи, способни общи задачи с изкуствен интелект",
   "dialog.provider.google.note": "Gemini модели за бързи, структурирани отговори",
@@ -544,7 +541,6 @@ export const dict = {
   "workspace.status.dirty": "Открити са необединени промени в това работно пространство.",
   "workspace.delete.confirm": "Да се ​​изтрие ли работното пространство „{{name}}“?",
   "workspace.delete.button": "Изтриване на работното пространство",
-  "dialog.usageExceeded.dontShowAgain": "Не показвай отново",
   "provider.disconnect.toast.noCredentials.description":
     "Няма намерени подвижни идентификационни данни за {{provider}}.",
   "provider.disconnect.toast.failed.description": "Неуспешно прекъсване на връзката {{provider}}.",

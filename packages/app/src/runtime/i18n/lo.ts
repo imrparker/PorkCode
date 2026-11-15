@@ -129,9 +129,6 @@ export const dict = {
   "dialog.provider.empty": "ບໍ່ພົບຜູ້ໃຫ້ບໍລິການ",
   "dialog.provider.group.popular": "ນິຍົມ",
   "dialog.provider.tag.recommended": "ແນະນຳ",
-  "dialog.provider.opencode.note": "ແບບທີ່ຄັດສັນມາລວມທັງ Claude, GPT, Gemini ແລະອື່ນໆ",
-  "dialog.provider.opencode.tagline": "ຮູບແບບການເພີ່ມປະສິດທິພາບທີ່ເຊື່ອຖືໄດ້",
-  "dialog.provider.opencodeGo.tagline": "ການສະໝັກໃຊ້ລາຄາຕໍ່າສຳລັບທຸກຄົນ",
   "dialog.provider.anthropic.note": "ເຂົ້າເຖິງໂມເດວ Claude ໂດຍກົງຜ່ານລະຫັດ API",
   "dialog.provider.copilot.note": "ຮູບແບບ AI ສໍາລັບການຊ່ວຍເຫຼືອການເຂົ້າລະຫັດຜ່ານ GitHub Copilot",
   "dialog.provider.openai.note": "ແບບ GPT ສໍາລັບວຽກງານ AI ທົ່ວໄປທີ່ໄວ, ມີຄວາມສາມາດ",
@@ -598,7 +595,6 @@ export const dict = {
   "workspace.status.error": "ບໍ່ສາມາດກວດສອບສະຖານະ git ໄດ້.",
   "workspace.status.dirty": "ກວດພົບການປ່ຽນແປງທີ່ບໍ່ຮວມຢູ່ໃນບ່ອນເຮັດວຽກນີ້.",
   "workspace.delete.button": "ລຶບພື້ນທີ່ເຮັດວຽກ",
-  "dialog.usageExceeded.dontShowAgain": "ຢ່າສະແດງອີກ",
   "desktop.menu.installCli": "ຕິດຕັ້ງ CLI...",
   "desktop.cli.installed.title": "ຕິດຕັ້ງ CLI ແລ້ວ",
   "desktop.cli.installed.message":

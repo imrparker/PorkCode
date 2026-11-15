@@ -66,12 +66,6 @@ export const dict = {
   "ui.sessionTurn.retry.attempt": "کوشش #{{attempt}}",
   "ui.sessionTurn.retry.attemptLine": "{{line}} - کوشش #{{attempt}}",
   "ui.sessionTurn.retry.geminiHot": "gemini اس وقت بہت زیادہ مصروف ہے",
-  "ui.sessionTurn.error.freeUsageExceeded": "مفت استعمال کی حد ختم ہو گئی",
-  "ui.sessionTurn.error.addCredits": "کریڈٹ شامل کریں۔",
-  "dialog.usageExceeded.freeTier.title": "مفت استعمال کی حد پوری ہو گئی",
-  "dialog.usageExceeded.freeTier.description":
-    "$10/ماہ میں بہترین اوپن سورس ماڈلز تک قابل اعتماد رسائی کے لیے PorkCode Go کو سبسکرائب کریں۔",
-  "dialog.usageExceeded.freeTier.actionLabel": "سبسکرائب کریں۔",
   "ui.sessionTurn.status.delegating": "کام سونپا جا رہا ہے",
   "ui.sessionTurn.status.planning": "اگلے اقدامات کی منصوبہ بندی کی جا رہی ہے",
   "ui.sessionTurn.status.gatheringContext": "دریافت کرنا",

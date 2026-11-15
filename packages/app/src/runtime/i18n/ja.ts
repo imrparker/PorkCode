@@ -134,9 +134,6 @@ export const dict = {
   "dialog.provider.empty": "プロバイダーが見つかりません",
   "dialog.provider.group.popular": "人気",
   "dialog.provider.tag.recommended": "推奨",
-  "dialog.provider.opencode.note": "Claude, GPT, Geminiなどを含む厳選されたモデル",
-  "dialog.provider.opencode.tagline": "信頼性の高い最適化モデル",
-  "dialog.provider.opencodeGo.tagline": "すべての人に低価格のサブスクリプション",
   "dialog.provider.anthropic.note": "APIキーでClaudeモデルに直接アクセス",
   "dialog.provider.copilot.note": "GitHub Copilotを通じてコーディングを支援するAIモデル",
   "dialog.provider.openai.note": "高速で高性能な汎用AIタスク向けのGPTモデル",
@@ -253,7 +250,6 @@ export const dict = {
   "dialog.project.edit.color.select": "{{color}}の色を選択",
   "dialog.project.edit.worktree.startup": "ワークスペース起動スクリプト",
   "dialog.project.edit.worktree.startup.placeholder": "例: bun install",
-  "dialog.usageExceeded.dontShowAgain": "今後表示しない",
 
   "toast.permissions.autoaccept.on.title": "権限を自動承認しています",
   "toast.permissions.autoaccept.on.description": "権限の要求は自動的に承認されます",

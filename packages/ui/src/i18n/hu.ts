@@ -67,12 +67,6 @@ export const dict = {
   "ui.sessionTurn.retry.attempt": "kísérlet #{{attempt}}",
   "ui.sessionTurn.retry.attemptLine": "{{line}} – #{{attempt}} kísérlet",
   "ui.sessionTurn.retry.geminiHot": "a Gemini jelenleg túlterhelt",
-  "ui.sessionTurn.error.freeUsageExceeded": "Az ingyenes használat túllépve",
-  "ui.sessionTurn.error.addCredits": "Adjon hozzá krediteket",
-  "dialog.usageExceeded.freeTier.title": "Elérte a szabad korlátot",
-  "dialog.usageExceeded.freeTier.description":
-    "Iratkozzon fel az PorkCode Go szolgáltatásra havi 10 dollárért, hogy megbízható hozzáférést kapjon a legjobb nyílt forráskódú modellekhez.",
-  "dialog.usageExceeded.freeTier.actionLabel": "Iratkozz fel",
   "ui.sessionTurn.status.delegating": "Munka delegálása",
   "ui.sessionTurn.status.planning": "A következő lépések tervezése",
   "ui.sessionTurn.status.gatheringContext": "Feltárása",

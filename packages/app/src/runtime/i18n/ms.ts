@@ -129,9 +129,6 @@ export const dict = {
   "dialog.provider.empty": "Tiada penyedia ditemui",
   "dialog.provider.group.popular": "Popular",
   "dialog.provider.tag.recommended": "Disyorkan",
-  "dialog.provider.opencode.note": "Model terpilih termasuk Claude, GPT, Gemini dan banyak lagi",
-  "dialog.provider.opencode.tagline": "Model dioptimumkan yang boleh dipercayai",
-  "dialog.provider.opencodeGo.tagline": "Langganan kos rendah untuk semua",
   "dialog.provider.anthropic.note": "Akses terus kepada model Claude melalui kunci API",
   "dialog.provider.copilot.note": "Model AI untuk bantuan pengekodan melalui GitHub Copilot",
   "dialog.provider.openai.note": "Model GPT untuk tugasan AI umum yang pantas dan berkeupayaan",
@@ -602,7 +599,6 @@ export const dict = {
   "workspace.status.error": "Tidak dapat mengesahkan status git.",
   "workspace.status.dirty": "Perubahan belum digabungkan dikesan dalam ruang kerja ini.",
   "workspace.delete.button": "Padam ruang kerja",
-  "dialog.usageExceeded.dontShowAgain": "Jangan tunjukkan lagi",
   "desktop.menu.installCli": "Pasang CLI...",
   "desktop.cli.installed.title": "CLI Dipasang",
   "desktop.cli.installed.message":

@@ -154,9 +154,6 @@ export const dict = {
   "dialog.provider.empty": "Ni ponudnikov",
   "dialog.provider.group.popular": "Priljubljeno",
   "dialog.provider.tag.recommended": "Priporočeno",
-  "dialog.provider.opencode.note": "Izbrani modeli, vključno z Claude, GPT, Gemini in drugimi",
-  "dialog.provider.opencode.tagline": "Zanesljivi optimizirani modeli",
-  "dialog.provider.opencodeGo.tagline": "Poceni naročnina za vsakogar",
   "dialog.provider.copilot.note": "Modeli AI za pomoč pri kodiranju prek GitHub Copilot",
   "dialog.provider.openai.note": "Modeli GPT za hitre in zmogljive splošne naloge z umetno inteligenco",
   "dialog.provider.google.note": "Modeli Gemini za hitre, strukturirane odzive",
@@ -565,7 +562,6 @@ export const dict = {
   "workspace.status.dirty": "V tem delovnem prostoru so bile zaznane nespojene spremembe.",
   "workspace.delete.confirm": 'Izbrišem delovni prostor "{{name}}"?',
   "workspace.delete.button": "Izbriši delovni prostor",
-  "dialog.usageExceeded.dontShowAgain": "Ne prikaži več",
   "provider.disconnect.toast.noCredentials.description":
     "Za {{provider}} ni bilo mogoče najti odstranljivih poverilnic.",
   "provider.disconnect.toast.failed.description": "Odklop {{provider}} ni uspel.",

@@ -144,9 +144,6 @@ export const dict = {
   "dialog.provider.empty": "找不到提供者",
   "dialog.provider.group.popular": "熱門",
   "dialog.provider.tag.recommended": "推薦",
-  "dialog.provider.opencode.note": "精選模型，包含 Claude、GPT、Gemini 等等",
-  "dialog.provider.opencode.tagline": "經過最佳化的可靠模型",
-  "dialog.provider.opencodeGo.tagline": "適合所有人的低成本訂閱",
   "dialog.provider.anthropic.note": "透過 API 金鑰直接使用 Claude 模型",
   "dialog.provider.openai.note": "適合快速且功能強大的通用 AI 工作之 GPT 模型",
   "dialog.provider.copilot.note": "透過 GitHub Copilot 使用程式設計輔助 AI 模型",
@@ -279,7 +276,6 @@ export const dict = {
 
   "dialog.project.edit.worktree.startup": "工作區啟動腳本",
   "dialog.project.edit.worktree.startup.placeholder": "例如 bun install",
-  "dialog.usageExceeded.dontShowAgain": "不再顯示",
 
   "toast.permissions.autoaccept.on.title": "正在自動接受權限",
   "toast.permissions.autoaccept.on.description": "權限要求將自動獲准",

@@ -130,9 +130,6 @@ export const dict = {
   "dialog.provider.empty": "Provayder tapılmadı",
   "dialog.provider.group.popular": "Populyar",
   "dialog.provider.tag.recommended": "Tövsiyə olunan",
-  "dialog.provider.opencode.note": "Claude, GPT, Gemini və daha çoxu daxil olmaqla seçilmiş modellər",
-  "dialog.provider.opencode.tagline": "Etibarlı optimallaşdırılmış modellər",
-  "dialog.provider.opencodeGo.tagline": "Hamı üçün aşağı qiymətli abunəlik",
   "dialog.provider.copilot.note": "GitHub Copilot vasitəsilə kodlaşdırma yardımı üçün AI modelləri",
   "dialog.provider.openai.note": "Sürətli və bacarıqlı ümumi AI tapşırıqları üçün GPT modelləri",
   "dialog.provider.google.note": "Sürətli, strukturlaşdırılmış cavablar üçün Gemini modelləri",
@@ -243,7 +240,6 @@ export const dict = {
   "dialog.project.edit.color.select": "{{color}} rəngini seçin",
   "dialog.project.edit.worktree.startup": "İş sahəsi başlanğıc skripti",
   "dialog.project.edit.worktree.startup.placeholder": "məs. bun install",
-  "dialog.usageExceeded.dontShowAgain": "Bir daha göstərmə",
 
   "toast.permissions.autoaccept.on.title": "İcazələr avtomatik qəbul edilir",
   "toast.permissions.autoaccept.on.description": "İcazə sorğuları avtomatik təsdiqlənəcək",

@@ -166,9 +166,6 @@ export const dict = {
   "dialog.provider.empty": "Провайдерів не знайдено",
   "dialog.provider.group.popular": "Популярні",
   "dialog.provider.tag.recommended": "Рекомендовані",
-  "dialog.provider.opencode.note": "Відібрані моделі, включаючи Claude, GPT, Gemini та інші",
-  "dialog.provider.opencode.tagline": "Надійні оптимізовані моделі",
-  "dialog.provider.opencodeGo.tagline": "Недорога підписка для всіх",
   "dialog.provider.copilot.note": "Моделі ШІ для допомоги в кодуванні через GitHub Copilot",
   "dialog.provider.openai.note": "Моделі GPT для швидких і універсальних завдань ШІ",
   "dialog.provider.google.note": "Моделі Gemini для швидких структурованих відповідей",
@@ -297,8 +294,6 @@ export const dict = {
   "dialog.project.edit.color.select": "Вибрати колір {{color}}",
   "dialog.project.edit.worktree.startup": "Скрипт запуску робочої області",
   "dialog.project.edit.worktree.startup.placeholder": "напр. bun install",
-
-  "dialog.usageExceeded.dontShowAgain": "Більше не показувати",
 
   "toast.permissions.autoaccept.on.title": "Автоматичне прийняття дозволів",
   "toast.permissions.autoaccept.on.description": "Запити дозволів будуть автоматично схвалюватися",

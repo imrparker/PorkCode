@@ -85,13 +85,6 @@ export const dict: Record<Keys, string> = {
   "ui.sessionTurn.retry.attempt": "forsøk nr. {{attempt}}",
   "ui.sessionTurn.retry.attemptLine": "{{line}} - forsøk nr. {{attempt}}",
   "ui.sessionTurn.retry.geminiHot": "Gemini er veldig overbelastet nå",
-  "ui.sessionTurn.error.freeUsageExceeded": "Gratisforbruket er overskredet",
-  "ui.sessionTurn.error.addCredits": "Legg til kreditter",
-
-  "dialog.usageExceeded.freeTier.title": "Gratisgrensen er nådd",
-  "dialog.usageExceeded.freeTier.description":
-    "Abonner på PorkCode Go for $10/måned for pålitelig tilgang til de beste modellene med åpen kildekode.",
-  "dialog.usageExceeded.freeTier.actionLabel": "Abonner",
 
   "ui.sessionTurn.status.delegating": "Delegerer arbeid",
   "ui.sessionTurn.status.planning": "Planlegger neste trinn",

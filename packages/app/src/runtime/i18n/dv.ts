@@ -131,10 +131,6 @@ export const dict = {
   "dialog.provider.empty": "އެއްވެސް ޕްރޮވައިޑަރެއް ނުފެނެއެވެ",
   "dialog.provider.group.popular": "މަޝްހޫރު",
   "dialog.provider.tag.recommended": "ލަފާދެވިފައިވުން",
-  "dialog.provider.opencode.note":
-    "ކިއުރެޓް ކުރެވިފައިވާ މޮޑެލްތަކުގެ ތެރޭގައި Claude، GPT، Gemini އަދި އެހެނިހެން މޮޑެލްތައް ހިމެނެއެވެ",
-  "dialog.provider.opencode.tagline": "އިތުބާރު ހުރި އޮޕްޓިމައިޒްޑް މޮޑެލްތަކެވެ",
-  "dialog.provider.opencodeGo.tagline": "އެންމެންނަށް ކުޑަ އަގެއްގައި ސަބްސްކްރިޕްޝަން ދިނުމެވެ",
   "dialog.provider.copilot.note": "GitHub Copilot މެދުވެރިކޮށް ކޯޑިންގ އެހީތެރިވުމަށް AI މޮޑެލްތައް",
   "dialog.provider.openai.note": "އަވަސް، ގާބިލް އާންމު AI ޓާސްކްތަކަށް GPT މޮޑެލްތަކެވެ",
   "dialog.provider.google.note": "އަވަސް، ސްޓްރަކްޗަރޑް ރެސްޕޮންސްތަކަށް Gemini މޮޑެލްތަކެވެ",
@@ -557,7 +553,6 @@ export const dict = {
   "workspace.status.dirty": "މި ވޯކްސްޕޭސްގައި ފާހަގަ ނުކުރެވި ހުރި ބަދަލުތައް.",
   "workspace.delete.confirm": 'ވޯކްސްޕޭސް "\u2068{{name}}\u2069" ފުހެލަންތަ؟',
   "workspace.delete.button": "ވޯކްސްޕޭސް ފުހެލުން",
-  "dialog.usageExceeded.dontShowAgain": "އަލުން ނުދައްކާ",
   "provider.disconnect.toast.noCredentials.description":
     "\u2068{{provider}}\u2069 އަށް ނައްތާލެވޭ އެއްވެސް ކްރެޑެންޝަލެއް ނުފެނުނެވެ.",
   "provider.disconnect.toast.failed.description": "\u2068{{provider}}\u2069 ޑިސްކަނެކްޓް ނުކުރެވުނެވެ.",

@@ -2,6 +2,8 @@ import { expect, type Page, type Request } from "@playwright/test"
 import type { SessionMessageInfo } from "@opencode/client/promise"
 import { base64Encode, checksum } from "@opencode/util/encode"
 
+// oxlint-disable anti-slop/no-unsafe-dictionary-type, anti-slop/no-runtime-typeof, anti-slop/no-conditional-empty-object-spread, anti-slop/no-known-value-widening -- this harness seeds opaque scenario blobs into browser storage; specs own the shapes and the app parses them at its own boundary
+
 // The mocked default server. Production builds connect to their own origin, so CI points this at the app.
 export const SERVER = `http://${process.env.PLAYWRIGHT_SERVER_HOST ?? "127.0.0.1"}:${process.env.PLAYWRIGHT_SERVER_PORT ?? "4096"}`
 
@@ -143,6 +145,7 @@ export function project(input: { id: string; directory: string; name?: string } 
     name: directory.split(/[\\/]/).at(-1),
     vcs: "git",
     time: { created: T0, updated: T0, active: T0 },
+    // SAFETY: empty array; the annotation only keeps a rest-spread override typed as string[].
     sandboxes: [] as string[],
     ...rest,
   }
@@ -167,7 +170,9 @@ export function session(
 
 export type ModelSeed = { id: string; name: string } & Record<string, unknown>
 
-// A connected `opencode` provider whose first model is the default.
+// A connected `opencode` provider whose first model is the default. The display name stays empty so
+// composer labels render bare model text, which keeps specs asserting model identity without a
+// provider prefix; specs that test provider-name surfaces build their own catalogs instead.
 export function provider(...models: ModelSeed[]) {
   const all = models.length ? models : [{ id: "test", name: "Test" }]
 
@@ -175,7 +180,7 @@ export function provider(...models: ModelSeed[]) {
     all: [
       {
         id: "opencode",
-        name: "OpenCode",
+        name: "",
         models: Object.fromEntries(all.map((model) => [model.id, { limit: { context: 200_000 }, ...model }])),
       },
     ],

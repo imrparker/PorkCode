@@ -5,10 +5,8 @@ import { Icon } from "@opencode/ui/icon"
 import { IconButton } from "@opencode/ui/icon-button"
 import { Menu } from "@opencode/ui/menu"
 import { ProviderIcon } from "@opencode/ui/provider-icon"
-import { OpenCodeLogo } from "@/providers/opencode-logo"
 import { showToast } from "@/shell/notifications/toast"
 import { useProviders } from "@/providers/catalog/providers"
-import { consoleProviderGroup } from "@/providers/catalog/console"
 import { useIntegrations } from "@/providers/catalog/integrations"
 import {
   createEffect,
@@ -26,7 +24,6 @@ import {
 import { useLanguage } from "@/runtime/i18n/language"
 import { useServerSDK } from "@/runtime/server/client"
 import { formatServerError } from "@/runtime/server/errors"
-import { CONSOLE_INTEGRATION } from "@/providers/connect/dialog-machine"
 import { DialogConnectProvider, useProviderConnectController } from "@/providers/connect/dialog"
 import { ProviderModelIcon } from "@/providers/models/provider-group"
 import { SettingsList } from "@/settings/list"
@@ -60,7 +57,6 @@ const LOCAL_BACKENDS = [
 
 export const SettingsProviders: Component<{
   directory: string | undefined
-  onSelectProvider?: (providerID: string) => void
   headerAction?: JSX.Element
 }> = (props) => {
   const dialog = useDialog()
@@ -71,7 +67,6 @@ export const SettingsProviders: Component<{
   const providerConnect = useProviderConnectController()
   const accountActions = useProviderAccountActions(() => props.directory)
 
-  const [consoleExpanded, setConsoleExpanded] = createSignal(false)
   const [pageState, setPageState] = createSignal(createSettingsProvidersState<ProviderItem>())
   const accountView = createMemo(() => providerAccountView(pageState()))
 
@@ -82,6 +77,7 @@ export const SettingsProviders: Component<{
     () => props.directory ?? "",
     (directory) => serverSdk.api.config.get(directory ? { location: { directory } } : undefined),
   )
+
   onCleanup(
     serverSdk.event.on("config.updated", () => {
       void refetchConfig()
@@ -93,8 +89,12 @@ export const SettingsProviders: Component<{
 
     for (let index = configEntries.latest.length - 1; index >= 0; index -= 1) {
       const entry = configEntries.latest[index]
+
       if (!entry || entry.type !== "document") continue
+
       const value = entry.info.providers?.[id]?.settings?.baseURL
+
+      // oxlint-disable-next-line anti-slop/no-runtime-typeof -- providers.<id>.settings.baseURL lives in the settings rest record as arbitrary JSON; narrow before display
       if (typeof value === "string" && value.trim()) return value.trim()
     }
 
@@ -210,39 +210,19 @@ export const SettingsProviders: Component<{
     })
   }
 
-  // Console-managed providers (`opencode-go`, `console-*`) connect through the `opencode`
-  // integration, so the lookup must follow `integrationID` rather than the provider id.
+  // A provider's account actions follow its integration, which a custom provider may share with
+  // the catalog entry it was derived from.
   const integration = (item: ProviderItem) => {
     const id = item.integrationID ?? item.id
 
     return integrations.list().find((entry) => entry.id === id)
   }
 
-  // The list stays as it was while the dialog connects, so a new sign-in that briefly drops the
-  // Console workspace providers from the catalog can't flash rows behind the dialog.
+  // The list stays as it was while the dialog connects, so a new sign-in that briefly drops providers
+  // from the catalog can't flash rows behind the dialog.
   const connect = (provider?: string) => dispatch({ type: "dialog.opened", provider, catalog: untrack(available) })
 
-  const liveAvailable = createMemo(() => {
-    const connected = providers.connected()
-    const managedConsole = consoleProviderGroup(connected)
-
-    const consoleConnected = integrations
-      .list()
-      .find((item) => item.id === CONSOLE_INTEGRATION)
-      ?.connections.some((connection) => connection.type === "credential" || connection.type === "env")
-
-    return connected
-      .filter(
-        (provider) =>
-          provider.id !== "opencode" ||
-          managedConsole !== undefined ||
-          consoleConnected ||
-          Object.values(provider.models).some((model) => model.cost.input > 0),
-      )
-      .toSorted((a, b) => Number(b.id === "opencode-go") - Number(a.id === "opencode-go"))
-  })
-
-  const available = createMemo(() => availableProviders(pageState(), liveAvailable()))
+  const available = createMemo(() => availableProviders(pageState(), providers.connected()))
 
   // Tells the machine which providers the server catalog lists, so a confirmed removal stops hiding a
   // provider once the server drops it and shows it again if it is later reconnected.
@@ -254,17 +234,6 @@ export const SettingsProviders: Component<{
   )
 
   const connected = createMemo(() => connectedProviders(pageState(), available()))
-
-  const consoleGroup = createMemo(() => consoleProviderGroup(available()))
-
-  const displayed = createMemo(() => {
-    const group = consoleGroup()
-
-    if (!group) return connected()
-    const grouped = new Set(group.providers.filter((item) => item.id !== group.root.id).map((item) => item.id))
-
-    return connected().filter((item) => !grouped.has(item.id))
-  })
 
   // Connection state comes from the integration list like the TUI: credential
   // connections mean an API key or an account login, env connections mean detected
@@ -314,15 +283,13 @@ export const SettingsProviders: Component<{
 
   const canManageAccounts = (item: ProviderItem) => providerAccounts(integration(item)).length > 0
 
-  const disconnect = (item: ProviderItem, name: string) => {
-    const group = consoleGroup()
+  const disconnect = (item: ProviderItem, name: string) =>
     dispatch({
       type: "disconnect.requested",
-      providerIDs: group?.root.id === item.id ? group.providers.map((provider) => provider.id) : [item.id],
+      providerIDs: [item.id],
       integrationID: item.integrationID ?? item.id,
       providerName: name,
     })
-  }
 
   const activate = (provider: ProviderItem, providerName: string, account: ProviderAccount) =>
     dispatch({
@@ -475,140 +442,54 @@ export const SettingsProviders: Component<{
           <h3 class="settings-section-title">{language.t("settings.providers.section.connected")}</h3>
           <SettingsList variant="catalog">
             <Show
-              when={displayed().length > 0}
+              when={connected().length > 0}
               fallback={<div class="settings-provider-empty">{language.t("settings.providers.connected.empty")}</div>}
             >
-              <For each={displayed()}>
-                {(item) => {
-                  const managedGroup = () => (consoleGroup()?.root.id === item.id ? consoleGroup() : undefined)
+              <For each={connected()}>
+                {(item) => (
+                  <div class="settings-provider-row group">
+                    <div class="settings-provider-lead">
+                      <ProviderModelIcon provider={item} class="settings-provider-icon shrink-0" />
 
-                  return (
+                      <div class="settings-provider-main">
+                        <span class="settings-provider-name truncate">{item.name}</span>
+                        <Badge>{type(item)}</Badge>
+                      </div>
+                    </div>
                     <Show
-                      when={managedGroup()}
+                      when={canManageAccounts(item)}
                       fallback={
-                        <div class="settings-provider-row group">
-                          <div class="settings-provider-lead">
-                            <ProviderModelIcon provider={item} class="settings-provider-icon shrink-0" />
-
-                            <div class="settings-provider-main">
-                              <span class="settings-provider-name truncate">{item.name}</span>
-                              <Badge>{type(item)}</Badge>
-                            </div>
-                          </div>
-                          <Show
-                            when={canManageAccounts(item)}
-                            fallback={
-                              <Show
-                                when={canDisconnect(item)}
-                                fallback={
-                                  <span class="settings-provider-env-hint">
-                                    {language.t("settings.providers.connected.environmentDescription")}
-                                  </span>
-                                }
-                              >
-                                <Button size="normal" variant="ghost-muted" onClick={() => disconnect(item, item.name)}>
-                                  {language.t("common.disconnect")}
-                                </Button>
-                              </Show>
-                            }
-                          >
-                            <Show when={activeProviderAccount(integration(item))?.status}>
-                              {(status) => (
-                                <Button
-                                  size="normal"
-                                  variant="ghost-muted"
-                                  class="text-[var(--v2-state-fg-warning)]"
-                                  title={status().message}
-                                  onClick={() => connect(item.id)}
-                                >
-                                  {language.t("dialog.provider.needsSignIn")}
-                                </Button>
-                              )}
-                            </Show>
-                            <AccountMenu provider={item} />
-                          </Show>
-                        </div>
+                        <Show
+                          when={canDisconnect(item)}
+                          fallback={
+                            <span class="settings-provider-env-hint">
+                              {language.t("settings.providers.connected.environmentDescription")}
+                            </span>
+                          }
+                        >
+                          <Button size="normal" variant="ghost-muted" onClick={() => disconnect(item, item.name)}>
+                            {language.t("common.disconnect")}
+                          </Button>
+                        </Show>
                       }
                     >
-                      {(group) => (
-                        <div class="settings-provider-console group">
-                          <div class="settings-provider-console-header">
-                            <div class="settings-provider-lead">
-                              <OpenCodeLogo class="settings-provider-icon size-4 shrink-0" />
-                              <div class="settings-provider-console-summary">
-                                <div class="settings-provider-main">
-                                  <span class="settings-provider-name truncate">
-                                    {language.t("provider.connect.opencode.name")}
-                                  </span>
-                                  <Badge>{group().workspace}</Badge>
-                                </div>
-                                <Show when={group().providers.length > 1}>
-                                  <button
-                                    type="button"
-                                    class="settings-provider-console-toggle"
-                                    aria-expanded={consoleExpanded()}
-                                    onClick={() => setConsoleExpanded((value) => !value)}
-                                  >
-                                    <span>
-                                      {language.plural(
-                                        "settings.providers.console.available",
-                                        group().providers.length,
-                                        { count: group().providers.length },
-                                      )}
-                                    </span>
-                                    <Icon
-                                      name="chevron-right"
-                                      size="small"
-                                      classList={{
-                                        "settings-provider-console-chevron": true,
-                                        open: consoleExpanded(),
-                                      }}
-                                    />
-                                  </button>
-                                </Show>
-                              </div>
-                            </div>
-                            <Show
-                              when={canManageAccounts(item)}
-                              fallback={
-                                <Button
-                                  size="normal"
-                                  variant="ghost-muted"
-                                  onClick={() => disconnect(item, language.t("provider.connect.opencode.name"))}
-                                >
-                                  {language.t("common.disconnect")}
-                                </Button>
-                              }
-                            >
-                              <AccountMenu provider={item} name={language.t("provider.connect.opencode.name")} />
-                            </Show>
-                          </div>
-                          <Show when={consoleExpanded()}>
-                            <div class="settings-provider-console-list">
-                              <div class="settings-provider-console-separator" aria-hidden="true" />
-                              <For each={group().providers}>
-                                {(provider) => (
-                                  <button
-                                    type="button"
-                                    class="settings-provider-console-item"
-                                    onClick={() => props.onSelectProvider?.(provider.id)}
-                                  >
-                                    <span>{provider.name.slice(group().prefix.length)}</span>
-                                    <Icon
-                                      name="chevron-right"
-                                      size="small"
-                                      class="settings-provider-console-item-chevron"
-                                    />
-                                  </button>
-                                )}
-                              </For>
-                            </div>
-                          </Show>
-                        </div>
-                      )}
+                      <Show when={activeProviderAccount(integration(item))?.status}>
+                        {(status) => (
+                          <Button
+                            size="normal"
+                            variant="ghost-muted"
+                            class="text-[var(--v2-state-fg-warning)]"
+                            title={status().message}
+                            onClick={() => connect(item.id)}
+                          >
+                            {language.t("dialog.provider.needsSignIn")}
+                          </Button>
+                        )}
+                      </Show>
+                      <AccountMenu provider={item} />
                     </Show>
-                  )
-                }}
+                  </div>
+                )}
               </For>
             </Show>
           </SettingsList>

@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test"
-import { project, provider, sessionHref } from "../utils/app"
+import { project, sessionHref } from "../utils/app"
 import { mockOpenCodeServer } from "../utils/mock-server"
 import { expectAppVisible } from "../utils/waits"
 import { openSession } from "../utils/workspace"
@@ -25,8 +25,8 @@ test("creates a session in a new project and selects its model", async ({ page }
     provider: () => ({
       all: [
         {
-          id: "opencode",
-          name: "OpenCode",
+          id: "ollama",
+          name: "Ollama",
           models: {
             "free-model": {
               id: "free-model",
@@ -37,20 +37,20 @@ test("creates a session in a new project and selects its model", async ({ page }
           },
         },
         {
-          id: "opencode-go",
-          name: "OpenCode Go",
+          id: "openrouter",
+          name: "OpenRouter",
           models: {
-            "go-model-1": {
-              id: "go-model-1",
-              name: "Go Model 1",
+            "router-model-1": {
+              id: "router-model-1",
+              name: "Router Model 1",
               cost: { input: 1, output: 1 },
               limit: { context: 200_000 },
             },
           },
         },
       ],
-      connected: ["opencode", "opencode-go"],
-      default: { providerID: "opencode", modelID: "free-model" },
+      connected: ["ollama", "openrouter"],
+      default: { providerID: "ollama", modelID: "free-model" },
     }),
     sessions: [],
     pageMessages: () => ({ items: [] }),
@@ -62,10 +62,10 @@ test("creates a session in a new project and selects its model", async ({ page }
       "opencode.global.dat:model",
       JSON.stringify({
         user: [
-          { providerID: "opencode", modelID: "free-model", visibility: "show" },
-          { providerID: "opencode-go", modelID: "go-model-1", visibility: "show" },
+          { providerID: "ollama", modelID: "free-model", visibility: "show" },
+          { providerID: "openrouter", modelID: "router-model-1", visibility: "show" },
         ],
-        recent: [{ providerID: "opencode-go", modelID: "go-model-1" }],
+        recent: [{ providerID: "openrouter", modelID: "router-model-1" }],
         variant: {},
       }),
     )
@@ -100,7 +100,7 @@ test("creates a session in a new project and selects its model", async ({ page }
   await expectAppVisible(page.locator('[data-component="composer"]'))
 
   const modelControl = page.locator('[data-action="composer-model"]')
-  await expect(modelControl).toContainText("Go Model 1")
+  await expect(modelControl).toContainText("Router Model 1")
   await modelControl.click()
   const modelSearch = page.getByPlaceholder("Search models", { exact: true })
   await expect(modelSearch).toBeFocused()
@@ -113,26 +113,40 @@ test("creates a session in a new project and selects its model", async ({ page }
   await modelSearch.press("ArrowUp")
   await modelSearch.press("Enter")
 
-  await expect(modelControl).toContainText("Go Model 1")
+  await expect(modelControl).toContainText("Router Model 1")
 })
 
 test("restores each existing session's model and variant when switching tabs", async ({ page }) => {
   const sessions = ["A", "B"].map((name) => ({
     id: `ses_model_${name}`,
     title: `Model ${name}`,
-    model: { id: `model-${name}`, providerID: "opencode", variant: "balanced" },
+    model: { id: `model-${name}`, providerID: "local", variant: "balanced" },
   }))
 
   await openSession(page, {
     name: "ModelSelection",
     sessions,
-    provider: provider(
-      ...sessions.map((session) => ({
-        id: session.model.id,
-        name: session.title,
-        variants: { balanced: {}, high: {} },
-      })),
-    ),
+    provider: {
+      all: [
+        {
+          id: "local",
+          name: "Local",
+          models: Object.fromEntries(
+            sessions.map((session) => [
+              session.model.id,
+              {
+                id: session.model.id,
+                name: session.title,
+                limit: { context: 200_000 },
+                variants: { balanced: {}, high: {} },
+              },
+            ]),
+          ),
+        },
+      ],
+      connected: ["local"],
+      default: { providerID: "local", modelID: sessions[0]!.model.id },
+    },
   })
 
   const hrefA = sessionHref(sessions[0]!.id)
@@ -140,7 +154,7 @@ test("restores each existing session's model and variant when switching tabs", a
   const composer = page.locator('[data-component="composer"]')
   const modelControl = composer.locator('[data-action="composer-model"]')
   const variant = composer.getByRole("button", { name: "Choose model variant", exact: true })
-  await expect(modelControl).toHaveText("Model A")
+  await expect(modelControl).toHaveText("Local / Model A")
   await expect(variant).toHaveText("balanced")
   await variant.click()
   await page.getByRole("menuitemradio", { name: "high", exact: true }).click()
@@ -148,7 +162,7 @@ test("restores each existing session's model and variant when switching tabs", a
 
   await page.locator(`[data-titlebar-tab-link][href="${hrefB}"]`).click()
   await expect(page).toHaveURL(hrefB)
-  await expect(modelControl).toHaveText("Model B")
+  await expect(modelControl).toHaveText("Local / Model B")
   await expect(variant).toHaveText("balanced")
   await variant.click()
   await page.getByRole("menuitemradio", { name: "high", exact: true }).click()
@@ -157,12 +171,12 @@ test("restores each existing session's model and variant when switching tabs", a
   // A new draft starts from the current session's non-default model and chosen variant.
   await page.getByRole("button", { name: "New session", exact: true }).click()
   await expect(page).toHaveURL(/\/new-session\?draftId=/)
-  await expect(modelControl).toHaveText("Model B")
+  await expect(modelControl).toHaveText("Local / Model B")
   await expect(variant).toHaveText("high")
 
   await page.locator(`[data-titlebar-tab-link][href="${hrefA}"]`).click()
   await expect(page).toHaveURL(hrefA)
-  await expect(modelControl).toHaveText("Model A")
+  await expect(modelControl).toHaveText("Local / Model A")
   await expect(variant).toHaveText("high")
 })
 
@@ -175,40 +189,54 @@ test("keeps a variant picked in another directory's session with that session ac
     id: `ses_model_${item.name.toLowerCase()}`,
     title: `${item.name} session`,
     directory: item.directory,
-    model: { id: `model-${item.name.toLowerCase()}`, providerID: "opencode", variant: "balanced" },
+    model: { id: `model-${item.name.toLowerCase()}`, providerID: "local", variant: "balanced" },
   }))
 
   await openSession(page, {
     name: "ModelHome",
     sessions,
-    provider: provider(
-      ...sessions.map((session) => ({
-        id: session.model.id,
-        name: session.title,
-        variants: { balanced: {}, high: {} },
-      })),
-    ),
+    provider: {
+      all: [
+        {
+          id: "local",
+          name: "Local",
+          models: Object.fromEntries(
+            sessions.map((session) => [
+              session.model.id,
+              {
+                id: session.model.id,
+                name: session.title,
+                limit: { context: 200_000 },
+                variants: { balanced: {}, high: {} },
+              },
+            ]),
+          ),
+        },
+      ],
+      connected: ["local"],
+      default: { providerID: "local", modelID: sessions[0]!.model.id },
+    },
   })
 
   const [home, away] = sessions.map((session) => sessionHref(session.id))
   const composer = page.locator('[data-component="composer"]')
   const modelControl = composer.locator('[data-action="composer-model"]')
   const variant = composer.getByRole("button", { name: "Choose model variant", exact: true })
-  await expect(modelControl).toHaveText("Home session")
+  await expect(modelControl).toHaveText("Local / Home session")
   await page.locator(`[data-titlebar-tab-link][href="${away}"]`).click()
   await expect(page).toHaveURL(away!)
-  await expect(modelControl).toHaveText("Away session")
+  await expect(modelControl).toHaveText("Local / Away session")
   await expect(variant).toHaveText("balanced")
   await variant.click()
   await page.getByRole("menuitemradio", { name: "high", exact: true }).click()
   await expect(variant).toHaveText("high")
 
   await page.reload()
-  await expect(modelControl).toHaveText("Away session")
+  await expect(modelControl).toHaveText("Local / Away session")
   await expect(variant).toHaveText("high")
 
   await page.locator(`[data-titlebar-tab-link][href="${home}"]`).click()
   await expect(page).toHaveURL(home!)
-  await expect(modelControl).toHaveText("Home session")
+  await expect(modelControl).toHaveText("Local / Home session")
   await expect(variant).toHaveText("balanced")
 })

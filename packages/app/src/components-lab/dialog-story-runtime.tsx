@@ -113,8 +113,8 @@ export const STORY_PROJECTS = [
 ]
 
 const defaultProviders = [
-  { id: "opencode-go", name: "OpenCode Go", package: "opencode-go", activation: "enabled" },
-  { id: "opencode", name: "OpenCode Zen", package: "opencode", activation: "enabled" },
+  { id: "openrouter", name: "OpenRouter", package: "openrouter", activation: "enabled" },
+  { id: "ollama", name: "Ollama", package: "ollama", activation: "enabled" },
   { id: "anthropic", name: "Anthropic", package: "anthropic", activation: "enabled" },
 ]
 
@@ -149,7 +149,7 @@ function modelRecord(input: {
 const defaultModels = [
   modelRecord({
     id: "deepseek-v4-pro",
-    providerID: "opencode-go",
+    providerID: "openrouter",
     name: "DeepSeek V4 Pro",
     inputCost: 1,
     outputCost: 3,
@@ -157,7 +157,7 @@ const defaultModels = [
   }),
   modelRecord({
     id: "glm-5",
-    providerID: "opencode-go",
+    providerID: "openrouter",
     name: "GLM-5",
     inputCost: 1,
     outputCost: 2,
@@ -165,22 +165,22 @@ const defaultModels = [
   }),
   modelRecord({
     id: "kimi-k3",
-    providerID: "opencode-go",
+    providerID: "openrouter",
     name: "Kimi K3",
     inputCost: 1,
     outputCost: 3,
     variants: ["fast", "thinking"],
   }),
   modelRecord({
-    id: "big-pickle",
-    providerID: "opencode",
-    name: "Big Pickle",
+    id: "llama-4-scout",
+    providerID: "ollama",
+    name: "Llama 4 Scout",
     inputCost: 0,
     outputCost: 0,
   }),
   modelRecord({
     id: "claude-opus-5-5",
-    providerID: "opencode",
+    providerID: "anthropic",
     name: "Claude Opus 5.5",
     inputCost: 5,
     outputCost: 25,
@@ -188,7 +188,7 @@ const defaultModels = [
   }),
   modelRecord({
     id: "gpt-5-6",
-    providerID: "opencode",
+    providerID: "openrouter",
     name: "GPT-5.6",
     inputCost: 2.5,
     outputCost: 10,
@@ -217,21 +217,6 @@ const integrations = [
         label: "Work account",
       },
     ],
-  },
-  {
-    id: "opencode",
-    name: "OpenCode Console",
-    methods: [
-      { type: "oauth", id: "console", label: "OpenCode Console account" },
-      { type: "key", label: "API key (service account)" },
-    ],
-    connections: [],
-  },
-  {
-    id: "opencode-go",
-    name: "OpenCode Go",
-    methods: [{ type: "oauth", id: "go", label: "Sign in with OpenCode" }],
-    connections: [],
   },
   {
     id: "openai",

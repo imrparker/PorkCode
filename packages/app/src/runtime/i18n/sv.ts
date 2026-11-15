@@ -327,9 +327,6 @@ export const dict = {
   "dialog.provider.empty": "Inga leverantörer hittades",
   "dialog.provider.group.popular": "Populära",
   "dialog.provider.tag.recommended": "Rekommenderad",
-  "dialog.provider.opencode.note": "Kurerade modeller inklusive Claude, GPT, Gemini och mer",
-  "dialog.provider.opencode.tagline": "Pålitliga optimerade modeller",
-  "dialog.provider.opencodeGo.tagline": "Lågprisprenumeration för alla",
   "dialog.provider.copilot.note": "AI-modeller för kodningshjälp via GitHub Copilot",
   "dialog.provider.openai.note": "GPT-modeller för snabba, kapabla allmänna AI-uppgifter",
   "dialog.provider.google.note": "Gemini-modeller för snabba, strukturerade svar",
@@ -440,7 +437,6 @@ export const dict = {
   "dialog.project.edit.color.select": "Välj färgen {{color}}",
   "dialog.project.edit.worktree.startup": "Startskript för arbetsyta",
   "dialog.project.edit.worktree.startup.placeholder": "t.ex. bun install",
-  "dialog.usageExceeded.dontShowAgain": "Visa inte igen",
 
   "toast.permissions.autoaccept.on.title": "Autoaccepterar behörigheter",
   "toast.permissions.autoaccept.on.description": "Behörighetsförfrågningar kommer att godkännas automatiskt",

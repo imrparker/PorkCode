@@ -1468,50 +1468,51 @@ for (const row of ["configured", "disabled", "failure"] as const) {
   })
 }
 
-// Zen and the Console account share the id `opencode`: the provider comes from models.dev, the
-// integration carries the account sign-in. The free catalog only counts as connected once a real
-// credential exists, and the row's tag reports which kind of credential it is.
+// A connected provider's row tags the kind of credential behind it; a provider with no
+// credential and nothing in config is not listed as connected at all.
 for (const row of [
-  { name: "a fresh install shows no connected providers", paid: false, connections: [], badge: undefined },
+  { name: "a fresh install shows no connected providers", connections: [], badge: undefined },
   {
-    name: "a stored Zen API key connects the provider with its method",
-    paid: true,
+    name: "a stored API key connects the provider with its method",
     connections: [{ type: "credential", id: "cred_v1", label: "API key", method: "key" }],
     badge: "API key",
   },
   {
-    name: "a Console account connects the provider as an account",
-    paid: true,
+    name: "an OAuth sign-in connects the provider as an account",
     connections: [{ type: "credential", id: "cred_account", label: "Clara Team", method: "oauth" }],
     badge: "Account",
   },
 ]) {
   test(`providers: ${row.name}`, async ({ page }) => {
+    const hasCredential = row.connections.length > 0
+
     const { settings } = await open(page, {
       provider: {
-        all: [
-          {
-            id: "opencode",
-            name: "OpenCode Zen",
-            models: {
-              "claude-sonnet-4-6": {
-                id: "claude-sonnet-4-6",
-                name: "Claude Sonnet 4.6",
-                cost: { input: row.paid ? 3 : 0, output: 0 },
+        all: hasCredential
+          ? [
+              {
+                id: "openai",
+                name: "OpenAI",
+                models: {
+                  "gpt-5": {
+                    id: "gpt-5",
+                    name: "GPT-5",
+                    cost: { input: 3, output: 0 },
+                  },
+                },
               },
-            },
-          },
-        ],
-        connected: ["opencode"],
+            ]
+          : [],
+        connected: hasCredential ? ["openai"] : [],
         default: {},
       },
       integrations: [
         {
-          id: "opencode",
-          name: "OpenCode Console",
+          id: "openai",
+          name: "OpenAI",
           methods: [
-            { id: "device", type: "oauth", label: "OpenCode Console account" },
-            { type: "key", label: "API key (service account)" },
+            { id: "device", type: "oauth", label: "Sign in" },
+            { type: "key", label: "API key" },
           ],
           connections: row.connections,
         },
@@ -1528,8 +1529,8 @@ for (const row of [
       return
     }
 
-    const zen = connected.locator(".settings-provider-row", { hasText: "OpenCode Zen" })
-    await expect(zen.locator('[data-component="tag"]')).toHaveText(row.badge)
+    const openai = connected.locator(".settings-provider-row", { hasText: "OpenAI" })
+    await expect(openai.locator('[data-component="tag"]')).toHaveText(row.badge)
   })
 }
 
@@ -1583,6 +1584,7 @@ test("providers: a configured local backend shows its saved server address on th
 
 test("providers: editing a local backend saves its server address and API key", async ({ page }) => {
   const keys: string[] = []
+
   const { settings } = await open(page, {
     provider: { all: [], connected: [], default: {} },
     onConnectKey: (input) => {
@@ -1591,9 +1593,11 @@ test("providers: editing a local backend saves its server address and API key", 
   })
 
   await settings.getByRole("tab", { name: "Providers", exact: true }).click()
+
   const row = settings
     .locator('[data-component="local-backends-section"]')
     .locator(".settings-provider-row", { hasText: "LM Studio" })
+
   await expect(row).toContainText("http://127.0.0.1:1234")
 
   await row.getByRole("button", { name: "Edit", exact: true }).click()
@@ -1612,10 +1616,13 @@ test("providers: editing a local backend saves its server address and API key", 
     (response) =>
       response.request().method() === "PATCH" && new URL(response.url()).pathname === "/api/experimental/config",
   )
+
   const connectKey = page.waitForResponse((response) => {
     const path = new URL(response.url()).pathname
+
     return response.request().method() === "POST" && path === "/api/integration/lmstudio/connect/key"
   })
+
   await url.fill("http://192.168.0.40:1234/v1")
   await dialog.getByLabel("API key").fill("lm-test-key")
   await dialog.getByRole("button", { name: "Save", exact: true }).click()
@@ -1626,37 +1633,6 @@ test("providers: editing a local backend saves its server address and API key", 
   expect((await connectKey).request().postDataJSON()).toEqual({ key: "lm-test-key" })
   expect(keys).toEqual(["lmstudio"])
   await expect(dialog).toHaveCount(0)
-})
-
-const consoleIntegrations = [
-  {
-    id: "opencode",
-    name: "OpenCode Console",
-    methods: [
-      { id: "device", type: "oauth", label: "OpenCode Console account" },
-      { type: "key", label: "API key (service account)" },
-    ],
-    connections: [],
-  },
-  { id: "opencode-go", name: "OpenCode Go", methods: [{ type: "key" }], connections: [] },
-]
-
-test("providers: OpenCode Go connects with its own methods, not the Console sign-in", async ({ page }) => {
-  const attempts: string[] = []
-
-  const dialog = await openIntegrationsDialog(page, {
-    integrations: consoleIntegrations,
-    onIntegrationOAuth: (input) => {
-      attempts.push(input.integrationID)
-
-      return { url: "https://auth.example.test/device?user_code=ABCD-EFGH" }
-    },
-  })
-
-  await dialog.locator('[data-provider-id="opencode-go"]').click()
-  const connect = page.getByRole("dialog", { name: "Connect OpenCode Go", exact: true })
-  await expect(connect.getByPlaceholder("API key")).toBeVisible()
-  expect(attempts).toEqual([])
 })
 
 test("providers: a rejected API key shows the server error and can be sent again", async ({ page }) => {
@@ -1828,12 +1804,11 @@ test("providers: adding an account starts a lone method once", async ({ page, co
 
   const dialog = await openIntegrationsDialog(page, {
     integrations: [
-      ...consoleIntegrations.filter((integration) => integration.id !== "opencode-go"),
       {
-        id: "opencode-go",
-        name: "OpenCode Go",
+        id: "openrouter",
+        name: "OpenRouter",
         methods: [{ type: "key" }],
-        connections: [{ type: "credential", id: "cred_go", label: "Go key", method: "key" }],
+        connections: [{ type: "credential", id: "cred_or", label: "Primary key", method: "key" }],
       },
       {
         id: "github-copilot",
@@ -1849,13 +1824,13 @@ test("providers: adding an account starts a lone method once", async ({ page, co
     },
   })
 
-  await dialog.locator('[data-provider-id="opencode-go"]').click()
+  await dialog.locator('[data-provider-id="openrouter"]').click()
   await dialog.getByRole("button", { name: "Add account", exact: true }).click()
   await expect(dialog.getByPlaceholder("API key")).toBeVisible()
   expect(attempts).toEqual([])
 
   await dialog.getByRole("button", { name: "Navigate back", exact: true }).click()
-  await expect(dialog.getByRole("radio", { name: "Go key", exact: true })).toBeVisible()
+  await expect(dialog.getByRole("radio", { name: "Primary key", exact: true })).toBeVisible()
   await dialog.getByRole("button", { name: "Integrations", exact: true }).click()
   await dialog.locator('[data-provider-id="github-copilot"]').click()
   const popup = page.waitForEvent("popup")

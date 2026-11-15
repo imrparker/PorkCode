@@ -13,7 +13,7 @@ describe("SessionError", () => {
       { type: "provider.rate-limit", message: "Slow down" },
       { type: "provider.rate-limit", message: "Slow down", status: 429, response: { body: '{"error":{}}' } },
       { type: "provider.auth", message: "Authentication failed" },
-      { type: "provider.free-limit", message: "Free usage limit reached", status: 429, retryAfterMs: 3_600_000 },
+      { type: "provider.quota", message: "Quota exceeded", status: 429, retryAfterMs: 3_600_000 },
       { type: "provider.future-condition", message: "A future provider failure" },
       { type: "unknown", message: "Unexpected" },
     ]

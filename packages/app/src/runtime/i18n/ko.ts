@@ -67,9 +67,6 @@ export const dict = {
   "dialog.provider.empty": "공급자 없음",
   "dialog.provider.group.popular": "인기",
   "dialog.provider.tag.recommended": "추천",
-  "dialog.provider.opencode.note": "Claude, GPT, Gemini 등을 포함한 엄선된 모델",
-  "dialog.provider.opencode.tagline": "신뢰할 수 있는 최적화 모델",
-  "dialog.provider.opencodeGo.tagline": "모두를 위한 저렴한 구독",
   "dialog.provider.anthropic.note": "API 키로 Claude 모델에 직접 액세스",
   "dialog.provider.copilot.note": "GitHub Copilot을 통한 코딩 지원용 AI 모델",
   "dialog.provider.openai.note": "빠르고 강력한 범용 AI 작업을 위한 GPT 모델",
@@ -176,7 +173,6 @@ export const dict = {
   "dialog.project.edit.color.select": "{{color}} 색상 선택",
   "dialog.project.edit.worktree.startup": "작업 공간 시작 스크립트",
   "dialog.project.edit.worktree.startup.placeholder": "예: bun install",
-  "dialog.usageExceeded.dontShowAgain": "다시 표시하지 않기",
 
   "toast.permissions.autoaccept.on.title": "권한 자동 수락 중",
   "toast.permissions.autoaccept.on.description": "권한 요청이 자동으로 승인됩니다",

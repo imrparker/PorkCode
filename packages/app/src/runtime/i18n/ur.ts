@@ -136,9 +136,6 @@ export const dict = {
   "dialog.provider.empty": "کوئی فراہم کنندہ نہیں ملا",
   "dialog.provider.group.popular": "مقبول",
   "dialog.provider.tag.recommended": "تجویز کردہ",
-  "dialog.provider.opencode.note": "کیوریٹ شدہ ماڈلز بشمول Claude، GPT، Gemini اور مزید",
-  "dialog.provider.opencode.tagline": "قابل اعتماد آپٹمائزڈ ماڈلز",
-  "dialog.provider.opencodeGo.tagline": "سب کے لیے کم لاگت کی رکنیت",
   "dialog.provider.copilot.note": "GitHub Copilot کے ذریعے کوڈنگ امداد کے لیے AI ماڈلز",
   "dialog.provider.openai.note": "تیز رفتار اور مؤثر عمومی AI کاموں کے لیے GPT ماڈلز",
   "dialog.provider.google.note": "تیز، منظم جوابات کے لیے Gemini ماڈل",
@@ -250,7 +247,6 @@ export const dict = {
   "dialog.project.edit.color.select": "\u2068{{color}}\u2069 رنگ منتخب کریں۔",
   "dialog.project.edit.worktree.startup": "ورک اسپیس اسٹارٹ اپ اسکرپٹ",
   "dialog.project.edit.worktree.startup.placeholder": "جیسے bun install",
-  "dialog.usageExceeded.dontShowAgain": "دوبارہ نہ دکھائیں",
 
   "toast.permissions.autoaccept.on.title": "خودکار طور پر قبول کرنے کی اجازتیں۔",
   "toast.permissions.autoaccept.on.description": "اجازت کی درخواستیں خود بخود منظور ہو جائیں گی۔",

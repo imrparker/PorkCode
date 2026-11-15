@@ -65,12 +65,6 @@ export const dict = {
   "ui.sessionTurn.retry.attempt": "përpjekje #{{attempt}}",
   "ui.sessionTurn.retry.attemptLine": "{{line}} - provoni #{{attempt}}",
   "ui.sessionTurn.retry.geminiHot": "Gemini është i mbingarkuar për momentin",
-  "ui.sessionTurn.error.freeUsageExceeded": "Përdorimi falas u tejkalua",
-  "ui.sessionTurn.error.addCredits": "Shto kredite",
-  "dialog.usageExceeded.freeTier.title": "U arrit kufiri falas",
-  "dialog.usageExceeded.freeTier.description":
-    "Abonohu në PorkCode Go për 10 dollarë/muaj dhe përfito qasje të besueshme në modelet më të mira me burim të hapur.",
-  "dialog.usageExceeded.freeTier.actionLabel": "Abonohu",
   "ui.sessionTurn.status.delegating": "Delegimi i punës",
   "ui.sessionTurn.status.planning": "Planifikimi i hapave të ardhshëm",
   "ui.sessionTurn.status.gatheringContext": "duke eksploruar",

@@ -1,7 +1,5 @@
 import { useDialog } from "@opencode/ui/context/dialog"
 import { createEffect, createMemo, createSignal, on, onCleanup, untrack } from "solid-js"
-import { consoleCatalogLoaded, consoleProviderGroup } from "@/providers/catalog/console"
-import { createConsoleCatalogSettler } from "@/providers/catalog/console-settle"
 import { useIntegrations } from "@/providers/catalog/integrations"
 import { useProviders } from "@/providers/catalog/providers"
 import type { ModelSelection } from "@/providers/models/selection"
@@ -18,7 +16,6 @@ import { showToast } from "@/shell/notifications/toast"
 import { useTabs } from "@/shell/tabs/tabs"
 import {
   CLAUDE_AGENT_INTEGRATION,
-  CONSOLE_INTEGRATION,
   createProviderDialogState,
   selectProviderDialogView,
   transitionProviderDialog,
@@ -112,27 +109,11 @@ export function createProviderDialogController(options: {
       .filter((group) => group.models.length > 0)
   })
 
-  const managedProviders = createMemo(() =>
-    provider() === CONSOLE_INTEGRATION ? consoleProviderGroup(connectionProviders()) : undefined,
-  )
-
   const firstModel = () => {
     const model = connectionGroups()[0]?.models[0]
 
     return model ? modelKey(model) : undefined
   }
-
-  const settler = createConsoleCatalogSettler({
-    isLoaded: () => consoleCatalogLoaded(connectionProviders()),
-    sync: () => {
-      data.location.provider.invalidate(location)
-      data.location.model.invalidate(location)
-
-      return Promise.all([data.location.provider.sync(location), data.location.model.sync(location)]).then(
-        () => undefined,
-      )
-    },
-  })
 
   // Effects run in order and one that throws cannot stop the events queued after it.
   const dispatch = (event: ProviderDialogEvent) => {
@@ -165,7 +146,7 @@ export function createProviderDialogController(options: {
       const account = serverAccounts(effect.provider).find((item) => item.id === effect.accountID)
       const name = providerName()
       void Promise.try(
-        () => account && accountActions.activate({ integrationID: effect.provider, provider: name, account }),
+        () => account && accountActions.activate({ provider: name, account }),
       )
         .catch(() => undefined)
         .then(() => dispatch({ type: "account.activate.settled", session: effect.session, attempt: effect.attempt }))
@@ -178,8 +159,7 @@ export function createProviderDialogController(options: {
       const name = providerName()
       void Promise.try(
         () =>
-          account &&
-          accountActions.remove({ integrationID: effect.provider, provider: name, account, final: effect.final }),
+          account && accountActions.remove({ provider: name, account, final: effect.final }),
       )
         .catch(() => undefined)
         .then(() => dispatch({ type: "account.remove.settled", session: effect.session, attempt: effect.attempt }))
@@ -234,8 +214,6 @@ export function createProviderDialogController(options: {
       return
     }
 
-    if (effect.type === "settle.cancel") return settler.cancel()
-
     if (effect.type === "models.reveal")
       return global.models.show(
         connectionModels().map((model) => ({ providerID: model.providerID, modelID: model.id })),
@@ -274,10 +252,9 @@ export function createProviderDialogController(options: {
   const runConnect = (input: Extract<ProviderDialogEffect, { type: "connect.effect" }>) => {
     const effect = input.effect
     const integrationID = input.provider
-    const isConsole = integrationID === CONSOLE_INTEGRATION
 
-    const result = (event: ProviderConnectEvent, catalog?: { pending: boolean; firstModel: string | undefined }) =>
-      dispatch({ type: "connect.result", session: input.session, provider: integrationID, event, catalog })
+    const result = (event: ProviderConnectEvent, firstModel?: string) =>
+      dispatch({ type: "connect.result", session: input.session, provider: integrationID, event, firstModel })
 
     if (effect.type === "load") {
       void serverSDK.api.integration
@@ -346,7 +323,7 @@ export function createProviderDialogController(options: {
       pollTimer = undefined
 
       if (!effect.delay) return poll(effect, integrationID, result)
-      const interval = effect.signIn.kind === "command" ? 500 : isConsole ? 500 : 1_000
+      const interval = effect.signIn.kind === "command" ? 500 : 1_000
       pollTimer = setTimeout(() => poll(effect, integrationID, result), interval)
 
       return
@@ -399,7 +376,7 @@ export function createProviderDialogController(options: {
 
     if (effect.type === "sync") return void sync()
 
-    void refresh(effect, integrationID, result)
+    void refresh(effect, result)
   }
 
   const start = (
@@ -407,7 +384,6 @@ export function createProviderDialogController(options: {
     integrationID: string,
     result: (event: ProviderConnectEvent) => void,
   ) => {
-    const isConsole = integrationID === CONSOLE_INTEGRATION
     const failed = (error: string) => result({ type: "start.failed", attempt: effect.attempt, error })
 
     if (effect.method.type === "command") {
@@ -431,17 +407,8 @@ export function createProviderDialogController(options: {
     }
 
     void serverSDK.api.integration.oauth.connect(input).then(
-      (response) => {
-        if (!isConsole || platform.platform !== "desktop")
-          return result({ type: "oauth.started", attempt: effect.attempt, authorization: response.data })
-        const url = new URL(response.data.url)
-        url.searchParams.set("client_id", "opencode-desktop")
-        // Lets the Console return link focus the window that started the sign-in.
-        url.searchParams.set("return_window", platform.windowID)
-        result({ type: "oauth.started", attempt: effect.attempt, authorization: { ...response.data, url: url.href } })
-      },
-      (error) =>
-        failed(isConsole ? language.t("provider.connect.console.startFailed") : formatServerError(error, language.t)),
+      (response) => result({ type: "oauth.started", attempt: effect.attempt, authorization: response.data }),
+      (error) => failed(formatServerError(error, language.t)),
     )
   }
 
@@ -450,8 +417,6 @@ export function createProviderDialogController(options: {
     integrationID: string,
     result: (event: ProviderConnectEvent) => void,
   ) => {
-    const isConsole = integrationID === CONSOLE_INTEGRATION
-
     const polled = (outcome: Extract<ProviderConnectEvent, { type: "polled" }>["outcome"]) =>
       result({ type: "polled", attempt: effect.attempt, outcome })
 
@@ -488,28 +453,11 @@ export function createProviderDialogController(options: {
           if (status.status === "complete") return polled({ status: "complete" })
 
           if (status.status === "expired")
-            return polled({
-              status: "failed",
-              error: language.t(isConsole ? "provider.connect.console.expired" : "provider.connect.oauth.expired"),
-            })
+            return polled({ status: "failed", error: language.t("provider.connect.oauth.expired") })
 
-          polled({
-            status: "failed",
-            error:
-              isConsole && status.message.includes("expired_token")
-                ? language.t("provider.connect.console.expired")
-                : isConsole && status.message.includes("access_denied")
-                  ? language.t("provider.connect.console.denied")
-                  : status.message,
-          })
+          polled({ status: "failed", error: status.message })
         },
-        (error) =>
-          polled({
-            status: "unreachable",
-            error: isConsole
-              ? language.t("provider.connect.console.statusFailed")
-              : formatServerError(error, language.t),
-          }),
+        (error) => polled({ status: "unreachable", error: formatServerError(error, language.t) }),
       )
   }
 
@@ -527,36 +475,14 @@ export function createProviderDialogController(options: {
       .catch(() => false)
   }
 
-  // The server loads the Console workspace's providers after the grant lands, so the first refresh
-  // can still show only the free catalog. Wait briefly for the workspace providers before moving on.
+  // The server loads a connection's providers and models after the credential lands; refresh once
+  // and continue with whatever models appeared.
   const refresh = async (
     effect: Extract<ProviderConnectEffect, { type: "refresh" }>,
-    integrationID: string,
-    result: (event: ProviderConnectEvent, catalog?: { pending: boolean; firstModel: string | undefined }) => void,
+    result: (event: ProviderConnectEvent, firstModel?: string) => void,
   ) => {
-    const refreshed = await sync()
-
-    if (integrationID !== CONSOLE_INTEGRATION)
-      return result(
-        { type: "refresh.succeeded", attempt: effect.attempt },
-        { pending: false, firstModel: firstModel() },
-      )
-
-    if (!refreshed)
-      return result({
-        type: "refresh.failed",
-        attempt: effect.attempt,
-        error: language.t("provider.connect.console.refreshFailed"),
-      })
-
-    const outcome = effect.method.type === "key" ? "loaded" : await settler.settle()
-
-    // Back or closing the dialog already moved on and stopped the wait.
-    if (outcome === "cancelled") return
-    result(
-      { type: "refresh.succeeded", attempt: effect.attempt },
-      { pending: outcome === "timed-out", firstModel: firstModel() },
-    )
+    await sync()
+    result({ type: "refresh.succeeded", attempt: effect.attempt }, firstModel())
   }
 
   const claudePhase = createMemo(() => {
@@ -611,7 +537,6 @@ export function createProviderDialogController(options: {
     providerName,
     connectionModels,
     connectionGroups,
-    managedProviders,
     claudeProblem,
     // Sorted by name so rows stay put when the server moves the active account first.
     accounts: () => {
@@ -635,23 +560,6 @@ export function createProviderDialogController(options: {
 
       if (account.status) return dispatch({ type: "account.add" })
       dispatch({ type: "account.activate.requested", accountID: account.id })
-    },
-    copyLink: async () => {
-      const state = untrack(machine)
-      const authorization = untrack(view).connect?.authorization
-
-      if (!authorization) return
-
-      const copied = await Promise.resolve()
-        .then(() =>
-          platform.writeClipboardText
-            ? platform.writeClipboardText(authorization.url)
-            : navigator.clipboard.writeText(authorization.url),
-        )
-        .then(() => true)
-        .catch(() => false)
-
-      dispatch({ type: "link.copied", session: state.session, attemptID: authorization.attemptID, copied })
     },
   }
 }

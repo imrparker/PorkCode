@@ -1158,7 +1158,7 @@ function App() {
         name: "docs.open",
         title: "Open docs",
         run: () => {
-          openUrl("https://opencode.ai/docs").catch(() => {})
+          openUrl("https://github.com/imrparker/PorkCode").catch(() => {})
           dialog.clear()
         },
         category: "System",

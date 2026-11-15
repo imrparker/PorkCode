@@ -1317,31 +1317,6 @@ export function createSessionTimelineRowRenderer(input: {
       return value
     }
 
-    const usageLimit = createMemo(() => {
-      const kind = current().kind
-
-      if (kind !== "free-limit" && kind !== "go-limit") return
-
-      const keys =
-        kind === "go-limit"
-          ? ({ title: "ui.sessionTurn.goLimit.title", lineReset: "ui.sessionTurn.goLimit.lineReset" } as const)
-          : ({ title: "ui.sessionTurn.freeLimit.title", lineReset: "ui.sessionTurn.freeLimit.lineReset" } as const)
-
-      const at = current().resetAt
-
-      if (at === undefined || !Number.isFinite(at) || Number.isNaN(new Date(at).getTime())) return i18n.t(keys.title)
-
-      const now = Date.now()
-      const sameDay = new Date(at).toDateString() === new Date(now).toDateString() && at - now < 86_400_000
-
-      const time = new Intl.DateTimeFormat(
-        i18n.locale(),
-        sameDay ? { timeStyle: "short" } : { dateStyle: "medium", timeStyle: "short" },
-      ).format(at)
-
-      return i18n.t(keys.lineReset, { time })
-    })
-
     // A budget pauses paid models, or only the ones it covers, until it resets at the start of a month.
     const budgetLimit = createMemo(() => {
       const kind = current().kind
@@ -1401,16 +1376,6 @@ export function createSessionTimelineRowRenderer(input: {
                       </>
                     )}
                   </Show>
-                </div>
-              )}
-            </Match>
-            <Match when={usageLimit()}>
-              {(text) => (
-                <div
-                  role="status"
-                  class="text-[13px] font-[440] leading-text-compact tracking-[-0.04px] text-v2-text-text-muted"
-                >
-                  {text()}
                 </div>
               )}
             </Match>

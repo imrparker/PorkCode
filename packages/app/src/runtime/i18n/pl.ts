@@ -133,9 +133,6 @@ export const dict = {
   "dialog.provider.empty": "Nie znaleziono dostawców",
   "dialog.provider.group.popular": "Popularne",
   "dialog.provider.tag.recommended": "Zalecane",
-  "dialog.provider.opencode.note": "Starannie dobrane modele, w tym Claude, GPT, Gemini i inne",
-  "dialog.provider.opencode.tagline": "Niezawodne, zoptymalizowane modele",
-  "dialog.provider.opencodeGo.tagline": "Niedroga subskrypcja dla każdego",
   "dialog.provider.copilot.note": "Modele AI do pomocy w kodowaniu przez GitHub Copilot",
   "dialog.provider.openai.note": "Modele GPT do szybkich i wszechstronnych zadań AI",
   "dialog.provider.google.note": "Modele Gemini do szybkich i ustrukturyzowanych odpowiedzi",
@@ -244,7 +241,6 @@ export const dict = {
   "dialog.project.edit.color.select": "Wybierz kolor {{color}}",
   "dialog.project.edit.worktree.startup": "Skrypt uruchamiania przestrzeni roboczej",
   "dialog.project.edit.worktree.startup.placeholder": "np. bun install",
-  "dialog.usageExceeded.dontShowAgain": "Nie pokazuj ponownie",
 
   "toast.permissions.autoaccept.on.title": "Automatyczne akceptowanie uprawnień",
   "toast.permissions.autoaccept.on.description": "Żądania uprawnień będą automatycznie zatwierdzane",

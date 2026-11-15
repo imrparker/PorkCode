@@ -98,13 +98,6 @@ export const dict = {
   "ui.sessionTurn.retry.attempt": "спроба № {{attempt}}",
   "ui.sessionTurn.retry.attemptLine": "{{line}} — спроба № {{attempt}}",
   "ui.sessionTurn.retry.geminiHot": "Gemini зараз перевантажений",
-  "ui.sessionTurn.error.freeUsageExceeded": "Перевищено ліміт безкоштовного використання",
-  "ui.sessionTurn.error.addCredits": "Додати кредити",
-
-  "dialog.usageExceeded.freeTier.title": "Безкоштовний ліміт вичерпано",
-  "dialog.usageExceeded.freeTier.description":
-    "Підпишіться на PorkCode Go за $10 на місяць для надійного доступу до найкращих моделей із відкритим кодом.",
-  "dialog.usageExceeded.freeTier.actionLabel": "Підписатися",
 
   "ui.sessionTurn.status.delegating": "Делегування роботи",
   "ui.sessionTurn.status.planning": "Планування наступних кроків",

@@ -1,16 +1,10 @@
 import { expect, test } from "bun:test"
 import { composerModelLabelKey, composerModelLabels, composerProviderName } from "./model-label"
 
-function provider(
-  id: string,
-  name: string,
-  options: { canonical?: string; integrationID?: string; models?: readonly (readonly [string, string])[] } = {},
-) {
+function provider(id: string, name: string, options: { models?: readonly (readonly [string, string])[] } = {}) {
   return {
     id,
     name,
-    canonical: options.canonical,
-    integrationID: options.integrationID,
     models: Object.fromEntries((options.models ?? [["m", "Model"]]).map(([id, name]) => [id, { id, name }])),
   }
 }
@@ -23,60 +17,18 @@ function label(labels: ReturnType<typeof composerModelLabels>, providerID: strin
   return labels.get(composerModelLabelKey(providerID, modelID))
 }
 
-const root = provider("opencode", "Anomaly / PorkCode", { integrationID: "opencode", models: [] })
+test("names providers from the catalog and falls back to the id", () => {
+  const all = catalog(provider("openai", "OpenAI"))
 
-const managed = provider("console-openai", "Anomaly / OpenAI", { integrationID: "opencode", canonical: "openai" })
-
-test.each([
-  provider("opencode", "Anomaly / PorkCode", { integrationID: "opencode" }),
-  provider("opencode", "PorkCode"),
-])("omits native provider $name", (native) => {
-  const all = catalog(native)
-
-  expect(composerProviderName("opencode", all)).toBeUndefined()
-  expect(label(composerModelLabels(all), "opencode", "m")).toEqual({ provider: undefined, model: "Model" })
-})
-
-test.each([
-  { direct: provider("openai", "Renamed", { models: [] }), connected: [], expected: "OpenAI" },
-  { direct: provider("openai", "Renamed", { models: [] }), connected: ["openai"], expected: "PorkCode / OpenAI" },
-  {
-    direct: provider("account", "Owls", { integrationID: "openai", models: [] }),
-    connected: ["account"],
-    expected: "PorkCode / OpenAI",
-  },
-  {
-    direct: provider("proxy", "OpenAI", { canonical: "openai", models: [] }),
-    connected: ["proxy"],
-    expected: "OpenAI",
-  },
-  { direct: provider("azure", "Azure", { canonical: "openai" }), connected: ["azure"], expected: "OpenAI" },
-])("matches connected stable identities, not names or canonical proxies: $direct.id / $connected", (row) => {
-  const all = catalog(root, managed, row.direct)
-
-  expect(composerProviderName(managed.id, all, [managed.id, ...row.connected])).toBe(row.expected)
-  expect(label(composerModelLabels(all, [managed.id, ...row.connected]), managed.id, "m")).toEqual({
-    provider: row.expected,
-    model: "Model",
-  })
+  expect(composerProviderName("openai", all)).toBe("OpenAI")
+  expect(composerProviderName("ghost", all)).toBe("ghost")
 })
 
 test("only connected providers get labels", () => {
-  const labels = composerModelLabels(catalog(root, managed, provider("openai", "OpenAI")), [managed.id])
+  const labels = composerModelLabels(catalog(provider("a", "Alpha"), provider("b", "Beta")), ["a"])
 
-  expect(label(labels, managed.id, "m")).toEqual({ provider: "OpenAI", model: "Model" })
-  expect(label(labels, "openai", "m")).toBeUndefined()
-})
-
-test("unknown managed routes do not infer identity from console prefixes or display names", () => {
-  const all = catalog(
-    root,
-    provider("console-openai", "Anomaly / OpenAI", { integrationID: "opencode" }),
-    provider("openai", "OpenAI"),
-  )
-
-  expect(composerProviderName("console-openai", all)).toBe("OpenAI")
-  expect(label(composerModelLabels(all), "console-openai", "m")).toEqual({ provider: "console-openai", model: "Model" })
+  expect(label(labels, "a", "m")).toEqual({ provider: "Alpha", model: "Model" })
+  expect(label(labels, "b", "m")).toBeUndefined()
 })
 
 test("duplicate provider labels use raw IDs only for overlapping model labels", () => {

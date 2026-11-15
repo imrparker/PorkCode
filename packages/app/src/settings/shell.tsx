@@ -162,9 +162,8 @@ function RootSettings() {
   const surface = useSettingsSurface()
   const inventory = useSettingsServers()
 
-  const [state, setState] = createStore<{ worktreeFilterReset: number; modelProvider: string | undefined }>({
+  const [state, setState] = createStore<{ worktreeFilterReset: number }>({
     worktreeFilterReset: 0,
-    modelProvider: undefined,
   })
 
   const multiple = createMemo(() => inventory().length > 1)
@@ -267,21 +266,12 @@ function RootSettings() {
         {(server) => (
           <SettingsServerDataScope server={server}>
             <Tabs.Content value="providers" class="settings-panel">
-              <SettingsProviders
-                directory={undefined}
-                headerAction={<SettingsServerSwitcher />}
-                onSelectProvider={(providerID) => {
-                  setState("modelProvider", providerID)
-                  surface.select("models")
-                }}
-              />
+              <SettingsProviders directory={undefined} headerAction={<SettingsServerSwitcher />} />
             </Tabs.Content>
             <Tabs.Content value="models" class="settings-panel">
               <SettingsModels
                 active={surface.view().tab === "models"}
-                provider={state.modelProvider}
                 headerAction={<SettingsServerSwitcher />}
-                onConsumeTarget={() => setState("modelProvider", undefined)}
               />
             </Tabs.Content>
             <Tabs.Content value="extensions" class="settings-panel">

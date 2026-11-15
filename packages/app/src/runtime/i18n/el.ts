@@ -129,9 +129,6 @@ export const dict = {
   "dialog.provider.empty": "Δεν βρέθηκαν πάροχοι",
   "dialog.provider.group.popular": "Δημοφιλή",
   "dialog.provider.tag.recommended": "Συνιστάται",
-  "dialog.provider.opencode.note": "Επιμελημένα μοντέλα συμπεριλαμβανομένων των Claude, GPT, Gemini και άλλων",
-  "dialog.provider.opencode.tagline": "Αξιόπιστα βελτιστοποιημένα μοντέλα",
-  "dialog.provider.opencodeGo.tagline": "Συνδρομή χαμηλού κόστους για όλους",
   "dialog.provider.copilot.note": "Μοντέλα AI για βοήθεια κωδικοποίησης μέσω GitHub Copilot",
   "dialog.provider.openai.note": "GPT μοντέλα για γρήγορες, ικανές εργασίες γενικής τεχνητής νοημοσύνης",
   "dialog.provider.google.note": "Gemini μοντέλα για γρήγορες, δομημένες απαντήσεις",
@@ -577,7 +574,6 @@ export const dict = {
   "workspace.status.dirty": "Εντοπίστηκαν μη συγχωνευμένες αλλαγές σε αυτόν τον χώρο εργασίας.",
   "workspace.delete.confirm": 'Διαγραφή χώρου εργασίας "{{name}}";',
   "workspace.delete.button": "Διαγραφή χώρου εργασίας",
-  "dialog.usageExceeded.dontShowAgain": "Να μην εμφανιστεί ξανά",
   "provider.disconnect.toast.noCredentials.description":
     "Δεν βρέθηκαν διαπιστευτήρια που μπορούν να αφαιρεθούν για τον πάροχο {{provider}}.",
   "provider.disconnect.toast.failed.description": "Αποτυχία αποσύνδεσης του παρόχου {{provider}}.",

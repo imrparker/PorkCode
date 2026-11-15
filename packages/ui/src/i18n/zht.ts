@@ -72,12 +72,6 @@ export const dict = {
   "ui.sessionTurn.retry.attempt": "第 {{attempt}} 次",
   "ui.sessionTurn.retry.attemptLine": "{{line}} - 第 {{attempt}} 次",
   "ui.sessionTurn.retry.geminiHot": "Gemini 目前負載過高",
-  "ui.sessionTurn.error.freeUsageExceeded": "免費使用額度已用完",
-  "ui.sessionTurn.error.addCredits": "新增點數",
-
-  "dialog.usageExceeded.freeTier.title": "已達免費額度上限",
-  "dialog.usageExceeded.freeTier.description": "每月 $10 訂閱 PorkCode Go，可靠地使用最佳開源模型。",
-  "dialog.usageExceeded.freeTier.actionLabel": "訂閱",
 
   "ui.sessionTurn.status.delegating": "正在委派工作",
   "ui.sessionTurn.status.planning": "正在規劃下一步",

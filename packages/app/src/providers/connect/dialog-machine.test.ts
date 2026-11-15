@@ -4,7 +4,6 @@ import {
   selectProviderDialogView,
   transitionProviderDialog,
   type ProviderAccounts,
-  type ProviderCatalogSnapshot,
   type ProviderDialogEffect,
   type ProviderDialogEvent,
   type ProviderDialogState,
@@ -63,7 +62,7 @@ function provider(state: ProviderDialogState) {
 }
 
 // Builds a sign-in result the way the driver does: tagged with the session and provider of the effect that asked.
-function result(state: ProviderDialogState, event: ProviderConnectEvent, catalog?: ProviderCatalogSnapshot) {
+function result(state: ProviderDialogState, event: ProviderConnectEvent, firstModel?: string) {
   const current = provider(state)
 
   return {
@@ -71,7 +70,7 @@ function result(state: ProviderDialogState, event: ProviderConnectEvent, catalog
     session: current.session,
     provider: current.provider,
     event,
-    catalog,
+    firstModel,
   } satisfies ProviderDialogEvent
 }
 
@@ -105,43 +104,6 @@ function waitingOAuth(name: string, methods = [oauth]) {
   )
 }
 
-// Signs in to the Console with OAuth until the catalogs refresh; returns the refresh attempt.
-function refreshingConsole() {
-  const opened = replay([selected("opencode", false)])
-  const choosing = replay([loaded(opened.state, [oauth, key])], opened.state)
-  const started = replay([{ type: "connect.input", event: { type: "method.selected", index: 0 } }], choosing.state)
-  const start = connectEffect(started.effects, "start")
-
-  const waiting = replay(
-    [result(started.state, { type: "oauth.started", attempt: start.attempt, authorization: authorization("att_1") })],
-    started.state,
-  )
-
-  const poll = connectEffect(waiting.effects, "poll")
-
-  const refreshing = replay(
-    [result(waiting.state, { type: "polled", attempt: poll.attempt, outcome: { status: "complete" } })],
-    waiting.state,
-  )
-
-  return { ...refreshing, attempt: connectEffect(refreshing.effects, "refresh").attempt }
-}
-
-function consoleWithoutModels(pending: boolean) {
-  const refreshing = refreshingConsole()
-
-  return replay(
-    [
-      result(
-        refreshing.state,
-        { type: "refresh.succeeded", attempt: refreshing.attempt },
-        { pending, firstModel: undefined },
-      ),
-    ],
-    refreshing.state,
-  )
-}
-
 // Opens a connected Claude Agent from the list and adds an account, which shows the setup.
 function claudeSetup(list = accounts(1)) {
   const picked = replay([selected("claude-agent", true, list)])
@@ -157,13 +119,7 @@ function claudeChecking(from: Run) {
   const refresh = connectEffect(saved.effects, "refresh")
 
   return replay(
-    [
-      result(
-        saved.state,
-        { type: "refresh.succeeded", attempt: refresh.attempt },
-        { pending: false, firstModel: undefined },
-      ),
-    ],
+    [result(saved.state, { type: "refresh.succeeded", attempt: refresh.attempt })],
     saved.state,
   )
 }
@@ -186,51 +142,6 @@ test("Back from a pending OAuth sign-in to the provider list allows backdrop dis
   expect(selectProviderDialogView(back.state).preventBackdropDismiss).toBe(false)
   expect(connectEffect(back.effects, "cancel")).toEqual({ type: "cancel", target: "oauth", attemptID: "att_1" })
   expect(back.effects).toContainEqual({ type: "controller.sync", provider: undefined })
-})
-
-test("Back from a Console connection without models returns to the sign-in methods", () => {
-  const empty = consoleWithoutModels(false)
-  expect(selectProviderDialogView(empty.state).body).toEqual({
-    kind: "no-models",
-    catalogPending: false,
-    refreshing: false,
-  })
-  expect(types(empty.effects)).toEqual(["connected.notify", "models.reveal", "toast.connected"])
-
-  const methods = replay([{ type: "back" }], empty.state)
-  expect(selectProviderDialogView(methods.state).body).toEqual({ kind: "methods" })
-  expect(selectProviderDialogView(methods.state).canBack).toBe(true)
-
-  expect(replay([{ type: "back" }], methods.state).state.status).toBe("picker")
-})
-
-test("Back from a failed Console refresh returns to the sign-in methods", () => {
-  const empty = consoleWithoutModels(true)
-  const refreshing = replay([{ type: "connect.input", event: { type: "refresh" } }], empty.state)
-  expect(selectProviderDialogView(refreshing.state).body).toEqual({
-    kind: "no-models",
-    catalogPending: true,
-    refreshing: true,
-  })
-  const attempt = connectEffect(refreshing.effects, "refresh").attempt
-
-  const failed = replay(
-    [result(refreshing.state, { type: "refresh.failed", attempt, error: "Could not refresh" })],
-    refreshing.state,
-  )
-
-  expect(selectProviderDialogView(failed.state).body).toEqual({ kind: "failed" })
-  expect(selectProviderDialogView(failed.state).title).toBe("console-error")
-
-  expect(selectProviderDialogView(replay([{ type: "back" }], failed.state).state).body).toEqual({ kind: "methods" })
-})
-
-test("Back during the Console workspace wait stops the wait", () => {
-  const refreshing = refreshingConsole()
-  const back = replay([{ type: "back" }], refreshing.state)
-
-  expect(back.effects).toContainEqual({ type: "settle.cancel" })
-  expect(selectProviderDialogView(back.state).body).toEqual({ kind: "methods" })
 })
 
 test("Back from a Claude Agent check started from Add account returns to the accounts", () => {
@@ -470,21 +381,19 @@ test("a credential saved after the dialog moved to another provider only reloads
   ])
 })
 
-test("Refresh on a Console connection whose models were still loading continues to the models", () => {
-  const empty = consoleWithoutModels(true)
-  expect(types(empty.effects)).toEqual(["connected.notify", "models.reveal"])
+test("a sign-in whose refresh finds models continues to them", () => {
+  const waiting = waitingOAuth("github-copilot")
+  const poll = connectEffect(waiting.effects, "poll")
 
-  const refreshing = replay([{ type: "connect.input", event: { type: "refresh" } }], empty.state)
+  const refreshing = replay(
+    [result(waiting.state, { type: "polled", attempt: poll.attempt, outcome: { status: "complete" } })],
+    waiting.state,
+  )
+
   const attempt = connectEffect(refreshing.effects, "refresh").attempt
 
   const models = replay(
-    [
-      result(
-        refreshing.state,
-        { type: "refresh.succeeded", attempt },
-        { pending: false, firstModel: "console-google:gemini" },
-      ),
-    ],
+    [result(refreshing.state, { type: "refresh.succeeded", attempt }, "github-copilot:model")],
     refreshing.state,
   )
 
@@ -513,13 +422,7 @@ test("a connection without models closes the dialog", () => {
   )
 
   const done = replay(
-    [
-      result(
-        refreshing.state,
-        { type: "refresh.succeeded", attempt: connectEffect(refreshing.effects, "refresh").attempt },
-        { pending: false, firstModel: undefined },
-      ),
-    ],
+    [result(refreshing.state, { type: "refresh.succeeded", attempt: connectEffect(refreshing.effects, "refresh").attempt })],
     refreshing.state,
   )
 
@@ -530,22 +433,31 @@ test("a connection without models closes the dialog", () => {
 })
 
 test("confirming a model closes once and keeps the outcome through disposal", () => {
-  const empty = consoleWithoutModels(true)
-  const refreshing = replay([{ type: "connect.input", event: { type: "refresh" } }], empty.state)
+  const picked = replay([selected("openrouter", true)])
+
+  const submitting = replay(
+    [loaded(picked.state, [key]), { type: "connect.input", event: { type: "entry.submitted", value: "sk-1" } }],
+    picked.state,
+  )
+
+  const refreshing = replay(
+    [result(submitting.state, { type: "submit.succeeded", attempt: connectEffect(submitting.effects, "submit").attempt })],
+    submitting.state,
+  )
 
   const models = replay(
     [
       result(
         refreshing.state,
         { type: "refresh.succeeded", attempt: connectEffect(refreshing.effects, "refresh").attempt },
-        { pending: false, firstModel: "opencode:big" },
+        "openrouter:big",
       ),
-      { type: "model.selected", modelKey: "opencode:small" },
+      { type: "model.selected", modelKey: "openrouter:small" },
     ],
     refreshing.state,
   )
 
-  const selection = { providerID: "opencode", modelID: "small" }
+  const selection = { providerID: "openrouter", modelID: "small" }
 
   const confirmed = replay([{ type: "model.confirmed", selection }], models.state)
   expect(confirmed.effects).toEqual([{ type: "dialog.close" }, { type: "model.apply", selection }])
@@ -579,7 +491,7 @@ test("a ChatGPT token sharing sign-in shows the welcome on close", () => {
       result(
         refreshing.state,
         { type: "refresh.succeeded", attempt: connectEffect(refreshing.effects, "refresh").attempt },
-        { pending: false, firstModel: "openai:gpt" },
+        "openai:gpt",
       ),
     ],
     refreshing.state,
@@ -602,34 +514,9 @@ test("a lone method waits on the accounts list and starts once Add account is ch
 })
 
 test("a standalone dialog has no way back to the provider list", () => {
-  const opened = replay([selected("opencode-go", false)], createProviderDialogState({ standalone: true }))
+  const opened = replay([selected("openrouter", false)], createProviderDialogState({ standalone: true }))
   const entering = replay([loaded(opened.state, [key])], opened.state)
 
   expect(selectProviderDialogView(entering.state).canBack).toBe(false)
   expect(replay([{ type: "back" }], entering.state).state).toBe(entering.state)
-})
-
-test("the Console sign-in link copy result belongs to its attempt", () => {
-  const opened = replay([selected("opencode", false)])
-  const choosing = replay([loaded(opened.state, [oauth, key])], opened.state)
-  const started = replay([{ type: "connect.input", event: { type: "method.selected", index: 0 } }], choosing.state)
-
-  const waiting = replay(
-    [
-      result(started.state, {
-        type: "oauth.started",
-        attempt: connectEffect(started.effects, "start").attempt,
-        authorization: authorization("att_1"),
-      }),
-    ],
-    started.state,
-  )
-
-  const session = provider(waiting.state).session
-
-  const copied = replay([{ type: "link.copied", session, attemptID: "att_1", copied: true }], waiting.state)
-  expect(selectProviderDialogView(copied.state).body).toEqual({ kind: "console-sign-in", copy: "copied" })
-
-  const stale = replay([{ type: "link.copied", session, attemptID: "att_0", copied: false }], copied.state)
-  expect(stale.state).toBe(copied.state)
 })

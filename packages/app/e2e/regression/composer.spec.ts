@@ -390,11 +390,11 @@ declare global {
   }
 }
 
-test("a managed composer label follows direct connections, not picker filtering or model identity", async ({
+test("the composer keeps its selected model through other providers connecting and disconnecting", async ({
   page,
 }) => {
-  const sessionID = "ses_managed_provider"
-  const connected = { direct: false }
+  const sessionID = "ses_provider_churn"
+  const connected = { extra: false }
   const switches: unknown[] = []
   const prompts: Parameters<NonNullable<MockServerConfig["onPrompt"]>>[0]["body"][] = []
   page.on("request", (request) => {
@@ -403,94 +403,65 @@ test("a managed composer label follows direct connections, not picker filtering 
   })
 
   const view = await openSession(page, {
-    name: "ManagedProvider",
-    sessions: [{ id: sessionID, agent: "build", model: { id: "gpt", providerID: "console-openai" } }],
+    name: "ProviderChurn",
+    sessions: [{ id: sessionID, agent: "build", model: { id: "gpt", providerID: "openai" } }],
     provider: () => ({
       all: [
-        {
-          id: "opencode",
-          integrationID: "opencode",
-          name: "Anomaly / OpenCode",
-          models: {},
-        },
-        {
-          id: "console-openai",
-          canonical: "openai",
-          integrationID: "opencode",
-          name: "Anomaly / OpenAI",
-          models: { gpt: { id: "gpt", name: "GPT" } },
-        },
-        ...(connected.direct
-          ? [
-              {
-                id: "openai",
-                name: "OpenAI",
-                models: { "direct-model": { id: "direct-model", name: "Direct Model" } },
-              },
-            ]
+        { id: "openai", name: "OpenAI", models: { gpt: { id: "gpt", name: "GPT" } } },
+        ...(connected.extra
+          ? [{ id: "groq", name: "Groq", models: { llama: { id: "llama", name: "Llama" } } }]
           : []),
       ],
-      connected: ["opencode", "console-openai", ...(connected.direct ? ["openai"] : [])],
+      connected: ["openai", ...(connected.extra ? ["groq"] : [])],
       default: {},
     }),
     onPrompt: (input) => void prompts.push(input.body),
-    seed: {
-      storage: {
-        "opencode.global.dat:model": {
-          user: [
-            { providerID: "console-openai", modelID: "gpt", visibility: "show" },
-            { providerID: "openai", modelID: "direct-model", visibility: "show" },
-          ],
-        },
-      },
-    },
   })
 
   const control = page.locator('[data-action="composer-model"]')
   const picker = page.getByRole("dialog", { name: "Select model", exact: true })
-  const selected = picker.locator('[data-option-key="console-openai:gpt"]')
+  const selected = picker.locator('[data-option-key="openai:gpt"]')
   await expect(control).toHaveText("OpenAI / GPT")
 
-  connected.direct = true
+  connected.extra = true
   await view.push([
     {
-      id: "evt_direct_connected",
+      id: "evt_extra_connected",
       created: T0 + 1,
       type: "provider.updated",
       location: { directory: view.directory },
       data: {},
     },
     {
-      id: "evt_direct_models_connected",
+      id: "evt_extra_models_connected",
       created: T0 + 2,
       type: "model.updated",
       location: { directory: view.directory },
       data: {},
     },
   ])
-  await expect(control).toHaveText("PorkCode / OpenAI / GPT")
-  await expect(control).toHaveAccessibleName("PorkCode / OpenAI / GPT")
+  await expect(control).toHaveText("OpenAI / GPT")
   await control.click()
   const search = picker.getByRole("combobox", { name: "Search models", exact: true })
-  await expect(picker.locator('[data-option-key="openai:direct-model"]')).toBeVisible()
+  await expect(picker.locator('[data-option-key="groq:llama"]')).toBeVisible()
   await search.fill("GPT")
-  await expect(picker.locator('[data-option-key="openai:direct-model"]')).toHaveCount(0)
+  await expect(picker.locator('[data-option-key="groq:llama"]')).toHaveCount(0)
   await expect(selected).toHaveAttribute("aria-current", "true")
-  await expect(control).toHaveText("PorkCode / OpenAI / GPT")
+  await expect(control).toHaveText("OpenAI / GPT")
   await search.press("Escape")
   await expect(picker).toBeHidden()
 
-  connected.direct = false
+  connected.extra = false
   await view.push([
     {
-      id: "evt_direct_disconnected",
+      id: "evt_extra_disconnected",
       created: T0 + 3,
       type: "provider.updated",
       location: { directory: view.directory },
       data: {},
     },
     {
-      id: "evt_direct_models_disconnected",
+      id: "evt_extra_models_disconnected",
       created: T0 + 4,
       type: "model.updated",
       location: { directory: view.directory },
@@ -499,10 +470,10 @@ test("a managed composer label follows direct connections, not picker filtering 
   ])
   await expect(control).toHaveText("OpenAI / GPT")
 
-  await view.editor.fill("Keep the managed provider selected")
+  await view.editor.fill("Keep the same model selected")
   await view.editor.press("Enter")
   await expect.poll(() => prompts.length).toBe(1)
-  expect(prompts[0]).toMatchObject({ text: "Keep the managed provider selected" })
+  expect(prompts[0]).toMatchObject({ text: "Keep the same model selected" })
   expect(switches).toEqual([])
 })
 
@@ -1191,59 +1162,34 @@ test("a sent shell command returns the composer to prompt mode, and ! enters she
   await expect(scroll).toHaveText("Enter shell command… git status")
 })
 
-test("marks a Console provider with its workspace only when it is also connected directly", async ({ page }) => {
+test("the model picker shows one heading per connected provider with its catalog name", async ({ page }) => {
   const model = (id: string, name: string) => ({ [id]: { id, name, limit: { context: 200_000 } } })
 
-  const managed = (id: string, canonical: string, name: string, models: ReturnType<typeof model>) => ({
-    id,
-    canonical,
-    integrationID: "opencode",
-    name: `Anomaly / ${name}`,
-    models,
-  })
-
   await openSession(page, {
-    name: "ComposerConsoleProviders",
+    name: "ComposerProviderHeadings",
     provider: {
       all: [
-        managed("opencode", "opencode", "OpenCode", model("console-model", "Console Model")),
-        managed("console-google", "google", "Google", model("managed-gemini", "Managed Gemini")),
-        managed("console-openai", "openai", "OpenAI", model("managed-gpt", "Managed GPT")),
-        { id: "google", canonical: "google", name: "Google", models: model("direct-gemini", "Direct Gemini") },
+        { id: "openrouter", name: "OpenRouter", models: model("kimi-k3", "Kimi K3") },
+        { id: "ollama", name: "Ollama", models: model("llama-4-scout", "Llama 4 Scout") },
+        { id: "anthropic", name: "Anthropic", models: model("claude-sonnet-5", "Claude Sonnet 5") },
       ],
-      connected: ["opencode", "console-google", "console-openai", "google"],
-      default: { providerID: "opencode", modelID: "console-model" },
-    },
-    seed: {
-      storage: {
-        "opencode.global.dat:model": {
-          user: [
-            ["opencode", "console-model"],
-            ["console-google", "managed-gemini"],
-            ["console-openai", "managed-gpt"],
-            ["google", "direct-gemini"],
-          ].map(([providerID, modelID]) => ({ providerID, modelID, visibility: "show" })),
-          recent: [],
-          variant: {},
-        },
-      },
+      connected: ["openrouter", "ollama", "anthropic"],
+      default: {},
     },
   })
 
   const trigger = page.locator('[data-component="composer"] [data-action="composer-model"]')
   await trigger.click()
   const menu = page.getByRole("dialog", { name: "Select model", exact: true })
-  await expect(menu.getByRole("option", { name: "Direct Gemini", exact: true })).toBeVisible()
+  await expect(menu.getByRole("option", { name: "Kimi K3", exact: true })).toBeVisible()
   const headings = menu.locator('[data-slot="search-list-header"]')
-  await expect(headings).toHaveCount(4)
-  await expect(headings.filter({ hasText: /^GoogleAnomaly$/ })).toHaveCount(1)
-  await expect(headings.filter({ hasText: /^Google$/ })).toHaveCount(1)
-  await expect(headings.filter({ hasText: /^OpenAI$/ })).toHaveCount(1)
-  await expect(headings.filter({ hasText: /^OpenCode$/ })).toHaveCount(1)
-  await expect(menu.getByText(/Anomaly \//)).toHaveCount(0)
+  await expect(headings).toHaveCount(3)
+  await expect(headings.filter({ hasText: /^OpenRouter$/ })).toHaveCount(1)
+  await expect(headings.filter({ hasText: /^Ollama$/ })).toHaveCount(1)
+  await expect(headings.filter({ hasText: /^Anthropic$/ })).toHaveCount(1)
 })
 
-test("shows thinking on hover or a non-default selection while preserving keyboard access", async ({ page }) => {
+test("keeps the variant picker visible while idle and preserves keyboard access", async ({ page }) => {
   const { editor: input } = await openSession(page, {
     name: "ComposerThinking",
     provider: provider({ id: "thinking-model", name: "Thinking Model", variants: { high: {} } }),
@@ -1253,33 +1199,30 @@ test("shows thinking on hover or a non-default selection while preserving keyboa
   const control = composer.getByRole("button", { name: "Choose model variant" })
   const option = (name: string) => page.getByRole("menuitemradio", { name, exact: true })
 
+  // Pork Default overrides upstream's hover fade in frosted-surfaces.css: the trigger stays
+  // visible and clickable even while its value is still "default" and nothing is hovered.
   await page.mouse.move(0, 0)
   await expect(control).toHaveText("default")
-  await expect(control).toHaveCSS("opacity", "0")
-  await expect(control).toHaveCSS("pointer-events", "none")
-
-  await input.hover()
   await expect(control).toHaveCSS("opacity", "1")
+  await expect(control).toHaveCSS("pointer-events", "auto")
 
-  // The menu keeps the control visible after the pointer leaves.
+  // The menu keeps the control expanded after the pointer leaves.
   await control.click()
   await expect(option("high")).toBeVisible()
   await page.mouse.move(0, 0)
   await expect(control).toHaveAttribute("aria-expanded", "true")
-  await expect(control).toHaveCSS("opacity", "1")
   await option("high").click()
 
   await input.click()
   await page.mouse.move(0, 0)
   await expect(control).toHaveText("high")
-  await expect(control).toHaveCSS("opacity", "1")
 
   await control.click()
   await option("default").click()
   await input.click()
   await page.mouse.move(0, 0)
   await expect(control).toHaveText("default")
-  await expect(control).toHaveCSS("opacity", "0")
+  await expect(control).toHaveCSS("opacity", "1")
 
   // The single-agent fixture has only Add and Model before the thinking trigger.
   await page.keyboard.press("Tab")
@@ -1288,14 +1231,11 @@ test("shows thinking on hover or a non-default selection while preserving keyboa
   await expect(composer.getByRole("button", { name: "Thinking Model" })).toBeFocused()
   await page.keyboard.press("Tab")
   await expect(control).toBeFocused()
-  await expect(control).toHaveCSS("opacity", "1")
   await page.keyboard.press("Enter")
   await expect(option("default")).toBeFocused()
-  await expect(control).toHaveCSS("opacity", "1")
+  await expect(control).toHaveAttribute("aria-expanded", "true")
   await page.keyboard.press("Escape")
   await expect(control).toBeFocused()
-  await page.keyboard.press("Tab")
-  await expect(control).toHaveCSS("opacity", "0")
 })
 
 test("pastes into the composer from the session view but not into other inputs", async ({ page }) => {

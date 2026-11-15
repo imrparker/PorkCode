@@ -662,33 +662,7 @@ export namespace Timeline {
   }
 }
 
-const MAX_RETRY_AFTER_MS = 45 * 86_400_000
-
-function usageLimit(
-  message: Pick<SessionMessageAssistant, "error"> & { time: { created: number; completed?: number } },
-) {
-  const type = message.error?.type
-
-  if (type !== "provider.free-limit" && type !== "provider.go-limit") return {}
-
-  const kind = type === "provider.go-limit" ? ("go-limit" as const) : ("free-limit" as const)
-  const delay = message.error?.retryAfterMs
-  const base = message.time.completed ?? message.time.created
-
-  if (
-    delay === undefined ||
-    !Number.isFinite(delay) ||
-    delay < 0 ||
-    delay > MAX_RETRY_AFTER_MS ||
-    !Number.isFinite(base) ||
-    Number.isNaN(new Date(base + delay).getTime())
-  )
-    return { kind }
-
-  return { kind, resetAt: base + delay }
-}
-
-// OpenCode Console says when the budget resets in its refusal's metadata, which every protocol's envelope names `resetsAt`.
+// Gateways that enforce monthly budgets say when the budget resets in their refusal's metadata, which every protocol's envelope names `resetsAt`.
 function budgetLimit(message: Pick<SessionMessageAssistant, "error">) {
   const type = message.error?.type
 
@@ -745,10 +719,9 @@ function stepEvent(
   }
 }
 
-function errorInfo(message: Parameters<typeof usageLimit>[0]): TurnErrorInfo {
+function errorInfo(message: Pick<SessionMessageAssistant, "error">): TurnErrorInfo {
   return {
     text: unwrapErrorMessage(message.error?.message ?? ""),
-    ...usageLimit(message),
     ...budgetLimit(message),
   }
 }

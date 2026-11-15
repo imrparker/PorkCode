@@ -128,9 +128,6 @@ export const dict = {
   "dialog.provider.empty": "Niciun furnizor găsit",
   "dialog.provider.group.popular": "Populare",
   "dialog.provider.tag.recommended": "Recomandat",
-  "dialog.provider.opencode.note": "Modele selectate, inclusiv Claude, GPT, Gemini și altele",
-  "dialog.provider.opencode.tagline": "Modele optimizate, fiabile",
-  "dialog.provider.opencodeGo.tagline": "Abonament accesibil pentru toți",
   "dialog.provider.copilot.note": "Modele AI pentru asistență la programare prin GitHub Copilot",
   "dialog.provider.openai.note": "Modele GPT pentru sarcini AI generale rapide și performante",
   "dialog.provider.google.note": "Modele Gemini pentru răspunsuri rapide și structurate",
@@ -573,7 +570,6 @@ export const dict = {
   "workspace.status.dirty": "S-au detectat modificări necomasate în acest spațiu de lucru.",
   "workspace.delete.confirm": "Ștergi spațiul de lucru „{{name}}”?",
   "workspace.delete.button": "Șterge spațiul de lucru",
-  "dialog.usageExceeded.dontShowAgain": "Nu mai afișa",
   "provider.disconnect.toast.noCredentials.description":
     "Nu s-au găsit date de autentificare care pot fi eliminate pentru {{provider}}.",
   "provider.disconnect.toast.failed.description": "Nu s-a putut deconecta {{provider}}.",

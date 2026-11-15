@@ -11,10 +11,10 @@ const fixtures = [
     id: "deployment",
     title: "Deployment architecture",
     source: `flowchart LR
-  Client[OpenCode client]
+  Client[PorkCode client]
 
   subgraph CF[Cloudflare]
-    DNS[opencode.ai]
+    DNS[porkcode.test]
     Web[Console frontend Worker]
     Proxy[Console API proxy Worker]
     Infer[inference-next Worker]

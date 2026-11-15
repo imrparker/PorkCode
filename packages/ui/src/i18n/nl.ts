@@ -102,12 +102,6 @@ export const dict = {
   "ui.sessionTurn.retry.attempt": "poging #{{attempt}}",
   "ui.sessionTurn.retry.attemptLine": "{{line}} - poging #{{attempt}}",
   "ui.sessionTurn.retry.geminiHot": "Gemini is momenteel overbelast",
-  "ui.sessionTurn.error.freeUsageExceeded": "Gratis gebruik overschreden",
-  "ui.sessionTurn.error.addCredits": "Tegoed toevoegen",
-  "dialog.usageExceeded.freeTier.title": "Gratis limiet bereikt",
-  "dialog.usageExceeded.freeTier.description":
-    "Abonneer je voor $ 10 per maand op PorkCode Go voor betrouwbare toegang tot de beste open-sourcemodellen.",
-  "dialog.usageExceeded.freeTier.actionLabel": "Abonneer je",
   "ui.sessionTurn.status.delegating": "Werk delegeren",
   "ui.sessionTurn.status.planning": "Volgende stappen plannen",
   "ui.sessionTurn.status.gatheringContext": "Verkennen",
