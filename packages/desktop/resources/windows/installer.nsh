@@ -56,6 +56,19 @@
 !macro customUnInstall
   ${IfNot} ${isUpdated}
     !insertmacro removeStagedUpdates $INSTDIR
+    ; Clean uninstall. Electron userData (window state, plugin storage, logs) is named after the app ID;
+    ; see lifecycle/configure.ts. The updater download cache name comes from the package name
+    ; ("@opencode/desktop" -> "@opencodedesktop-updater"), shared by all channels and safe to drop: it
+    ; only holds downloaded update payloads. Session data under ~/.local/share/opencode is NOT touched;
+    ; the CLI shares it, and deleting user credentials on uninstall would be wrong.
+    RMDir /r "$APPDATA\${APP_ID}"
+    RMDir /r "$LOCALAPPDATA\@opencodedesktop-updater"
+    ; Drop our opencode:// deep-link registration only when it still points at this install, so Windows
+    ; never keeps a dead handler; another app's registration of the same scheme is left alone.
+    ReadRegStr $R0 HKCU "Software\Classes\opencode\shell\open\command" ""
+    ${If} $R0 == '"$INSTDIR\${APP_EXECUTABLE_FILENAME}" "%1"'
+      DeleteRegKey HKCU "Software\Classes\opencode"
+    ${EndIf}
   ${EndIf}
 !macroend
 
