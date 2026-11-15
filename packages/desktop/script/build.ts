@@ -46,7 +46,12 @@ if (!built) {
 }
 
 // The channel is compiled into the executable, so verify the copy that actually landed in resources/.
-if (built) await verifyBundledCliChannel()
+// Cross-arch packaging cannot run the target binary (Windows x64 refuses ARM64 executables), so the
+// spawn check runs only when the bundled CLI matches this host; cross builds rely on building the
+// CLI with OPENCODE_CHANNEL=porkcode themselves.
+if (built && getCurrentCli().cpu === process.arch) await verifyBundledCliChannel()
+if (built && getCurrentCli().cpu !== process.arch)
+  console.warn(`Skipping bundled-CLI channel verification for ${getCurrentCli().target}; this host cannot run it`)
 
 await $`bunx electron-vite build`
 
