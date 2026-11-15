@@ -200,7 +200,7 @@ export default { path: file, version: ${JSON.stringify(opencodePty.version)}, sh
       outfile: path.join(outdir, name, "bin", binary),
       execArgv: [
         "--smol",
-        `--user-agent=opencode/${Script.channel}/${Script.version}/cli`,
+        `--user-agent=porkcode/${Script.channel}/${Script.version}/cli`,
         "--use-system-ca",
         "--no-warnings",
         "--",
@@ -234,7 +234,7 @@ export default { path: file, version: ${JSON.stringify(opencodePty.version)}, sh
         name: `@opencode/${name}`,
         version: Script.version,
         license: "MIT",
-        repository: { type: "git", url: "git+https://github.com/anomalyco/opencode.git" },
+        repository: { type: "git", url: "git+https://github.com/imrparker/PorkCode.git" },
         os: [item.os],
         cpu: [item.arch],
       },

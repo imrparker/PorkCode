@@ -349,16 +349,16 @@ forced-exit deadline does not prove that those worker threads were joined.
 The workflow can also be run manually against a branch:
 
 ```sh
-gh workflow run check-process-daemon.yml --repo anomalyco/opencode --ref BRANCH
-gh run list --repo anomalyco/opencode --workflow check-process-daemon.yml --branch BRANCH
-gh run view RUN_ID --repo anomalyco/opencode --log-failed
+gh workflow run check-process-daemon.yml --repo imrparker/PorkCode --ref BRANCH
+gh run list --repo imrparker/PorkCode --workflow check-process-daemon.yml --branch BRANCH
+gh run view RUN_ID --repo imrparker/PorkCode --log-failed
 ```
 
 ## Releases
 
 Releases are built by
 [`.github/workflows/release-process-daemon.yml`](../../.github/workflows/release-process-daemon.yml)
-in anomalyco/opencode. To release version `X.Y.Z`:
+in imrparker/PorkCode. To release version `X.Y.Z`:
 
 1. Bump `version` in `Cargo.toml` (and `Cargo.lock`), and `version` plus every
    `optionalDependencies` entry in `npm/package.json`, to `X.Y.Z`. The workflow
@@ -393,7 +393,7 @@ import { binaryPath } from "@opencode/pty"
 
 npm publishing uses trusted publishing with provenance. Each of the nine
 packages (`@opencode/pty` and the eight `@opencode/pty-<platform>`
-packages) must list anomalyco/opencode with workflow
+packages) must list imrparker/PorkCode with workflow
 `release-process-daemon.yml` as its trusted publisher, with no environment
 (the release job does not use one).
 
