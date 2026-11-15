@@ -3,6 +3,10 @@
 - This repository does not use Changesets. Do not add `.changeset` files; follow the existing release workflow instead.
 - The default branch is `dev`. Base branches and worktrees on `origin/dev`, target PRs at `dev`, and diff against `origin/dev` unless told otherwise.
 
+## Decoupling Roadmap
+
+- PorkCode is separating from upstream OpenCode (local-first, no cloud vendors). Read `docs/decoupling-plan.md` before touching identity, storage, provider or update code, and keep its checkboxes and Progress log current as you work.
+
 ## Live TUI Testing
 
 - Run `bun run dev:live` from a development worktree to test its TUI against the currently elected `opencode` background server and live sessions.
