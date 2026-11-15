@@ -37,9 +37,9 @@ describe("SkillPlugin.Plugin", () => {
 
       expect(skills).toContainEqual(
         expect.objectContaining({
-          id: "opencode",
+          id: "porkcode",
           name: "PorkCode",
-          path: "skill://opencode/SKILL.md",
+          path: "skill://porkcode/SKILL.md",
           description: expect.stringContaining("any question about PorkCode itself"),
         }),
       )
@@ -48,10 +48,10 @@ describe("SkillPlugin.Plugin", () => {
           id: "report",
           name: "Report",
           path: "skill://report/SKILL.md",
-          description: expect.stringContaining("opencode issue"),
+          description: expect.stringContaining("PorkCode issue"),
         }),
       )
-      expect(report?.content).toContain("- opencode version: 1.2.3")
+      expect(report?.content).toContain("- PorkCode version: 1.2.3")
       expect(report?.content).toContain("- install/channel: beta")
     }),
   )

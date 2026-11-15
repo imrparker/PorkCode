@@ -9,16 +9,16 @@ import { AbsolutePath } from "../schema.js"
 import { Skill } from "../skill.js"
 import { Config } from "../config.js"
 import os from "os"
-import opencodeContent from "./skill/opencode.md" with { type: "text" }
+import porkCodeContent from "./skill/porkcode.md" with { type: "text" }
 import reportContent from "./skill/report.md" with { type: "text" }
 
-export const OpencodeContent = opencodeContent
+export const PorkCodeContent = porkCodeContent
 export const ReportContent = reportContent
 
-export const OpencodeDescription =
-  "Use this skill for any question about PorkCode itself, including how PorkCode works, using or configuring it, migrating from V1 to V2, troubleshooting it, developing plugins or integrations, using the PorkCode SDK, clients, server, or API, and contributing to the PorkCode codebase. Also use it for PorkCode agents, commands, skills, tools, permissions, MCP servers, providers, models, themes, keybinds, formatters, the CLI, TUI, desktop app, and web app."
+export const PorkCodeDescription =
+  "Use this skill for any question about PorkCode itself, including how PorkCode works, using or configuring it, troubleshooting it, developing plugins or integrations, using the PorkCode SDK, clients, server, or API, and contributing to the PorkCode codebase. Also use it for PorkCode agents, commands, skills, tools, permissions, MCP servers, providers, models, themes, keybinds, formatters, the CLI, TUI, desktop app, and web app."
 const REPORT_DESCRIPTION =
-  "Use when the user wants to report an opencode issue or bug. Collect standard diagnostics, add user-specific reproduction context, and publish the issue with GitHub CLI."
+  "Use when the user wants to report a PorkCode issue or bug. Collect standard diagnostics, add user-specific reproduction context, and publish the issue with GitHub CLI."
 
 export const Plugin = define({
   id: "opencode.skill",
@@ -27,11 +27,11 @@ export const Plugin = define({
     yield* ctx.skill.transform((editor) => {
       editor.add(
         Skill.Info.make({
-          id: Skill.ID.make("opencode"),
+          id: Skill.ID.make("porkcode"),
           name: Skill.Name.make("PorkCode"),
-          description: OpencodeDescription,
-          path: AbsolutePath.make("skill://opencode/SKILL.md"),
-          content: OpencodeContent,
+          description: PorkCodeDescription,
+          path: AbsolutePath.make("skill://porkcode/SKILL.md"),
+          content: PorkCodeContent,
         }),
       )
       editor.add(
@@ -61,7 +61,7 @@ const reportContentWithDiagnostics = Effect.fn("SkillPlugin.reportContentWithDia
     "",
     "These values were captured when the built-in report skill was registered. Verify them before publishing.",
     "",
-    `- opencode version: ${app.version}`,
+    `- PorkCode version: ${app.version}`,
     `- install/channel: ${app.channel}`,
     `- OS: ${os.type()} ${os.release()} (${os.platform()} ${os.arch()}${emulated ? ", emulated on ARM64" : ""})`,
     `- Terminal: ${terminal()}`,
