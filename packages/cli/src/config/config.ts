@@ -7,7 +7,7 @@ import { produce, type Draft } from "immer"
 import { applyEdits, modify, parse, type ParseError } from "jsonc-parser"
 import path from "path"
 import { ConfigMigration } from "./migrate"
-import { Info, normalizeLegacyTabs, SchemaURL } from "./schema"
+import { Info, normalizeLegacyTabs } from "./schema"
 
 export * from "./schema"
 
@@ -91,7 +91,7 @@ export const layer = Layer.effect(
           if (!edits.length) return current
           const text = yield* fs
             .readFileString(file)
-            .pipe(Effect.orElseSucceed(() => JSON.stringify({ $schema: SchemaURL }, null, 2)))
+            .pipe(Effect.orElseSucceed(() => "{}"))
           const updated = edits.reduce(
             (text, edit) =>
               applyEdits(

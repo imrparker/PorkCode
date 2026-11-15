@@ -40,8 +40,8 @@ export default {
   "error.installDistro": "Distribution konnte nicht installiert werden: {{distro}}",
   "error.installOpencode": "PorkCode-Installation fehlgeschlagen",
   "error.alreadyAdded": "{{distro}} wurde bereits hinzugefügt",
-  "error.opencodeMissing": "opencode ist in dieser Distribution nicht installiert",
-  "error.opencodeCannotRun": "opencode ist installiert, konnte aber nicht ausgeführt werden",
+  "error.opencodeMissing": "porkcode ist in dieser Distribution nicht installiert",
+  "error.opencodeCannotRun": "porkcode ist installiert, konnte aber nicht ausgeführt werden",
   "error.opencodeNotInstalled": "PorkCode ist in {{distro}} nicht installiert",
   "error.updateVersion":
     "Das PorkCode-Update wurde abgeschlossen, aber {{distro}} meldet weiterhin {{installed}}; erwartet wurde {{expected}}",

@@ -300,7 +300,7 @@ export const dict = {
   "error.chain.responseBody": "Тело одговора:\n{{body}}",
   "error.chain.didYouMean": "Да ли сте мислили: {{suggestions}}",
   "error.chain.modelNotFound": "Модел није пронађен: {{provider}}/{{model}}",
-  "error.chain.checkConfig": "Проверите имена добављача/модела конфигурације (opencode.json).",
+  "error.chain.checkConfig": "Проверите имена добављача/модела конфигурације (porkcode.json).",
   "error.chain.mcpFailed":
     "MCP сервер „{{name}}“ није успео. Напомена, PorkCode још увек не подржава MCP аутентификацију.",
   "error.chain.providerAuthFailed": "аутентификација добављача није успела ({{provider}}): {{message}}",
@@ -615,7 +615,7 @@ export const dict = {
   "desktop.menu.installCli": "Инсталирај CLI...",
   "desktop.cli.installed.title": "CLI је инсталиран",
   "desktop.cli.installed.message":
-    "CLI је инсталиран у {{path}}\n\nПоново покрените терминал да бисте користили наредбу 'opencode2'.",
+    "CLI је инсталиран у {{path}}\n\nПоново покрените терминал да бисте користили наредбу 'porkcode'.",
   "desktop.cli.failed.title": "Инсталација није успела",
   "desktop.cli.failed.message": "Инсталација CLI-ја није успела: {{error}}",
   "command.project.copyID": "Копирај ID пројекта",
@@ -735,8 +735,8 @@ export const dict = {
   "server.connect.address.invalid": "Унесите важећу HTTP или HTTPS адресу сервера.",
   "server.connect.failed": "Није могуће повезати се. Проверите адресу сервера и лозинку, па покушајте поново.",
   "server.connect.scan": "Скенирај QR код",
-  "server.connect.scan.description": "Усмерите камеру на QR код који приказује opencode pair.",
-  "server.connect.scan.invalid": "Ово није PorkCode код за повезивање. Скенирајте код који приказује opencode pair.",
+  "server.connect.scan.description": "Усмерите камеру на QR код који приказује porkcode pair.",
+  "server.connect.scan.invalid": "Ово није PorkCode код за повезивање. Скенирајте код који приказује porkcode pair.",
   "server.connect.camera": "Камера за упаривање",
   "server.connect.camera.starting": "Отварање камере…",
   "server.connect.mixedContent":

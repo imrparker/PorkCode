@@ -314,7 +314,7 @@ export const dict = {
   "error.chain.responseBody": "Тело ответа:\n{{body}}",
   "error.chain.didYouMean": "Возможно, вы имели в виду: {{suggestions}}",
   "error.chain.modelNotFound": "Модель не найдена: {{provider}}/{{model}}",
-  "error.chain.checkConfig": "Проверьте названия провайдера и модели в конфигурации (opencode.json)",
+  "error.chain.checkConfig": "Проверьте названия провайдера и модели в конфигурации (porkcode.json)",
   "error.chain.mcpFailed":
     'MCP-сервер "{{name}}" завершился с ошибкой. Обратите внимание: PorkCode пока не поддерживает MCP-авторизацию.',
   "error.chain.providerAuthFailed": "Ошибка аутентификации провайдера ({{provider}}): {{message}}",
@@ -629,7 +629,7 @@ export const dict = {
   "settings.extensions.tab.mcps": "МКП",
   "settings.extensions.tab.skills": "Навыки",
   "settings.extensions.availableAll": "Доступно для всех проектов",
-  "settings.extensions.manageConfig": "Управление в opencode.json",
+  "settings.extensions.manageConfig": "Управление в porkcode.json",
   "settings.extensions.addSkills": "Как добавить навыки",
   "project.settings.extensions.description": "Посмотреть расширения, доступные для этого проекта",
   "project.settings.extensions.tab.lsps": "ЛСП",
@@ -674,7 +674,7 @@ export const dict = {
   "desktop.menu.installCli": "Установить CLI...",
   "desktop.cli.installed.title": "CLI установлен",
   "desktop.cli.installed.message":
-    "CLI установлен в {{path}}\n\nПерезапустите терминал, чтобы использовать команду «opencode2».",
+    "CLI установлен в {{path}}\n\nПерезапустите терминал, чтобы использовать команду «porkcode».",
   "desktop.cli.failed.title": "Не удалось установить",
   "desktop.cli.failed.message": "Не удалось установить CLI: {{error}}",
   "command.project.copyID": "Копировать идентификатор проекта",
@@ -806,8 +806,8 @@ export const dict = {
   "server.connect.address.invalid": "Введите действительный адрес сервера HTTP или HTTPS.",
   "server.connect.failed": "Не удалось подключиться. Проверьте адрес сервера и пароль, затем попробуйте снова.",
   "server.connect.scan": "Сканировать QR-код",
-  "server.connect.scan.description": "Наведите камеру на QR-код, показанный парой opencode.",
-  "server.connect.scan.invalid": "Это не код пары PorkCode. Сканируйте код, показанный парой opencode.",
+  "server.connect.scan.description": "Наведите камеру на QR-код, показанный парой porkcode.",
+  "server.connect.scan.invalid": "Это не код пары PorkCode. Сканируйте код, показанный парой porkcode.",
   "server.connect.camera": "Сопряжение камеры",
   "server.connect.camera.starting": "Открытие камеры…",
   "server.connect.mixedContent":

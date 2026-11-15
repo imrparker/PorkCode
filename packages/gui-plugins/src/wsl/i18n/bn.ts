@@ -39,8 +39,8 @@ export default {
   "error.installDistro": "ডিস্ট্রো ইনস্টল করতে ব্যর্থ হয়েছে: {{distro}}",
   "error.installOpencode": "PorkCode ইনস্টলেশন ব্যর্থ হয়েছে৷",
   "error.alreadyAdded": "{{distro}} ইতিমধ্যেই যোগ করা হয়েছে৷",
-  "error.opencodeMissing": "এই ডিস্ট্রোতে opencode ইনস্টল করা নেই",
-  "error.opencodeCannotRun": "opencode ইনস্টল করা আছে কিন্তু চালানো যায়নি",
+  "error.opencodeMissing": "এই ডিস্ট্রোতে porkcode ইনস্টল করা নেই",
+  "error.opencodeCannotRun": "porkcode ইনস্টল করা আছে কিন্তু চালানো যায়নি",
   "error.opencodeNotInstalled": "PorkCode {{distro}} এ ইনস্টল করা নেই",
   "error.updateVersion":
     "PorkCode আপডেট শেষ হয়েছে কিন্তু {{distro}} এখনও রিপোর্ট করে {{installed}}; প্রত্যাশিত {{expected}}",

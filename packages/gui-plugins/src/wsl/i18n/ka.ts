@@ -40,8 +40,8 @@ export default {
   "error.installDistro": "დისტროს დაყენება ვერ მოხერხდა: {{distro}}",
   "error.installOpencode": "PorkCode ინსტალაცია ვერ მოხერხდა",
   "error.alreadyAdded": "{{distro}} უკვე დამატებულია",
-  "error.opencodeMissing": "opencode არ არის დაინსტალირებული ამ დისტროში",
-  "error.opencodeCannotRun": "opencode დაინსტალირებულია, მაგრამ ვერ გაშვება",
+  "error.opencodeMissing": "porkcode არ არის დაინსტალირებული ამ დისტროში",
+  "error.opencodeCannotRun": "porkcode დაინსტალირებულია, მაგრამ ვერ გაშვება",
   "error.opencodeNotInstalled": "PorkCode არ არის დაინსტალირებული {{distro}}",
   "error.updateVersion":
     "PorkCode განახლება დასრულდა, მაგრამ {{distro}} კვლავ იუწყება {{installed}}; მოსალოდნელია {{expected}}",

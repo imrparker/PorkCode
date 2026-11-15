@@ -40,8 +40,8 @@ export default {
   "error.installDistro": "ڈسٹرو انسٹال نئیں ہو سکیا: ⁨{{distro}}⁩",
   "error.installOpencode": "PorkCode دی تنصیب ناکام ہو گئی",
   "error.alreadyAdded": "⁨{{distro}}⁩ پہلے ای شامل اے",
-  "error.opencodeMissing": "اس ڈسٹرو وچ opencode انسٹال نئیں اے",
-  "error.opencodeCannotRun": "opencode انسٹال اے پر چل نئیں سکیا",
+  "error.opencodeMissing": "اس ڈسٹرو وچ porkcode انسٹال نئیں اے",
+  "error.opencodeCannotRun": "porkcode انسٹال اے پر چل نئیں سکیا",
   "error.opencodeNotInstalled": "⁨{{distro}}⁩ وچ PorkCode انسٹال نئیں اے",
   "error.updateVersion":
     "PorkCode دی اپ ڈیٹ پوری ہو گئی پر ⁨{{distro}}⁩ ہلے وی ⁨{{installed}}⁩ دس رہیا اے؛ ⁨{{expected}}⁩ چاہیدا سی",

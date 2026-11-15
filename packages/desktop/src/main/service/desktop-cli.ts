@@ -48,7 +48,7 @@ export const layer = Layer.effect(
       const home = app.getPath("home")
       yield* runInstaller(cli.binary, home)
 
-      return path.join(home, ".opencode", "bin", "opencode")
+      return path.join(home, ".porkcode", "bin", "porkcode")
     })
 
     return Service.of({ resolve, install })
@@ -106,7 +106,7 @@ const bundledVersion = Effect.fn("DesktopCli.bundledVersion")(function* (bundled
   // async read waits behind everything else the main thread is doing at that moment.
   const shipped = yield* Effect.sync(() => {
     try {
-      return readFileSync(path.join(path.dirname(bundled), "opencode-cli.version"), "utf8").trim()
+      return readFileSync(path.join(path.dirname(bundled), "porkcode-cli.version"), "utf8").trim()
     } catch {
       return ""
     }
@@ -206,7 +206,7 @@ export const describePaths = Effect.fn("DesktopCli.describePaths")(function* (co
   )
 })
 
-// The installer runs `opencode --version`, which can take several seconds on first run while Gatekeeper scans it.
+// The installer runs `porkcode --version`, which can take several seconds on first run while Gatekeeper scans it.
 const INSTALL_TIMEOUT_MS = 60_000
 
 const runInstaller = Effect.fn("DesktopCli.installForUser")(function* (binary: string, home: string) {
@@ -227,7 +227,7 @@ const runInstaller = Effect.fn("DesktopCli.installForUser")(function* (binary: s
     child.stdin.on("error", () => {})
     child.stdin.end(installer)
 
-    // A timeout or the app quitting leaves no installer writing into ~/.opencode behind.
+    // A timeout or the app quitting leaves no installer writing into ~/.porkcode behind.
     return Effect.sync(() => {
       if (child.exitCode === null && child.signalCode === null) child.kill("SIGKILL")
     })
@@ -240,9 +240,9 @@ const runInstaller = Effect.fn("DesktopCli.installForUser")(function* (binary: s
 })
 
 function executableName() {
-  return process.platform === "win32" ? "opencode-cli.exe" : "opencode-cli"
+  return process.platform === "win32" ? "porkcode-cli.exe" : "porkcode-cli"
 }
 
 function developmentExecutableName() {
-  return process.platform === "win32" ? "opencode-cli-dev.exe" : "opencode-cli-dev"
+  return process.platform === "win32" ? "porkcode-cli-dev.exe" : "porkcode-cli-dev"
 }

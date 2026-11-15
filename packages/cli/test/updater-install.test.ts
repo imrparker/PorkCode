@@ -412,11 +412,11 @@ it.live("WinGet update checks report a missing package instead of a version", ()
   }),
 )
 
-// Links are named opencode-upgrade-<pid>-<random>.exe; read them from inside the installer run.
+// Links are named porkcode-upgrade-<pid>-<random>.exe; read them from inside the installer run.
 const links = (directory: string) =>
-  existsSync(directory) ? readdirSync(directory).filter((name) => name.startsWith("opencode-")) : []
+  existsSync(directory) ? readdirSync(directory).filter((name) => name.startsWith("porkcode-")) : []
 const upgradeLinks = (directory: string) =>
-  links(directory).filter((name) => name.startsWith(`opencode-upgrade-${process.pid}-`))
+  links(directory).filter((name) => name.startsWith(`porkcode-upgrade-${process.pid}-`))
 
 windows("windows keeps a second link to the running binary in the cache while the installer runs", () =>
   Effect.gen(function* () {
@@ -432,13 +432,13 @@ windows("windows keeps a second link to the running binary in the cache while th
     layout.cache = test.global.cache
     yield* test.fs.makeDirectory(test.global.cache, { recursive: true })
     // pid 999999999 does not exist; pid 4 is System, alive but not openable (EPERM).
-    yield* test.fs.writeFileString(path.join(test.global.cache, "opencode-upgrade-999999999-dead.exe"), "exited")
-    yield* test.fs.writeFileString(path.join(test.global.cache, "opencode-service-4-aa.exe"), "inaccessible")
+    yield* test.fs.writeFileString(path.join(test.global.cache, "porkcode-upgrade-999999999-dead.exe"), "exited")
+    yield* test.fs.writeFileString(path.join(test.global.cache, "porkcode-service-4-aa.exe"), "inaccessible")
     yield* test.updater.upgrade("bun", "2.3.4")
     expect(test.commands).toHaveLength(1)
     // The installed path never disappears; the extra link is released and only dead ones are swept.
     expect(yield* test.fs.readFileString(test.executable)).toBe("binary")
-    expect(links(test.global.cache)).toEqual(["opencode-service-4-aa.exe"])
+    expect(links(test.global.cache)).toEqual(["porkcode-service-4-aa.exe"])
   }),
 )
 
@@ -561,7 +561,7 @@ test("Node distribution honors the compile-time CLI name", async () => {
       "test",
       import.meta.path,
       "--define",
-      'PORKCODE_CLI_NAME="opencode2-node"',
+      'PORKCODE_CLI_NAME="porkcode-node"',
       "--test-name-pattern",
       "^Node distribution resolves the published npm package$",
     ],
@@ -578,7 +578,7 @@ test("Node distribution honors the compile-time CLI name", async () => {
   expect(stderr).toContain("1 pass")
 })
 
-if (typeof PORKCODE_CLI_NAME === "string" && PORKCODE_CLI_NAME === "opencode2-node") {
+if (typeof PORKCODE_CLI_NAME === "string" && PORKCODE_CLI_NAME === "porkcode-node") {
   it.live("Node distribution resolves the published npm package", () =>
     Effect.gen(function* () {
       const test = yield* fixture(

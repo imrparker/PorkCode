@@ -287,7 +287,7 @@ export const dict = {
   "error.chain.responseBody": "Тяло на отговора:\n{{body}}",
   "error.chain.didYouMean": "Може би имахте предвид: {{suggestions}}",
   "error.chain.modelNotFound": "Моделът не е намерен: {{provider}}/{{model}}",
-  "error.chain.checkConfig": "Проверете имената на доставчика/модела на вашата конфигурация (opencode.json).",
+  "error.chain.checkConfig": "Проверете имената на доставчика/модела на вашата конфигурация (porkcode.json).",
   "error.chain.mcpFailed":
     'MCP сървър "{{name}}" не успя. Имайте предвид, че PorkCode все още не поддържа MCP удостоверяване.',
   "error.chain.providerAuthFailed": "Неуспешно удостоверяване на доставчика ({{provider}}): {{message}}",
@@ -566,7 +566,7 @@ export const dict = {
   "settings.extensions.tab.mcps": "MCPs",
   "settings.extensions.tab.skills": "Умения",
   "settings.extensions.availableAll": "Предлага се за всички проекти",
-  "settings.extensions.manageConfig": "Управление в opencode.json",
+  "settings.extensions.manageConfig": "Управление в porkcode.json",
   "settings.extensions.addSkills": "Как да добавите умения",
   "project.settings.extensions.description": "Вижте разширенията, налични за този проект",
   "project.settings.extensions.tab.lsps": "LSPs",
@@ -607,7 +607,7 @@ export const dict = {
   "desktop.menu.installCli": "Инсталиране на CLI...",
   "desktop.cli.installed.title": "CLI е инсталиран",
   "desktop.cli.installed.message":
-    "CLI е инсталиран в {{path}}\n\nРестартирайте терминала, за да използвате командата 'opencode2'.",
+    "CLI е инсталиран в {{path}}\n\nРестартирайте терминала, за да използвате командата 'porkcode'.",
   "desktop.cli.failed.title": "Неуспешна инсталация",
   "desktop.cli.failed.message": "CLI не можа да бъде инсталиран: {{error}}",
   "command.project.copyID": "Копиране на идентификатора на проекта",
@@ -728,8 +728,8 @@ export const dict = {
   "server.connect.address.invalid": "Въведете валиден HTTP или HTTPS адрес на сървър.",
   "server.connect.failed": "Свързването е неуспешно. Проверете адреса и паролата на сървъра и опитайте отново.",
   "server.connect.scan": "Сканиране на QR код",
-  "server.connect.scan.description": "Насочете камерата към QR кода, показан от opencode pair.",
-  "server.connect.scan.invalid": "Това не е код за сдвояване с PorkCode. Сканирайте кода, показан от opencode pair.",
+  "server.connect.scan.description": "Насочете камерата към QR кода, показан от porkcode pair.",
+  "server.connect.scan.invalid": "Това не е код за сдвояване с PorkCode. Сканирайте кода, показан от porkcode pair.",
   "server.connect.camera": "Камера за сдвояване",
   "server.connect.camera.starting": "Отваряне на камерата…",
   "server.connect.mixedContent":

@@ -40,8 +40,8 @@ export default {
   "error.installDistro": "A disztribúció telepítése sikertelen: {{distro}}",
   "error.installOpencode": "Az PorkCode telepítése sikertelen",
   "error.alreadyAdded": "A(z) {{distro}} már hozzá van adva",
-  "error.opencodeMissing": "Az opencode nincs telepítve ebben a disztribúcióban",
-  "error.opencodeCannotRun": "Az opencode telepítve van, de nem futtatható",
+  "error.opencodeMissing": "Az porkcode nincs telepítve ebben a disztribúcióban",
+  "error.opencodeCannotRun": "Az porkcode telepítve van, de nem futtatható",
   "error.opencodeNotInstalled": "Az PorkCode nincs telepítve ebben: {{distro}}",
   "error.updateVersion":
     "Az PorkCode frissítése befejeződött, de a(z) {{distro}} továbbra is ezt jelenti: {{installed}}; a várt érték: {{expected}}",

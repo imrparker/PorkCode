@@ -434,10 +434,10 @@ export const dict = {
   "server.connect.link": "Pairing link",
   "server.connect.link.placeholder": "http://192.168.1.2:4096/auth/connect/…",
   "server.connect.link.invalid":
-    "Paste the full pairing link from opencode pair, or from Settings → Pairing on the server's computer.",
+    "Paste the full pairing link from porkcode pair, or from Settings → Pairing on the server's computer.",
   "server.connect.password.prompt": "No pairing link?",
   "server.connect.password.use": "Use password",
-  "server.connect.password.hint": "To see it, run opencode service get password on the server's computer.",
+  "server.connect.password.hint": "To see it, run porkcode service get password on the server's computer.",
   "server.connect.link.prompt": "Have a pairing link?",
   "server.connect.link.use": "Use pairing link",
   "server.connect.button": "Connect",
@@ -445,14 +445,14 @@ export const dict = {
   "server.connect.failed": "Could not connect. Check the server address and password, then try again.",
   "server.connect.pair.link": "Run this command on the server's computer to get a pairing link and QR code.",
   "server.connect.scan": "Scan QR code",
-  "server.connect.scan.description": "Point your camera at the QR code shown by opencode pair.",
-  "server.connect.scan.invalid": "This is not an PorkCode pairing code. Scan the code shown by opencode pair.",
+  "server.connect.scan.description": "Point your camera at the QR code shown by porkcode pair.",
+  "server.connect.scan.invalid": "This is not an PorkCode pairing code. Scan the code shown by porkcode pair.",
   "server.connect.scan.failed": "This browser could not read the QR code. Enter your connection details manually.",
-  "server.connect.link.expired": "This pairing link expired or was already used. Run opencode pair to get a new one.",
+  "server.connect.link.expired": "This pairing link expired or was already used. Run porkcode pair to get a new one.",
   "server.connect.link.unreachable":
     "Could not reach {{url}}. Check that this device can reach the server, then try again.",
   "server.connect.link.legacy":
-    "This pairing code is from an older version of PorkCode. Update PorkCode on the server, then run opencode pair again.",
+    "This pairing code is from an older version of PorkCode. Update PorkCode on the server, then run porkcode pair again.",
   "server.connect.camera": "Pairing camera",
   "server.connect.camera.starting": "Opening camera…",
   "server.connect.mixedContent":
@@ -560,7 +560,7 @@ export const dict = {
   "error.chain.responseBody": "Response body:\n{{body}}",
   "error.chain.didYouMean": "Did you mean: {{suggestions}}",
   "error.chain.modelNotFound": "Model not found: {{provider}}/{{model}}",
-  "error.chain.checkConfig": "Check your config (opencode.json) provider/model names",
+  "error.chain.checkConfig": "Check your config (porkcode.json) provider/model names",
   "error.chain.mcpFailed": 'MCP server "{{name}}" failed. Note, PorkCode does not support MCP authentication yet.',
   "error.chain.providerAuthFailed": "Provider authentication failed ({{provider}}): {{message}}",
   "error.chain.providerInitFailed":
@@ -868,7 +868,7 @@ export const dict = {
   "settings.plugins.part.server": "Server",
   "settings.plugins.part.tui": "TUI",
   "settings.plugins.parts.note":
-    'Switches turn off only a plugin\'s desktop UI. Add "-<id>" to plugins in your global opencode.json to turn off its server part, or "-" and its TUI plugin\'s ID to plugins in cli.json to turn off its TUI part.',
+    'Switches turn off only a plugin\'s desktop UI. Add "-<id>" to plugins in your global porkcode.json to turn off its server part, or "-" and its TUI plugin\'s ID to plugins in cli.json to turn off its TUI part.',
   "settings.tab.about": "About",
   "settings.about.version": "Version {{version}}",
   "settings.about.devVersion": "development",
@@ -945,7 +945,7 @@ export const dict = {
   "settings.extensions.tab.mcps": "MCPs",
   "settings.extensions.tab.skills": "Skills",
   "settings.extensions.availableAll": "Available to all projects",
-  "settings.extensions.manageConfig": "Manage in opencode.json",
+  "settings.extensions.manageConfig": "Manage in porkcode.json",
   "settings.extensions.addSkills": "How to add skills",
   "settings.extensions.plugins.loadFailed": "Could not load plugins",
   "project.settings.title": "Edit project",

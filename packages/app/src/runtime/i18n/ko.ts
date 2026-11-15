@@ -214,7 +214,7 @@ export const dict = {
   "error.chain.responseBody": "응답 본문:\n{{body}}",
   "error.chain.didYouMean": "혹시 {{suggestions}}을(를) 의미하셨나요?",
   "error.chain.modelNotFound": "모델을 찾을 수 없음: {{provider}}/{{model}}",
-  "error.chain.checkConfig": "구성(opencode.json)의 공급자/모델 이름을 확인하세요",
+  "error.chain.checkConfig": "구성(porkcode.json)의 공급자/모델 이름을 확인하세요",
   "error.chain.mcpFailed": 'MCP 서버 "{{name}}" 실패. 참고: PorkCode는 아직 MCP 인증을 지원하지 않습니다.',
   "error.chain.providerAuthFailed": "공급자 인증 실패 ({{provider}}): {{message}}",
   "error.chain.providerInitFailed": '공급자 "{{provider}}" 초기화 실패. 자격 증명과 구성을 확인하세요.',
@@ -577,7 +577,7 @@ export const dict = {
   "settings.extensions.tab.mcps": "MCP",
   "settings.extensions.tab.skills": "스킬",
   "settings.extensions.availableAll": "모든 프로젝트에서 사용 가능",
-  "settings.extensions.manageConfig": "opencode.json에서 관리",
+  "settings.extensions.manageConfig": "porkcode.json에서 관리",
   "settings.extensions.addSkills": "스킬 추가 방법",
   "project.settings.extensions.description": "이 프로젝트에서 사용할 수 있는 확장 보기",
   "project.settings.extensions.tab.lsps": "LSP",
@@ -616,7 +616,7 @@ export const dict = {
   "desktop.menu.installCli": "CLI 설치...",
   "desktop.cli.installed.title": "CLI 설치됨",
   "desktop.cli.installed.message":
-    "CLI가 {{path}}에 설치되었습니다\n\n'opencode2' 명령을 사용하려면 터미널을 다시 시작하세요.",
+    "CLI가 {{path}}에 설치되었습니다\n\n'porkcode' 명령을 사용하려면 터미널을 다시 시작하세요.",
   "desktop.cli.failed.title": "설치 실패",
   "desktop.cli.failed.message": "CLI 설치 실패: {{error}}",
   "command.project.copyID": "프로젝트 ID 복사",
@@ -735,9 +735,9 @@ export const dict = {
   "server.connect.address.invalid": "유효한 HTTP 또는 HTTPS 서버 주소를 입력하세요.",
   "server.connect.failed": "연결할 수 없습니다. 서버 주소와 비밀번호를 확인한 후 다시 시도하세요.",
   "server.connect.scan": "QR 코드 스캔",
-  "server.connect.scan.description": "opencode pair에서 표시된 QR 코드를 카메라로 가리키세요.",
+  "server.connect.scan.description": "porkcode pair에서 표시된 QR 코드를 카메라로 가리키세요.",
   "server.connect.scan.invalid":
-    "이것은 PorkCode 페어링 코드가 아닙니다. opencode 페어링에서 표시된 코드를 스캔하세요.",
+    "이것은 PorkCode 페어링 코드가 아닙니다. porkcode 페어링에서 표시된 코드를 스캔하세요.",
   "server.connect.camera": "카메라 페어링",
   "server.connect.camera.starting": "카메라 열기…",
   "server.connect.mixedContent":

@@ -39,8 +39,8 @@ export default {
   "error.installDistro": "فشل تثبيت التوزيعة: {{distro}}",
   "error.installOpencode": "فشل تثبيت PorkCode",
   "error.alreadyAdded": "تمت إضافة {{distro}} بالفعل",
-  "error.opencodeMissing": "opencode غير مثبت في هذه التوزيعة",
-  "error.opencodeCannotRun": "opencode مثبت، لكن تعذر تشغيله",
+  "error.opencodeMissing": "porkcode غير مثبت في هذه التوزيعة",
+  "error.opencodeCannotRun": "porkcode مثبت، لكن تعذر تشغيله",
   "error.opencodeNotInstalled": "PorkCode غير مثبت في {{distro}}",
   "error.updateVersion":
     "اكتمل تحديث PorkCode، لكن {{distro}} ما زالت تعرض الإصدار {{installed}}؛ الإصدار المتوقع هو {{expected}}",

@@ -40,8 +40,8 @@ export default {
   "error.installDistro": "डिस्ट्रो स्थापना गर्न असफल: {{distro}}",
   "error.installOpencode": "PorkCode स्थापना असफल भयो",
   "error.alreadyAdded": "{{distro}} पहिले नै थपिएको छ",
-  "error.opencodeMissing": "Opencode यस distro मा स्थापित छैन",
-  "error.opencodeCannotRun": "opencode स्थापित छ तर चलाउन सकिएन",
+  "error.opencodeMissing": "PorkCode यस distro मा स्थापित छैन",
+  "error.opencodeCannotRun": "porkcode स्थापित छ तर चलाउन सकिएन",
   "error.opencodeNotInstalled": "PorkCode {{distro}} मा स्थापित छैन",
   "error.updateVersion":
     "PorkCode अद्यावधिक समाप्त भयो तर {{distro}} ले अझै पनि रिपोर्ट गर्छ {{installed}}; अपेक्षित {{expected}}",

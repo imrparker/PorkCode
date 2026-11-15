@@ -287,7 +287,7 @@ export const dict = {
   "error.chain.responseBody": "Javob organi:\n{{body}}",
   "error.chain.didYouMean": "Buni nazarda tutdingizmi: {{suggestions}}",
   "error.chain.modelNotFound": "Model topilmadi: {{provider}}/{{model}}",
-  "error.chain.checkConfig": "Konfiguratsiya (opencode.json) provayder/model nomlarini tekshiring",
+  "error.chain.checkConfig": "Konfiguratsiya (porkcode.json) provayder/model nomlarini tekshiring",
   "error.chain.mcpFailed":
     "MCP \"{{name}}\" serveri muvaffaqiyatsiz tugadi. E'tibor bering, PorkCode hali MCP autentifikatsiyasini qo'llab-quvvatlamaydi.",
   "error.chain.providerAuthFailed": "Provayder autentifikatsiyasi amalga oshmadi ({{provider}}): {{message}}",
@@ -562,7 +562,7 @@ export const dict = {
   "settings.extensions.tab.mcps": "MCP-lar",
   "settings.extensions.tab.skills": "Ko‘nikmalar",
   "settings.extensions.availableAll": "Barcha loyihalar uchun mavjud",
-  "settings.extensions.manageConfig": "opencode.json faylida boshqarish",
+  "settings.extensions.manageConfig": "porkcode.json faylida boshqarish",
   "settings.extensions.addSkills": "Ko‘nikmalarni qanday qo‘shish kerak",
   "project.settings.extensions.description": "Ushbu loyiha uchun mavjud kengaytmalarni ko‘ring",
   "project.settings.extensions.tab.lsps": "LSP-lar",
@@ -606,7 +606,7 @@ export const dict = {
   "desktop.menu.installCli": "CLI o‘rnatish...",
   "desktop.cli.installed.title": "CLI o‘rnatildi",
   "desktop.cli.installed.message":
-    "CLI {{path}} manziliga o‘rnatildi\n\n'opencode2' buyrug‘idan foydalanish uchun terminalni qayta ishga tushiring.",
+    "CLI {{path}} manziliga o‘rnatildi\n\n'porkcode' buyrug‘idan foydalanish uchun terminalni qayta ishga tushiring.",
   "desktop.cli.failed.title": "O‘rnatish amalga oshmadi",
   "desktop.cli.failed.message": "CLI o‘rnatib bo‘lmadi: {{error}}",
   "command.project.copyID": "Loyiha ID-sini nusxalash",
@@ -726,8 +726,8 @@ export const dict = {
   "server.connect.address.invalid": "Yaroqli HTTP yoki HTTPS server manzilini kiriting.",
   "server.connect.failed": "Ulanib bo‘lmadi. Server manzili va parolni tekshiring, keyin qayta urinib ko'ring.",
   "server.connect.scan": "QR kodini skanerlang",
-  "server.connect.scan.description": "Kamerani opencode pair koʻrsatgan QR kodga qarating.",
-  "server.connect.scan.invalid": "Bu PorkCode ulash kodi emas. opencode pair koʻrsatgan kodni skanerlang.",
+  "server.connect.scan.description": "Kamerani porkcode pair koʻrsatgan QR kodga qarating.",
+  "server.connect.scan.invalid": "Bu PorkCode ulash kodi emas. porkcode pair koʻrsatgan kodni skanerlang.",
   "server.connect.camera": "Kamerani ulash",
   "server.connect.camera.starting": "Kamera ochilmoqda…",
   "server.connect.mixedContent":

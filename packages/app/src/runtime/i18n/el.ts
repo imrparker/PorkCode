@@ -289,7 +289,7 @@ export const dict = {
   "error.chain.responseBody": "Σώμα απόκρισης:\n{{body}}",
   "error.chain.didYouMean": "Μήπως εννοείτε: {{suggestions}}",
   "error.chain.modelNotFound": "Το μοντέλο δεν βρέθηκε: {{provider}}/{{model}}",
-  "error.chain.checkConfig": "Ελέγξτε τη διαμόρφωση (opencode.json) ονόματα παρόχου/μοντέλων",
+  "error.chain.checkConfig": "Ελέγξτε τη διαμόρφωση (porkcode.json) ονόματα παρόχου/μοντέλων",
   "error.chain.mcpFailed":
     'MCP διακομιστής "{{name}}" απέτυχε. Σημείωση, το PorkCode δεν υποστηρίζει ακόμη έλεγχο ταυτότητας MCP.',
   "error.chain.providerAuthFailed": "Ο έλεγχος ταυτότητας παρόχου απέτυχε ({{provider}}): {{message}}",
@@ -599,7 +599,7 @@ export const dict = {
   "settings.extensions.tab.mcps": "MCP",
   "settings.extensions.tab.skills": "Δεξιότητες",
   "settings.extensions.availableAll": "Διαθέσιμο σε όλα τα έργα",
-  "settings.extensions.manageConfig": "Διαχείριση στο opencode.json",
+  "settings.extensions.manageConfig": "Διαχείριση στο porkcode.json",
   "settings.extensions.addSkills": "Πώς να προσθέσετε δεξιότητες",
   "project.settings.extensions.description": "Προβολή επεκτάσεων που είναι διαθέσιμες σε αυτό το έργο",
   "project.settings.extensions.tab.lsps": "LSP",
@@ -610,7 +610,7 @@ export const dict = {
   "desktop.menu.installCli": "Εγκατάσταση CLI...",
   "desktop.cli.installed.title": "Το CLI εγκαταστάθηκε",
   "desktop.cli.installed.message":
-    "Το CLI εγκαταστάθηκε στη διαδρομή {{path}}\n\nΕπανεκκινήστε το τερματικό για να χρησιμοποιήσετε την εντολή 'opencode2'.",
+    "Το CLI εγκαταστάθηκε στη διαδρομή {{path}}\n\nΕπανεκκινήστε το τερματικό για να χρησιμοποιήσετε την εντολή 'porkcode'.",
   "desktop.cli.failed.title": "Η εγκατάσταση απέτυχε",
   "desktop.cli.failed.message": "Αποτυχία εγκατάστασης του CLI: {{error}}",
   "command.project.copyID": "Αντιγραφή ID έργου",
@@ -725,9 +725,9 @@ export const dict = {
   "server.connect.failed":
     "Δεν ήταν δυνατή η σύνδεση. Ελέγξτε τη διεύθυνση του διακομιστή και τον κωδικό πρόσβασης και, στη συνέχεια, δοκιμάστε ξανά.",
   "server.connect.scan": "Σάρωση κωδικού QR",
-  "server.connect.scan.description": "Στρέψτε την κάμερά σας στον κωδικό QR που εμφανίζεται από το opencode pair.",
+  "server.connect.scan.description": "Στρέψτε την κάμερά σας στον κωδικό QR που εμφανίζεται από το porkcode pair.",
   "server.connect.scan.invalid":
-    "Αυτός δεν είναι κωδικός σύζευξης PorkCode. Σαρώστε τον κωδικό που εμφανίζεται από το opencode pair.",
+    "Αυτός δεν είναι κωδικός σύζευξης PorkCode. Σαρώστε τον κωδικό που εμφανίζεται από το porkcode pair.",
   "server.connect.camera": "Κάμερα ζευγοποίησης",
   "server.connect.camera.starting": "Άνοιγμα κάμερας…",
   "server.connect.mixedContent":

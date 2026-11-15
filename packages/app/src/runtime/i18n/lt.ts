@@ -47,7 +47,7 @@ const desktop = [
   "Pranešti apie klaidą",
   "PorkCode meniu",
   "CLI įdiegtas",
-  "CLI įdiegtas į {{path}}\n\nPaleiskite terminalą iš naujo, kad galėtumėte naudoti komandą 'opencode2'.",
+  "CLI įdiegtas į {{path}}\n\nPaleiskite terminalą iš naujo, kad galėtumėte naudoti komandą 'porkcode'.",
   "Įdiegti nepavyko",
   "Nepavyko įdiegti CLI: {{error}}",
   "Paleisti iš naujo",
@@ -299,7 +299,7 @@ export const dict = {
   "error.chain.responseBody": "Atsakymo turinys:\n{{body}}",
   "error.chain.didYouMean": "Ar turėjote omenyje: {{suggestions}}",
   "error.chain.modelNotFound": "Modelis nerastas: {{provider}}/{{model}}",
-  "error.chain.checkConfig": "Patikrinkite konfigūracijos (opencode.json) teikėjo / modelio pavadinimus",
+  "error.chain.checkConfig": "Patikrinkite konfigūracijos (porkcode.json) teikėjo / modelio pavadinimus",
   "error.chain.mcpFailed":
     "MCP serveris „{{name}}“ nepavyko. Atminkite, kad PorkCode dar nepalaiko MCP autentifikavimo.",
   "error.chain.providerAuthFailed": "Teikėjo autentifikavimas nepavyko ({{provider}}): {{message}}",
@@ -610,7 +610,7 @@ export const dict = {
   "settings.extensions.tab.mcps": "MCP",
   "settings.extensions.tab.skills": "Įgūdžiai",
   "settings.extensions.availableAll": "Pasiekiama visiems projektams",
-  "settings.extensions.manageConfig": "Tvarkyti faile opencode.json",
+  "settings.extensions.manageConfig": "Tvarkyti faile porkcode.json",
   "settings.extensions.addSkills": "Kaip pridėti įgūdžių",
   "project.settings.extensions.description": "Peržiūrėkite šiam projektui pasiekiamus plėtinius",
   "project.settings.extensions.tab.lsps": "LSP",
@@ -736,8 +736,8 @@ export const dict = {
   "server.connect.failed":
     "Nepavyko prisijungti. Patikrinkite serverio adresą ir slaptažodį, tada bandykite dar kartą.",
   "server.connect.scan": "Nuskaitykite QR kodą",
-  "server.connect.scan.description": "Nukreipkite fotoaparatą į QR kodą, rodomą opencode pair.",
-  "server.connect.scan.invalid": "Tai nėra PorkCode susiejimo kodas. Nuskaitykite kodą, kurį rodo opencode pair.",
+  "server.connect.scan.description": "Nukreipkite fotoaparatą į QR kodą, rodomą porkcode pair.",
+  "server.connect.scan.invalid": "Tai nėra PorkCode susiejimo kodas. Nuskaitykite kodą, kurį rodo porkcode pair.",
   "server.connect.camera": "Kameros susiejimas",
   "server.connect.camera.starting": "Atidaroma kamera…",
   "server.connect.mixedContent":

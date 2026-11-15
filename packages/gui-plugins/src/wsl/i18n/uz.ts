@@ -40,8 +40,8 @@ export default {
   "error.installDistro": "Distroni oʻrnatib boʻlmadi: {{distro}}",
   "error.installOpencode": "PorkCode oʻrnatilmadi",
   "error.alreadyAdded": "{{distro}} allaqachon qo'shilgan",
-  "error.opencodeMissing": "Opencode ushbu tarqatishda o'rnatilmagan",
-  "error.opencodeCannotRun": "opencode o'rnatilgan, lekin ishga tushirilmadi",
+  "error.opencodeMissing": "PorkCode ushbu tarqatishda o'rnatilmagan",
+  "error.opencodeCannotRun": "porkcode o'rnatilgan, lekin ishga tushirilmadi",
   "error.opencodeNotInstalled": "PorkCode {{distro}} da o'rnatilmagan",
   "error.updateVersion":
     "PorkCode yangilanishi tugallandi, lekin {{distro}} hali ham {{installed}} haqida xabar beradi; kutilgan {{expected}}",

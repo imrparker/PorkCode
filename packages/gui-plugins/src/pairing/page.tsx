@@ -364,7 +364,7 @@ function DialogPairing(props: {
     return current.kind === "loading" ? current : undefined
   })
 
-  // The QR code carries the remote address as `opencode pair --remote` prints it, {"code","urls"} JSON, which the
+  // The QR code carries the remote address as `porkcode pair --remote` prints it, {"code","urls"} JSON, which the
   // app's scanner reads. Keyed by its content, so the countdown and a refresh in flight never draw it again.
   const payload = createMemo(() => ready()?.qr)
 

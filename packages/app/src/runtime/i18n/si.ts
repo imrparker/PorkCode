@@ -290,7 +290,7 @@ export const dict = {
   "error.chain.responseBody": "ප්‍රතිචාර අන්තර්ගතය:\n{{body}}",
   "error.chain.didYouMean": "ඔබ අදහස් කළේ: {{suggestions}}",
   "error.chain.modelNotFound": "ආකෘතිය හමු නොවීය: {{provider}}/{{model}}",
-  "error.chain.checkConfig": "ඔබගේ වින්‍යාසය (opencode.json) සපයන්නා/ආදර්ශ නම් පරීක්ෂා කරන්න",
+  "error.chain.checkConfig": "ඔබගේ වින්‍යාසය (porkcode.json) සපයන්නා/ආදර්ශ නම් පරීක්ෂා කරන්න",
   "error.chain.mcpFailed": 'MCP සේවාදායකය "{{name}}" අසාර්ථක විය. සටහන, PorkCode තවමත් MCP සත්‍යාපනයට සහය නොදක්වයි.',
   "error.chain.providerAuthFailed": "සැපයුම්කරු සත්‍යාපනය අසාර්ථක විය ({{provider}}): {{message}}",
   "error.chain.providerInitFailed":
@@ -562,7 +562,7 @@ export const dict = {
   "settings.extensions.tab.mcps": "MCP",
   "settings.extensions.tab.skills": "කුසලතා",
   "settings.extensions.availableAll": "සියලු ව්‍යාපෘති සඳහා ලබා ගත හැකිය",
-  "settings.extensions.manageConfig": "opencode.json තුළ කළමනාකරණය කරන්න",
+  "settings.extensions.manageConfig": "porkcode.json තුළ කළමනාකරණය කරන්න",
   "settings.extensions.addSkills": "කුසලතා එක් කරන ආකාරය",
   "project.settings.extensions.description": "මෙම ව්‍යාපෘතියට ඇති දිගු බලන්න",
   "project.settings.extensions.tab.lsps": "LSP",
@@ -600,7 +600,7 @@ export const dict = {
   "desktop.menu.installCli": "CLI ස්ථාපනය කරන්න...",
   "desktop.cli.installed.title": "CLI ස්ථාපනය කරන ලදී",
   "desktop.cli.installed.message":
-    "CLI {{path}} වෙත ස්ථාපනය කරන ලදී\n\n'opencode2' විධානය භාවිත කිරීමට ටර්මිනලය නැවත අරඹන්න.",
+    "CLI {{path}} වෙත ස්ථාපනය කරන ලදී\n\n'porkcode' විධානය භාවිත කිරීමට ටර්මිනලය නැවත අරඹන්න.",
   "desktop.cli.failed.title": "ස්ථාපනය අසාර්ථක විය",
   "desktop.cli.failed.message": "CLI ස්ථාපනය කිරීමට අසමත් විය: {{error}}",
   "command.project.copyID": "ව්‍යාපෘති ID පිටපත් කරන්න",
@@ -723,9 +723,9 @@ export const dict = {
   "server.connect.address.invalid": "වලංගු HTTP හෝ HTTPS සේවාදායක ලිපිනයක් ඇතුළත් කරන්න.",
   "server.connect.failed": "සම්බන්ධ වීමට නොහැකි විය. සේවාදායක ලිපිනය සහ මුරපදය පරීක්ෂා කර නැවත උත්සාහ කරන්න.",
   "server.connect.scan": "QR කේතය පරිලෝකනය කරන්න",
-  "server.connect.scan.description": "opencode pair මගින් පෙන්වන QR කේතය වෙත ඔබේ කැමරාව යොමු කරන්න.",
+  "server.connect.scan.description": "porkcode pair මගින් පෙන්වන QR කේතය වෙත ඔබේ කැමරාව යොමු කරන්න.",
   "server.connect.scan.invalid":
-    "මෙය PorkCode යුගල කිරීමේ කේතයක් නොවේ. opencode pair මගින් පෙන්වන කේතය පරිලෝකනය කරන්න.",
+    "මෙය PorkCode යුගල කිරීමේ කේතයක් නොවේ. porkcode pair මගින් පෙන්වන කේතය පරිලෝකනය කරන්න.",
   "server.connect.camera": "කැමරාව යුගල කිරීම",
   "server.connect.camera.starting": "කැමරාව විවෘත කරමින්...",
   "server.connect.mixedContent":

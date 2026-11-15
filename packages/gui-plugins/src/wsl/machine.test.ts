@@ -17,7 +17,7 @@ const readyProbe = { name: "Debian", canExecute: true, hasBash: true, hasCurl: t
 function check(distro: string, version: string): WslOpencodeCheck {
   return {
     distro,
-    resolvedPath: "/usr/bin/opencode",
+    resolvedPath: "/usr/bin/porkcode",
     version,
     expectedVersion: "2",
     matchesDesktop: version === "2",

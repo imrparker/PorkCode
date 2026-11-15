@@ -40,8 +40,8 @@ export default {
   "error.installDistro": "Дистро суулгаж чадсангүй: {{distro}}",
   "error.installOpencode": "PorkCode суулгаж чадсангүй",
   "error.alreadyAdded": "{{distro}} аль хэдийн нэмэгдсэн байна",
-  "error.opencodeMissing": "opencode энэ түгээлтэд суулгаагүй байна",
-  "error.opencodeCannotRun": "opencode суулгасан боловч ажиллуулж чадсангүй",
+  "error.opencodeMissing": "porkcode энэ түгээлтэд суулгаагүй байна",
+  "error.opencodeCannotRun": "porkcode суулгасан боловч ажиллуулж чадсангүй",
   "error.opencodeNotInstalled": "PorkCode-г {{distro}}-д суулгаагүй байна",
   "error.updateVersion":
     "PorkCode шинэчлэлт дууссан боловч {{distro}} мэдээлсэн хэвээр {{installed}}; хүлээгдэж буй {{expected}}",

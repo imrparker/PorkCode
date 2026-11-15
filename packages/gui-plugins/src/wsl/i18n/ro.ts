@@ -39,8 +39,8 @@ export default {
   "error.installDistro": "Nu s-a putut instala distribuția: {{distro}}",
   "error.installOpencode": "Instalarea PorkCode a eșuat",
   "error.alreadyAdded": "{{distro}} este deja adăugată",
-  "error.opencodeMissing": "opencode nu este instalat în această distribuție",
-  "error.opencodeCannotRun": "opencode este instalat, dar nu a putut fi pornit",
+  "error.opencodeMissing": "porkcode nu este instalat în această distribuție",
+  "error.opencodeCannotRun": "porkcode este instalat, dar nu a putut fi pornit",
   "error.opencodeNotInstalled": "PorkCode nu este instalat în {{distro}}",
   "error.updateVersion":
     "Actualizarea PorkCode s-a terminat, dar {{distro}} raportează tot {{installed}}; era așteptat {{expected}}",

@@ -40,8 +40,8 @@ export default {
   "error.installDistro": "Namestitev distribucije ni uspela: {{distro}}",
   "error.installOpencode": "Namestitev PorkCode ni uspela",
   "error.alreadyAdded": "{{distro}} je že dodan",
-  "error.opencodeMissing": "opencode ni nameščen v tej distribuciji",
-  "error.opencodeCannotRun": "opencode je nameščen, vendar se ne more zagnati",
+  "error.opencodeMissing": "porkcode ni nameščen v tej distribuciji",
+  "error.opencodeCannotRun": "porkcode je nameščen, vendar se ne more zagnati",
   "error.opencodeNotInstalled": "PorkCode ni nameščen v {{distro}}",
   "error.updateVersion":
     "Posodobitev PorkCode je končana, vendar {{distro}} še vedno poroča {{installed}}; pričakovano {{expected}}",

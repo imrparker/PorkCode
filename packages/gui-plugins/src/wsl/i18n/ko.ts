@@ -39,8 +39,8 @@ export default {
   "error.installDistro": "배포판 설치 실패: {{distro}}",
   "error.installOpencode": "PorkCode 설치 실패",
   "error.alreadyAdded": "{{distro}} 배포판은 이미 추가되었습니다",
-  "error.opencodeMissing": "이 배포판에 opencode가 설치되어 있지 않습니다",
-  "error.opencodeCannotRun": "opencode가 설치되어 있지만 실행할 수 없습니다",
+  "error.opencodeMissing": "이 배포판에 porkcode가 설치되어 있지 않습니다",
+  "error.opencodeCannotRun": "porkcode가 설치되어 있지만 실행할 수 없습니다",
   "error.opencodeNotInstalled": "{{distro}}에 PorkCode가 설치되어 있지 않습니다",
   "error.updateVersion":
     "PorkCode 업데이트가 완료되었지만 {{distro}}에서 여전히 {{installed}} 버전으로 표시됩니다. 예상 버전: {{expected}}",

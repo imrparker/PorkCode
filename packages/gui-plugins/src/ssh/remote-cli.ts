@@ -1,7 +1,6 @@
 export * as RemoteCli from "./remote-cli"
 
-import { Effect, Schema } from "effect"
-import { HttpClient, HttpClientResponse } from "effect/http"
+import { Schema } from "effect"
 
 export class Failure extends Schema.TaggedError<Failure>()("RemoteCliFailure", {
   code: Schema.Literals(["platform", "version", "install"]),
@@ -24,12 +23,12 @@ export function requireVersion(version: string) {
 }
 
 export function discoverScript(options: { fromPath?: boolean; cache?: { directory: string; prefix: string } } = {}) {
-  return `cli=${options.fromPath ? "$(command -v opencode || true)" : '""'}
-if [ -z "$cli" ] && [ -x "$HOME/.opencode/bin/opencode" ]; then cli="$HOME/.opencode/bin/opencode"; fi
+  return `cli=${options.fromPath ? "$(command -v porkcode || true)" : '""'}
+if [ -z "$cli" ] && [ -x "$HOME/.porkcode/bin/porkcode" ]; then cli="$HOME/.porkcode/bin/porkcode"; fi
 ${
   options.cache
     ? `if [ -z "$cli" ]; then
-  for binary in "$HOME"/${quote(options.cache.directory)}/${quote(options.cache.prefix)}*/opencode; do
+  for binary in "$HOME"/${quote(options.cache.directory)}/${quote(options.cache.prefix)}*/porkcode; do
     if [ -x "$binary" ]; then cli="$binary"; fi
   done
 fi
@@ -72,14 +71,30 @@ fi
 printf 'PORKCODE_REMOTE_TARGET=%s\\n' "$target"
 `
 
+// PorkCode publishes no CLI archives to a public registry; downloading upstream `@opencode/*`
+// binaries would install OpenCode itself. Remote hosts fetch the standalone archives built by
+// packages/cli/script/pack.ts (`porkcode-<target>.tar.gz`) from a base URL the user configures,
+// such as an internal file server or a GitHub release of this repository. Without a configured
+// base, remote installs fail with an actionable error instead of reaching for upstream binaries.
 export function archiveUrl(target: string, version: string) {
   if (!/^(linux|darwin)-(x64-baseline|arm64)(-musl)?$/.test(target))
     throw new Failure({ code: "platform", detail: target })
 
-  return `https://registry.npmjs.org/@opencode/cli-${target}/-/cli-${target}-${requireVersion(version)}.tgz`
+  const base = process.env.PORKCODE_REMOTE_CLI_BASE?.trim()
+
+  if (!base)
+    throw new Failure({
+      code: "install",
+      detail:
+        "No PorkCode CLI distribution is configured. Set PORKCODE_REMOTE_CLI_BASE to a URL serving porkcode-<target>.tar.gz archives, or stage the binary on the remote host.",
+    })
+
+  requireVersion(version)
+
+  return `${base.endsWith("/") ? base : `${base}/`}porkcode-${target}.tar.gz`
 }
 
-type Source = { type: "download"; url: string } | { type: "archive" } | { type: "installer"; binary?: string }
+type Source = { type: "download"; url: string } | { type: "archive" } | { type: "installer"; binary: string }
 
 export function installScript(input: { version: string; directory?: string; source: Source }) {
   const version = requireVersion(input.version)
@@ -88,20 +103,20 @@ export function installScript(input: { version: string; directory?: string; sour
   // installations use archives so their destination and shell setup stay isolated.
   if (input.source.type === "installer")
     return `set -eu
-curl -fsSL https://raw.githubusercontent.com/imrparker/PorkCode/develop/install | bash -s -- ${input.source.binary ? `--binary ${input.source.binary}` : `--version ${quote(version)}`}
-${verifyScript('"$HOME/.opencode/bin/opencode"', version)}
+curl -fsSL https://raw.githubusercontent.com/imrparker/PorkCode/develop/install | bash -s -- --binary ${quote(input.source.binary)}
+${verifyScript('"$HOME/.porkcode/bin/porkcode"', version)}
 `
 
   return `set -eu
 umask 077
-destination="$HOME"/${quote(`${input.directory ?? ".opencode/bin"}/opencode`)}
+destination="$HOME"/${quote(`${input.directory ?? ".porkcode/bin"}/porkcode`)}
 mkdir -p "$(dirname "$destination")"
 stage=$(mktemp -d "$(dirname "$destination")/.install-XXXXXX")
 trap 'rm -rf "$stage"' EXIT
 ${stageBinary(input.source)}
-chmod 755 "$stage/package/bin/opencode"
-${verifyScript('"$stage/package/bin/opencode"', version)}
-mv "$stage/package/bin/opencode" "$destination"
+chmod 755 "$stage/porkcode"
+${verifyScript('"$stage/porkcode"', version)}
+mv "$stage/porkcode" "$destination"
 `
 }
 
@@ -120,18 +135,3 @@ tar -xzf "$stage/archive.tgz" -C "$stage"`
 function verifyScript(command: string, version: string) {
   return `test "$(${command} --version | awk '{print $NF}' | sed 's/^v//')" = ${quote(version)}`
 }
-
-const Beta = Schema.Struct({ version: Schema.String.check(Schema.isPattern(/^0\.0\.0-beta-\d+(?:\.\d+)?$/)) })
-
-export const latestBeta = Effect.fn("RemoteCli.latestBeta")(function* () {
-  const http = yield* HttpClient.HttpClient
-
-  const metadata = yield* http.get("https://registry.npmjs.org/@opencode%2fcli/beta").pipe(
-    Effect.flatMap(HttpClientResponse.filterStatusOk),
-    Effect.flatMap(HttpClientResponse.schemaBodyJson(Beta)),
-    Effect.timeout("30 seconds"),
-    Effect.mapError(() => new Failure({ code: "install", detail: "https://registry.npmjs.org/@opencode%2fcli/beta" })),
-  )
-
-  return metadata.version
-})

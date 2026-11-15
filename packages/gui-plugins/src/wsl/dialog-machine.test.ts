@@ -32,7 +32,7 @@ const probe = (name: string) => ({ name, canExecute: true, hasBash: true, hasCur
 
 const check = (distro: string, version: string | null) => ({
   distro,
-  resolvedPath: "/usr/bin/opencode",
+  resolvedPath: "/usr/bin/porkcode",
   version,
   expectedVersion: "1.0",
   matchesDesktop: version === "1.0",

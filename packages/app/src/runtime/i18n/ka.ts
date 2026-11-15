@@ -286,7 +286,7 @@ export const dict = {
   "error.chain.responseBody": "პასუხის სხეული:\n{{body}}",
   "error.chain.didYouMean": "იგულისხმეთ: {{suggestions}}",
   "error.chain.modelNotFound": "მოდელი ვერ მოიძებნა: {{provider}}/{{model}}",
-  "error.chain.checkConfig": "შეამოწმეთ თქვენი კონფიგურაცია (opencode.json) პროვაიდერის/მოდელების სახელები",
+  "error.chain.checkConfig": "შეამოწმეთ თქვენი კონფიგურაცია (porkcode.json) პროვაიდერის/მოდელების სახელები",
   "error.chain.mcpFailed":
     'MCP სერვერი "{{name}}" ვერ მოხერხდა. შენიშვნა, PorkCode ჯერ არ უჭერს მხარს MCP ავთენტიფიკაციას.',
   "error.chain.providerAuthFailed": "პროვაიდერის ავთენტიფიკაცია ვერ მოხერხდა ({{provider}}): {{message}}",
@@ -558,7 +558,7 @@ export const dict = {
   "settings.extensions.tab.mcps": "MCP-ები",
   "settings.extensions.tab.skills": "უნარები",
   "settings.extensions.availableAll": "ხელმისაწვდომია ყველა პროექტისთვის",
-  "settings.extensions.manageConfig": "მართეთ opencode.json-ში",
+  "settings.extensions.manageConfig": "მართეთ porkcode.json-ში",
   "settings.extensions.addSkills": "როგორ დავამატოთ უნარები",
   "project.settings.extensions.description": "იხილეთ ამ პროექტისთვის ხელმისაწვდომი გაფართოებები",
   "project.settings.extensions.tab.lsps": "LSP-ები",
@@ -601,7 +601,7 @@ export const dict = {
   "desktop.menu.installCli": "CLI-ის დაყენება...",
   "desktop.cli.installed.title": "CLI დაყენებულია",
   "desktop.cli.installed.message":
-    "CLI დაყენდა მისამართზე {{path}}\n\n'opencode2' ბრძანების გამოსაყენებლად გადატვირთეთ ტერმინალი.",
+    "CLI დაყენდა მისამართზე {{path}}\n\n'porkcode' ბრძანების გამოსაყენებლად გადატვირთეთ ტერმინალი.",
   "desktop.cli.failed.title": "დაყენება ვერ მოხერხდა",
   "desktop.cli.failed.message": "CLI-ის დაყენება ვერ მოხერხდა: {{error}}",
   "command.project.copyID": "პროექტის ID-ის კოპირება",
@@ -721,9 +721,9 @@ export const dict = {
   "server.connect.address.invalid": "შეიყვანეთ ვალიდური HTTP ან HTTPS სერვერის მისამართი.",
   "server.connect.failed": "ვერ მოხერხდა დაკავშირება. შეამოწმეთ სერვერის მისამართი და პაროლი, შემდეგ კვლავ სცადეთ.",
   "server.connect.scan": "სკანირება QR კოდით",
-  "server.connect.scan.description": "მიმართეთ კამერა opencode pair-ის მიერ ნაჩვენებ QR კოდზე.",
+  "server.connect.scan.description": "მიმართეთ კამერა porkcode pair-ის მიერ ნაჩვენებ QR კოდზე.",
   "server.connect.scan.invalid":
-    "ეს PorkCode-ის დაწყვილების კოდი არ არის. დაასკანირეთ opencode pair-ის მიერ ნაჩვენები კოდი.",
+    "ეს PorkCode-ის დაწყვილების კოდი არ არის. დაასკანირეთ porkcode pair-ის მიერ ნაჩვენები კოდი.",
   "server.connect.camera": "კამერასთან წყვილობა",
   "server.connect.camera.starting": "კამერის გახსნა…",
   "server.connect.mixedContent":

@@ -286,7 +286,7 @@ export const dict = {
   "error.chain.responseBody": "Tělo odpovědi:\n{{body}}",
   "error.chain.didYouMean": "Měli jste na mysli: {{suggestions}}",
   "error.chain.modelNotFound": "Model nenalezen: {{provider}}/{{model}}",
-  "error.chain.checkConfig": "Zkontrolujte název poskytovatele/modelu konfigurace (opencode.json).",
+  "error.chain.checkConfig": "Zkontrolujte název poskytovatele/modelu konfigurace (porkcode.json).",
   "error.chain.mcpFailed": 'MCP server "{{name}}" selhal. Poznámka: PorkCode zatím nepodporuje ověřování MCP.',
   "error.chain.providerAuthFailed": "Ověření poskytovatele se nezdařilo ({{provider}}): {{message}}",
   "error.chain.providerInitFailed":
@@ -564,7 +564,7 @@ export const dict = {
   "settings.extensions.tab.mcps": "MCP",
   "settings.extensions.tab.skills": "Dovednosti",
   "settings.extensions.availableAll": "Dostupné pro všechny projekty",
-  "settings.extensions.manageConfig": "Spravujte v opencode.json",
+  "settings.extensions.manageConfig": "Spravujte v porkcode.json",
   "settings.extensions.addSkills": "Jak přidat dovednosti",
   "project.settings.extensions.description": "Zobrazit rozšíření dostupná pro tento projekt",
   "project.settings.extensions.tab.lsps": "LSP",
@@ -608,7 +608,7 @@ export const dict = {
   "desktop.menu.installCli": "Nainstalovat CLI...",
   "desktop.cli.installed.title": "CLI nainstalováno",
   "desktop.cli.installed.message":
-    "CLI bylo nainstalováno do {{path}}\n\nChcete-li používat příkaz 'opencode2', restartujte terminál.",
+    "CLI bylo nainstalováno do {{path}}\n\nChcete-li používat příkaz 'porkcode', restartujte terminál.",
   "desktop.cli.failed.title": "Instalace se nezdařila",
   "desktop.cli.failed.message": "CLI se nepodařilo nainstalovat: {{error}}",
   "command.project.copyID": "Kopírovat ID projektu",
@@ -737,8 +737,8 @@ export const dict = {
   "server.connect.address.invalid": "Zadejte platnou adresu serveru HTTP nebo HTTPS.",
   "server.connect.failed": "Připojení se nezdařilo. Zkontrolujte adresu serveru a heslo a zkuste to znovu.",
   "server.connect.scan": "Naskenovat QR kód",
-  "server.connect.scan.description": "Namiřte kameru na QR kód zobrazený příkazem opencode pair.",
-  "server.connect.scan.invalid": "Toto není párovací kód PorkCode. Naskenujte kód zobrazený příkazem opencode pair.",
+  "server.connect.scan.description": "Namiřte kameru na QR kód zobrazený příkazem porkcode pair.",
+  "server.connect.scan.invalid": "Toto není párovací kód PorkCode. Naskenujte kód zobrazený příkazem porkcode pair.",
   "server.connect.camera": "Kamera pro párování",
   "server.connect.camera.starting": "Otevírání kamery…",
   "server.connect.mixedContent":

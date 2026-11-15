@@ -40,8 +40,8 @@ export default {
   "error.installDistro": "ޑިސްޓްރޯ: ⁨{{distro}}⁩ އިންސްޓޯލް ކުރަން ނާކާމިޔާބު",
   "error.installOpencode": "PorkCode އިންސްޓޯލް ކުރުން ނާކާމިޔާބުވެއްޖެ",
   "error.alreadyAdded": "⁨{{distro}}⁩ މިހާރުވެސް އިތުރުކޮށްފައިވެއެވެ",
-  "error.opencodeMissing": "މި ޑިސްޓްރޯގައި opencode އިންސްޓޯލްކޮށްފައެއް ނުވެއެވެ",
-  "error.opencodeCannotRun": "opencode އިންސްޓޯލް ކޮށްފައި އޮތް ނަމަވެސް ހިންގޭ ގޮތެއް ނުވިއެވެ",
+  "error.opencodeMissing": "މި ޑިސްޓްރޯގައި porkcode އިންސްޓޯލްކޮށްފައެއް ނުވެއެވެ",
+  "error.opencodeCannotRun": "porkcode އިންސްޓޯލް ކޮށްފައި އޮތް ނަމަވެސް ހިންގޭ ގޮތެއް ނުވިއެވެ",
   "error.opencodeNotInstalled": "PorkCode އަކީ ⁨{{distro}}⁩ ގައި އިންސްޓޯލް ކުރެވިފައިވާ އެއްޗެއް ނޫނެވެ",
   "error.updateVersion":
     "PorkCode އަޕްޑޭޓް ނިމުނު ނަމަވެސް ⁨{{distro}}⁩ އަދިވެސް ރިޕޯޓް ކުރަނީ ⁨{{installed}}⁩؛ ލަފާކުރެވޭ ގޮތުގައި ⁨{{expected}}⁩",

@@ -40,8 +40,8 @@ export default {
   "error.installDistro": "Jakelun asentaminen epäonnistui: {{distro}}",
   "error.installOpencode": "PorkCoden asennus epäonnistui",
   "error.alreadyAdded": "{{distro}} on jo lisätty",
-  "error.opencodeMissing": "opencodea ei ole asennettu tähän jakeluun",
-  "error.opencodeCannotRun": "opencode on asennettu, mutta sitä ei voitu suorittaa",
+  "error.opencodeMissing": "porkcodea ei ole asennettu tähän jakeluun",
+  "error.opencodeCannotRun": "porkcode on asennettu, mutta sitä ei voitu suorittaa",
   "error.opencodeNotInstalled": "PorkCodea ei ole asennettu jakeluun {{distro}}",
   "error.updateVersion":
     "PorkCoden päivitys valmistui, mutta {{distro}} ilmoittaa yhä version {{installed}}; odotettu versio on {{expected}}",

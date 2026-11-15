@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
-APP=opencode
+APP=porkcode
 
 MUTED='\033[0;2m'
 RED='\033[0;31m'
@@ -11,7 +11,7 @@ usage() {
     cat <<EOF
 PorkCode Installer
 
-Installs a PorkCode CLI binary into ~/.opencode/bin. PorkCode does not host
+Installs a PorkCode CLI binary into ~/.porkcode/bin. PorkCode does not host
 release downloads, so you must point it at a binary you built or obtained:
 
 Usage: install [options]
@@ -22,8 +22,8 @@ Options:
         --no-modify-path    Don't modify shell config files (.zshrc, .bashrc, etc.)
 
 Examples:
-    ./install --binary /path/to/opencode
-    curl -fsSL https://raw.githubusercontent.com/imrparker/PorkCode/develop/install | bash -s -- --binary /path/to/opencode
+    ./install --binary /path/to/porkcode
+    curl -fsSL https://raw.githubusercontent.com/imrparker/PorkCode/develop/install | bash -s -- --binary /path/to/porkcode
 EOF
 }
 
@@ -71,7 +71,7 @@ if [[ ! -f "$binary_path" ]]; then
     exit 1
 fi
 
-install_dir="$HOME/.opencode/bin"
+install_dir="$HOME/.porkcode/bin"
 mkdir -p "$install_dir"
 
 target="$install_dir/$APP"
@@ -89,7 +89,7 @@ if $no_modify_path; then
     exit 0
 fi
 
-path_line="export PATH=\"\$HOME/.opencode/bin:\$PATH\""
+path_line="export PATH=\"\$HOME/.porkcode/bin:\$PATH\""
 marker="# added by PorkCode installer"
 
 add_to_rc() {
@@ -98,7 +98,7 @@ add_to_rc() {
         return
     fi
     printf '\n%s\n%s\n' "$marker" "$path_line" >> "$rc"
-    echo -e "${MUTED}Added ~/.opencode/bin to PATH in $rc${NC}"
+    echo -e "${MUTED}Added ~/.porkcode/bin to PATH in $rc${NC}"
 }
 
 case "${SHELL:-}" in
@@ -110,4 +110,4 @@ case "${SHELL:-}" in
         ;;
 esac
 
-echo -e "${MUTED}Restart your shell or re-source your profile, then run 'opencode'.${NC}"
+echo -e "${MUTED}Restart your shell or re-source your profile, then run 'porkcode'.${NC}"

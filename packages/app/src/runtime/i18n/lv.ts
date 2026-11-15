@@ -287,7 +287,7 @@ export const dict = {
   "error.chain.responseBody": "Atbildes saturs:\n{{body}}",
   "error.chain.didYouMean": "Vai domājāt: {{suggestions}}",
   "error.chain.modelNotFound": "Modelis nav atrasts: {{provider}}/{{model}}",
-  "error.chain.checkConfig": "Pārbaudiet konfigurāciju (opencode.json) pakalpojuma/modela nosaukumus",
+  "error.chain.checkConfig": "Pārbaudiet konfigurāciju (porkcode.json) pakalpojuma/modela nosaukumus",
   "error.chain.mcpFailed":
     'MCP serveris "{{name}}" neizdevās. Ņemiet vērā, PorkCode vēl neatbalsta MCP autentifikāciju.',
   "error.chain.providerAuthFailed": "Pakalpojuma autentifikācija neizdevās ({{provider}}): {{message}}",
@@ -595,7 +595,7 @@ export const dict = {
   "settings.extensions.tab.mcps": "MCP",
   "settings.extensions.tab.skills": "Prasmes",
   "settings.extensions.availableAll": "Pieejams visiem projektiem",
-  "settings.extensions.manageConfig": "Pārvaldīt failā opencode.json",
+  "settings.extensions.manageConfig": "Pārvaldīt failā porkcode.json",
   "settings.extensions.addSkills": "Kā pievienot prasmes",
   "project.settings.extensions.description": "Skatiet šim projektam pieejamos paplašinājumus",
   "project.settings.extensions.tab.lsps": "LSP",
@@ -606,7 +606,7 @@ export const dict = {
   "desktop.menu.installCli": "Instalēt CLI...",
   "desktop.cli.installed.title": "CLI ir instalēta",
   "desktop.cli.installed.message":
-    "CLI ir instalēta vietā {{path}}\n\nRestartējiet termināli, lai izmantotu komandu 'opencode2'.",
+    "CLI ir instalēta vietā {{path}}\n\nRestartējiet termināli, lai izmantotu komandu 'porkcode'.",
   "desktop.cli.failed.title": "Instalēšana neizdevās",
   "desktop.cli.failed.message": "Neizdevās instalēt CLI: {{error}}",
   "command.project.copyID": "Kopēt projekta ID",
@@ -723,8 +723,8 @@ export const dict = {
   "server.connect.failed":
     "Nevarēja izveidot savienojumu. Pārbaudiet servera adresi un paroli, pēc tam mēģiniet vēlreiz.",
   "server.connect.scan": "Skenējiet QR kodu",
-  "server.connect.scan.description": "Pavērsiet kameru pret QR kodu, ko parāda opencode pair.",
-  "server.connect.scan.invalid": "Šis nav kods PorkCode savienošanai pārī. Skenējiet kodu, ko parāda opencode pair.",
+  "server.connect.scan.description": "Pavērsiet kameru pret QR kodu, ko parāda porkcode pair.",
+  "server.connect.scan.invalid": "Šis nav kods PorkCode savienošanai pārī. Skenējiet kodu, ko parāda porkcode pair.",
   "server.connect.camera": "Kameras savienošana pārī",
   "server.connect.camera.starting": "Tiek atvērta kamera…",
   "server.connect.mixedContent":

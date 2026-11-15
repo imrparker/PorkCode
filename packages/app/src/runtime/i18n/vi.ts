@@ -304,7 +304,7 @@ export const dict = {
   "error.chain.responseBody": "Nội dung phản hồi:\n{{body}}",
   "error.chain.didYouMean": "Có phải ý bạn là: {{suggestions}}",
   "error.chain.modelNotFound": "Không tìm thấy mô hình: {{provider}}/{{model}}",
-  "error.chain.checkConfig": "Kiểm tra tên nhà cung cấp/mô hình cấu hình (opencode.json) của bạn",
+  "error.chain.checkConfig": "Kiểm tra tên nhà cung cấp/mô hình cấu hình (porkcode.json) của bạn",
   "error.chain.mcpFailed": 'Máy chủ MCP "{{name}}" gặp lỗi. Lưu ý: PorkCode chưa hỗ trợ xác thực MCP.',
   "error.chain.providerAuthFailed": "Không xác thực được nhà cung cấp ({{provider}}): {{message}}",
   "error.chain.providerInitFailed":
@@ -421,7 +421,7 @@ export const dict = {
   "settings.extensions.tab.mcps": "MCP",
   "settings.extensions.tab.skills": "Kỹ năng",
   "settings.extensions.availableAll": "Có sẵn cho tất cả dự án",
-  "settings.extensions.manageConfig": "Quản lý trong opencode.json",
+  "settings.extensions.manageConfig": "Quản lý trong porkcode.json",
   "settings.extensions.addSkills": "Cách thêm kỹ năng",
   "project.settings.extensions.description": "Xem tiện ích mở rộng có sẵn cho dự án này",
   "project.settings.extensions.tab.lsps": "LSP",
@@ -612,7 +612,7 @@ export const dict = {
   "desktop.menu.installCli": "Cài đặt CLI...",
   "desktop.cli.installed.title": "Đã cài đặt CLI",
   "desktop.cli.installed.message":
-    "Đã cài đặt CLI vào {{path}}\n\nHãy khởi động lại terminal để sử dụng lệnh 'opencode2'.",
+    "Đã cài đặt CLI vào {{path}}\n\nHãy khởi động lại terminal để sử dụng lệnh 'porkcode'.",
   "desktop.cli.failed.title": "Cài đặt thất bại",
   "desktop.cli.failed.message": "Không thể cài đặt CLI: {{error}}",
   "command.project.copyID": "Sao chép ID dự án",
@@ -733,8 +733,8 @@ export const dict = {
   "server.connect.address.invalid": "Nhập địa chỉ máy chủ HTTP hoặc HTTPS hợp lệ.",
   "server.connect.failed": "Không thể kết nối. Kiểm tra địa chỉ máy chủ và mật khẩu, sau đó thử lại.",
   "server.connect.scan": "Quét mã QR",
-  "server.connect.scan.description": "Chĩa camera của bạn vào mã QR được hiển thị bởi cặp opencode.",
-  "server.connect.scan.invalid": "Đây không phải mã ghép cặp PorkCode. Quét mã được hiển thị bởi ghép cặp opencode.",
+  "server.connect.scan.description": "Chĩa camera của bạn vào mã QR được hiển thị bởi cặp porkcode.",
+  "server.connect.scan.invalid": "Đây không phải mã ghép cặp PorkCode. Quét mã được hiển thị bởi ghép cặp porkcode.",
   "server.connect.camera": "Ghép cặp camera",
   "server.connect.camera.starting": "Đang mở camera…",
   "server.connect.mixedContent":

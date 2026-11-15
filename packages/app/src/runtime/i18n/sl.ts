@@ -313,7 +313,7 @@ export const dict = {
   "error.chain.responseBody": "Telo odgovora:\n{{body}}",
   "error.chain.didYouMean": "Ste mislili: {{suggestions}}",
   "error.chain.modelNotFound": "Modela ni bilo mogoče najti: {{provider}}/{{model}}",
-  "error.chain.checkConfig": "Preverite imena ponudnikov/modelov konfiguracije (opencode.json).",
+  "error.chain.checkConfig": "Preverite imena ponudnikov/modelov konfiguracije (porkcode.json).",
   "error.chain.mcpFailed": 'MCP strežnik "{{name}}" ni uspel. Opomba, PorkCode še ne podpira avtentikacije MCP.',
   "error.chain.providerAuthFailed": "Preverjanje pristnosti ponudnika ni uspelo ({{provider}}): {{message}}",
   "error.chain.providerInitFailed":
@@ -587,7 +587,7 @@ export const dict = {
   "settings.extensions.tab.mcps": "MCP-ji",
   "settings.extensions.tab.skills": "Spretnosti",
   "settings.extensions.availableAll": "Na voljo za vse projekte",
-  "settings.extensions.manageConfig": "Upravljajte v opencode.json",
+  "settings.extensions.manageConfig": "Upravljajte v porkcode.json",
   "settings.extensions.addSkills": "Kako dodati veščine",
   "project.settings.extensions.description": "Oglejte si razširitve, ki so na voljo za ta projekt",
   "project.settings.extensions.tab.lsps": "LSP-ji",
@@ -627,7 +627,7 @@ export const dict = {
   "desktop.menu.installCli": "Namesti CLI...",
   "desktop.cli.installed.title": "CLI je nameščen",
   "desktop.cli.installed.message":
-    "CLI je nameščen v {{path}}\n\nZa uporabo ukaza 'opencode2' znova zaženite terminal.",
+    "CLI je nameščen v {{path}}\n\nZa uporabo ukaza 'porkcode' znova zaženite terminal.",
   "desktop.cli.failed.title": "Namestitev ni uspela",
   "desktop.cli.failed.message": "CLI-ja ni bilo mogoče namestiti: {{error}}",
   "command.project.copyID": "Kopiraj ID projekta",
@@ -747,8 +747,8 @@ export const dict = {
   "server.connect.failed":
     "Povezave ni bilo mogoče vzpostaviti. Preverite naslov strežnika in geslo ter poskusite znova.",
   "server.connect.scan": "Skeniraj QR kodo",
-  "server.connect.scan.description": "Usmerite kamero na QR kodo, ki jo prikaže opencode pair.",
-  "server.connect.scan.invalid": "To ni PorkCode paritna koda. Skenirajte kodo, ki jo prikaže opencode pair.",
+  "server.connect.scan.description": "Usmerite kamero na QR kodo, ki jo prikaže porkcode pair.",
+  "server.connect.scan.invalid": "To ni PorkCode paritna koda. Skenirajte kodo, ki jo prikaže porkcode pair.",
   "server.connect.camera": "Paritvena kamera",
   "server.connect.camera.starting": "Odpiranje kamere…",
   "server.connect.mixedContent":

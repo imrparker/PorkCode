@@ -7,7 +7,7 @@ import { Effect, FileSystem, Option, Schema } from "effect"
 import { randomUUID } from "crypto"
 import { applyEdits, createScanner, modify, parse, parseTree, type Node, type ParseError } from "jsonc-parser"
 import path from "path"
-import { Info, SchemaURL } from "./schema"
+import { Info } from "./schema"
 
 const decodeV1 = Schema.decodeUnknownOption(TuiConfigV1.Info)
 const decodeInfo = Schema.decodeUnknownOption(Info)
@@ -102,9 +102,8 @@ export const run = Effect.fn("cli.config.migrate")(function* (input: {
   const kv = yield* readJson(path.join(input.state, "kv.json"))
   const values = migrateV1(legacy, kv ?? {})
   if (!Object.keys(values).length) return
-  const migrated = { $schema: SchemaURL, ...values }
 
-  const result = yield* persist(JSON.stringify(migrated, null, 2) + "\n", migrated)
+  const result = yield* persist(JSON.stringify(values, null, 2) + "\n", values)
   if (result.cause === undefined)
     yield* Effect.logInfo("migrated cli config", {
       from: [

@@ -276,7 +276,7 @@ export function mainConfig(input: NodeBuildInput): UserConfig {
     esbuild: { jsx: "automatic" },
     define: {
       PORKCODE_VERSION: JSON.stringify(input.version),
-      PORKCODE_CLI_NAME: JSON.stringify("opencode2-node"),
+      PORKCODE_CLI_NAME: JSON.stringify("porkcode-node"),
       PORKCODE_CHANNEL: JSON.stringify(input.channel),
       PORKCODE_ARTIFACT: JSON.stringify("cli-node"),
       ...(input.highlights ? { PORKCODE_RELEASE_HIGHLIGHTS: JSON.stringify(input.highlights) } : {}),

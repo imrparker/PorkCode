@@ -296,7 +296,7 @@ export const dict = {
   "error.chain.responseBody": "بدنه پاسخگویی:\n{{body}}",
   "error.chain.didYouMean": "آیا منظورتان این بود: {{suggestions}}",
   "error.chain.modelNotFound": "مدل پیدا نشد: {{provider}}/{{model}}",
-  "error.chain.checkConfig": "نام ارائه دهنده/مدل پیکربندی (opencode.json) خود را بررسی کنید",
+  "error.chain.checkConfig": "نام ارائه دهنده/مدل پیکربندی (porkcode.json) خود را بررسی کنید",
   "error.chain.mcpFailed":
     'سرور MCP "{{name}}" ناموفق بود. توجه داشته باشید، PorkCode هنوز از احراز هویت MCP پشتیبانی نمی کند.',
   "error.chain.providerAuthFailed": "احراز هویت ارائه دهنده ناموفق بود ({{provider}}): {{message}}",
@@ -567,7 +567,7 @@ export const dict = {
   "settings.extensions.tab.mcps": "MCPها",
   "settings.extensions.tab.skills": "مهارت‌ها",
   "settings.extensions.availableAll": "در دسترس همه پروژه‌ها",
-  "settings.extensions.manageConfig": "مدیریت در opencode.json",
+  "settings.extensions.manageConfig": "مدیریت در porkcode.json",
   "settings.extensions.addSkills": "نحوه افزودن مهارت‌ها",
   "project.settings.extensions.description": "مشاهده افزونه‌های موجود برای این پروژه",
   "project.settings.extensions.tab.lsps": "LSPها",
@@ -625,7 +625,7 @@ export const dict = {
   "desktop.menu.installCli": "نصب CLI...",
   "desktop.cli.installed.title": "CLI نصب شد",
   "desktop.cli.installed.message":
-    "CLI در \u2068{{path}}\u2069 نصب شد\n\nبرای استفاده از دستور 'opencode2'، ترمینال را دوباره راه‌اندازی کنید.",
+    "CLI در \u2068{{path}}\u2069 نصب شد\n\nبرای استفاده از دستور 'porkcode'، ترمینال را دوباره راه‌اندازی کنید.",
   "desktop.cli.failed.title": "نصب ناموفق بود",
   "desktop.cli.failed.message": "نصب CLI ناموفق بود: \u2068{{error}}\u2069",
   "dialog.server.menu.hide": "پنهان کردن از فهرست پروژه‌ها",
@@ -726,8 +726,8 @@ export const dict = {
   "server.connect.address.invalid": "یک نشانی معتبر سرور HTTP یا HTTPS وارد کنید.",
   "server.connect.failed": "اتصال ممکن نشد. نشانی سرور و گذرواژه را بررسی کنید و دوباره تلاش کنید.",
   "server.connect.scan": "پویش کد QR",
-  "server.connect.scan.description": "دوربین را به‌سمت کد QR نمایش‌داده‌شده توسط opencode pair بگیرید.",
-  "server.connect.scan.invalid": "این کد جفت‌سازی PorkCode نیست. کدی را پویش کنید که opencode pair نشان می‌دهد.",
+  "server.connect.scan.description": "دوربین را به‌سمت کد QR نمایش‌داده‌شده توسط porkcode pair بگیرید.",
+  "server.connect.scan.invalid": "این کد جفت‌سازی PorkCode نیست. کدی را پویش کنید که porkcode pair نشان می‌دهد.",
   "server.connect.camera": "دوربین جفت‌سازی",
   "server.connect.camera.starting": "در حال باز کردن دوربین…",
   "server.connect.mixedContent":

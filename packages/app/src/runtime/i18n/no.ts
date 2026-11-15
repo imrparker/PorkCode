@@ -27,8 +27,8 @@ export const dict = {
   "server.connect.address.invalid": "Skriv inn en gyldig HTTP- eller HTTPS-serveradresse.",
   "server.connect.failed": "Kunne ikke koble til. Sjekk serveradressen og passordet, og prøv på nytt.",
   "server.connect.scan": "Skann QR-koden",
-  "server.connect.scan.description": "Pek kameraet mot QR-koden vist av opencode pair.",
-  "server.connect.scan.invalid": "Dette er ikke en PorkCode-paringskode. Skann koden vist av opencode pair.",
+  "server.connect.scan.description": "Pek kameraet mot QR-koden vist av porkcode pair.",
+  "server.connect.scan.invalid": "Dette er ikke en PorkCode-paringskode. Skann koden vist av porkcode pair.",
   "server.connect.camera": "Sammenkobling av kamera",
   "server.connect.camera.starting": "Åpner kamera …",
   "server.connect.mixedContent":
@@ -502,7 +502,7 @@ export const dict = {
   "error.chain.responseBody": "Responsinnhold:\n{{body}}",
   "error.chain.didYouMean": "Mente du: {{suggestions}}",
   "error.chain.modelNotFound": "Modell ikke funnet: {{provider}}/{{model}}",
-  "error.chain.checkConfig": "Sjekk leverandør-/modellnavnene i konfigurasjonen din (opencode.json)",
+  "error.chain.checkConfig": "Sjekk leverandør-/modellnavnene i konfigurasjonen din (porkcode.json)",
   "error.chain.mcpFailed": 'MCP-server "{{name}}" mislyktes. Merk at PorkCode ikke støtter MCP-autentisering ennå.',
   "error.chain.providerAuthFailed": "Leverandørautentisering mislyktes ({{provider}}): {{message}}",
   "error.chain.providerInitFailed":
@@ -828,7 +828,7 @@ export const dict = {
   "settings.extensions.tab.mcps": "MCP-er",
   "settings.extensions.tab.skills": "Ferdigheter",
   "settings.extensions.availableAll": "Tilgjengelig for alle prosjekter",
-  "settings.extensions.manageConfig": "Administrer i opencode.json",
+  "settings.extensions.manageConfig": "Administrer i porkcode.json",
   "settings.extensions.addSkills": "Hvordan legge til ferdigheter",
   "project.settings.extensions.description": "Se utvidelser som er tilgjengelige for dette prosjektet",
   "project.settings.extensions.tab.lsps": "LSP-er",
@@ -866,7 +866,7 @@ export const dict = {
   "desktop.menu.installCli": "Installer CLI...",
   "desktop.cli.installed.title": "CLI installert",
   "desktop.cli.installed.message":
-    "CLI-en ble installert i {{path}}.\n\nStart terminalen på nytt for å bruke kommandoen 'opencode2'.",
+    "CLI-en ble installert i {{path}}.\n\nStart terminalen på nytt for å bruke kommandoen 'porkcode'.",
   "desktop.cli.failed.title": "Installasjonen mislyktes",
   "desktop.cli.failed.message": "Kunne ikke installere CLI-en: {{error}}",
   "command.project.copyID": "Kopier prosjekt-ID",

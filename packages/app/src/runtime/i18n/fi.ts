@@ -24,8 +24,8 @@ export const dict = {
   "server.connect.failed":
     "Yhteyttä ei voitu muodostaa. Tarkista palvelimen osoite ja salasana ja yritä sitten uudelleen.",
   "server.connect.scan": "Skannaa QR-koodi",
-  "server.connect.scan.description": "Suuntaa kamerasi QR-koodiin, joka näkyy opencode pair:ssä.",
-  "server.connect.scan.invalid": "Tämä ei ole PorkCode-pariliitoskoodi. Skannaa opencode pair:n näyttämä koodi.",
+  "server.connect.scan.description": "Suuntaa kamerasi QR-koodiin, joka näkyy porkcode pair:ssä.",
+  "server.connect.scan.invalid": "Tämä ei ole PorkCode-pariliitoskoodi. Skannaa porkcode pair:n näyttämä koodi.",
   "server.connect.camera": "Kameraparin muodostaminen",
   "server.connect.camera.starting": "Avataan kameraa…",
   "server.connect.mixedContent":
@@ -423,7 +423,7 @@ export const dict = {
   "error.chain.responseBody": "Vastausteksti:\n{{body}}",
   "error.chain.didYouMean": "Tarkoititko: {{suggestions}}",
   "error.chain.modelNotFound": "Mallia ei löydy: {{provider}}/{{model}}",
-  "error.chain.checkConfig": "Tarkista määritysten (opencode.json) palveluntarjoajien ja mallien nimet",
+  "error.chain.checkConfig": "Tarkista määritysten (porkcode.json) palveluntarjoajien ja mallien nimet",
   "error.chain.mcpFailed": 'MCP-palvelin "{{name}}" epäonnistui. Huomaa, että PorkCode ei vielä tue MCP-todennusta.',
   "error.chain.providerAuthFailed": "Palveluntarjoajan todennus epäonnistui ({{provider}}): {{message}}",
   "error.chain.providerInitFailed":
@@ -761,7 +761,7 @@ export const dict = {
   "settings.extensions.tab.mcps": "MCP:t",
   "settings.extensions.tab.skills": "Taidot",
   "settings.extensions.availableAll": "Saatavilla kaikkiin projekteihin",
-  "settings.extensions.manageConfig": "Hallinnoi osoitteessa opencode.json",
+  "settings.extensions.manageConfig": "Hallinnoi osoitteessa porkcode.json",
   "settings.extensions.addSkills": "Kuinka lisätä taitoja",
   "project.settings.extensions.description": "Näytä tämän projektin saatavilla olevat laajennukset",
   "project.settings.extensions.tab.lsps": "LSP:t",
@@ -799,7 +799,7 @@ export const dict = {
   "desktop.menu.installCli": "Asenna CLI...",
   "desktop.cli.installed.title": "CLI asennettu",
   "desktop.cli.installed.message":
-    "CLI asennettiin kohteeseen {{path}}.\n\nKäynnistä terminaali uudelleen, jotta voit käyttää 'opencode2'-komentoa.",
+    "CLI asennettiin kohteeseen {{path}}.\n\nKäynnistä terminaali uudelleen, jotta voit käyttää 'porkcode'-komentoa.",
   "desktop.cli.failed.title": "Asennus epäonnistui",
   "desktop.cli.failed.message": "CLI:n asennus epäonnistui: {{error}}",
   "command.project.copyID": "Kopioi projektin tunnus",

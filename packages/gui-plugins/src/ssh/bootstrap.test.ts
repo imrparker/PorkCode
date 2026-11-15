@@ -16,9 +16,25 @@ test("ignores stopped services and registrations that do not match the healthy e
 
 test("rejects unsafe versions and platforms in remote installation paths", () => {
   expect(() => binaryPath('2.0.0"; whoami')).toThrow()
-  expect(RemoteCli.archiveUrl("linux-x64-baseline-musl", "2.0.0-beta.1")).toBe(
-    "https://registry.npmjs.org/@opencode/cli-linux-x64-baseline-musl/-/cli-linux-x64-baseline-musl-2.0.0-beta.1.tgz",
-  )
-  expect(() => RemoteCli.installScript({ version: '2.0.0"; whoami', source: { type: "installer" } })).toThrow()
+  expect(() => RemoteCli.installScript({ version: '2.0.0"; whoami', source: { type: "archive" } })).toThrow()
   expect(() => RemoteCli.archiveUrl("linux-x64;whoami", "2.0.0")).toThrow()
+})
+
+test("builds archive URLs from the configured distribution base only", () => {
+  const previous = process.env.PORKCODE_REMOTE_CLI_BASE
+
+  try {
+    delete process.env.PORKCODE_REMOTE_CLI_BASE
+    expect(() => RemoteCli.archiveUrl("linux-x64-baseline-musl", "2.0.0-beta.1")).toThrow(
+      /PORKCODE_REMOTE_CLI_BASE/,
+    )
+
+    process.env.PORKCODE_REMOTE_CLI_BASE = "https://files.example.com/porkcode/"
+    expect(RemoteCli.archiveUrl("linux-x64-baseline-musl", "2.0.0-beta.1")).toBe(
+      "https://files.example.com/porkcode/porkcode-linux-x64-baseline-musl.tar.gz",
+    )
+  } finally {
+    if (previous === undefined) delete process.env.PORKCODE_REMOTE_CLI_BASE
+    else process.env.PORKCODE_REMOTE_CLI_BASE = previous
+  }
 })

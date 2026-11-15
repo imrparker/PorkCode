@@ -39,8 +39,8 @@ export default {
   "error.installDistro": "Không cài đặt được bản phân phối: {{distro}}",
   "error.installOpencode": "Không cài đặt được PorkCode",
   "error.alreadyAdded": "{{distro}} đã được thêm",
-  "error.opencodeMissing": "opencode chưa được cài đặt trong bản phân phối này",
-  "error.opencodeCannotRun": "opencode đã được cài đặt nhưng không thể chạy",
+  "error.opencodeMissing": "porkcode chưa được cài đặt trong bản phân phối này",
+  "error.opencodeCannotRun": "porkcode đã được cài đặt nhưng không thể chạy",
   "error.opencodeNotInstalled": "PorkCode chưa được cài đặt trong {{distro}}",
   "error.updateVersion":
     "Đã cập nhật PorkCode nhưng {{distro}} vẫn báo phiên bản {{installed}}; phiên bản dự kiến là {{expected}}",

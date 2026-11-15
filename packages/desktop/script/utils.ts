@@ -83,10 +83,10 @@ export function nodePtyPackage(target?: string) {
   return `@lydell/node-pty-${cli.os}-${cli.cpu}`
 }
 
-export async function downloadCliToResources(version = CLI_VERSION, dest = windowsify("resources/opencode-cli")) {
+export async function downloadCliToResources(version = CLI_VERSION, dest = windowsify("resources/porkcode-cli")) {
   const { $ } = await import("bun")
   const cli = getCurrentCli()
-  const directory = await mkdtemp(join(tmpdir(), "opencode-cli-"))
+  const directory = await mkdtemp(join(tmpdir(), "porkcode-cli-"))
 
   try {
     await $`bun install --no-save --cwd ${directory} ${`${cli.package}@${version}`} ${`--os=${cli.os}`} ${`--cpu=${cli.cpu}`}`
@@ -98,7 +98,7 @@ export async function downloadCliToResources(version = CLI_VERSION, dest = windo
   console.log(`Copied ${cli.package}@${version} to ${dest}`)
 }
 
-export async function copyBuiltCliToResources(root: string, dest = windowsify("resources/opencode-cli")) {
+export async function copyBuiltCliToResources(root: string, dest = windowsify("resources/porkcode-cli")) {
   const cli = getCurrentCli()
   const directory = cli.package.replace("@opencode/", "")
   await copyCliToResources(join(root, directory), dest)
@@ -109,7 +109,7 @@ export async function copyBuiltCliToResources(root: string, dest = windowsify("r
 // 200 MB binary on first launch.
 async function copyCliToResources(pkg: string, dest: string) {
   const cli = getCurrentCli()
-  await copyFile(join(pkg, "bin", cli.os === "win32" ? "opencode.exe" : "opencode"), dest)
+  await copyFile(join(pkg, "bin", cli.os === "win32" ? "porkcode.exe" : "porkcode"), dest)
   await prepareCli(dest)
 
   const manifest = Option.getOrUndefined(
@@ -121,7 +121,7 @@ async function copyCliToResources(pkg: string, dest: string) {
 }
 
 export function versionFile(cli: string) {
-  return join(dirname(cli), "opencode-cli.version")
+  return join(dirname(cli), "porkcode-cli.version")
 }
 
 async function prepareCli(dest: string) {
@@ -161,7 +161,7 @@ export function isForkCliDatabase(reported: string, channel = FORK_CLI_CHANNEL) 
 // The channel is baked into the executable and reaches no artifact a build could read, so ask the bundled binary
 // where it would keep its database. `debug paths db` prints one path without touching a running service; the two
 // overrides that also move the database are removed so the answer reflects the compiled-in channel alone.
-export async function verifyBundledCliChannel(dest = windowsify("resources/opencode-cli")) {
+export async function verifyBundledCliChannel(dest = windowsify("resources/porkcode-cli")) {
   const result = Bun.spawnSync({
     cmd: [dest, "debug", "paths", "db"],
     env: { ...process.env, PORKCODE_DB: undefined, PORKCODE_DISABLE_CHANNEL_DB: undefined },

@@ -39,8 +39,8 @@ export default {
   "error.installDistro": "distro ස්ථාපනය කිරීමට අසමත් විය: {{distro}}",
   "error.installOpencode": "PorkCode ස්ථාපනය අසාර්ථක විය",
   "error.alreadyAdded": "{{distro}} දැනටමත් එක් කර ඇත",
-  "error.opencodeMissing": "මෙම distro හි opencode ස්ථාපනය කර නොමැත",
-  "error.opencodeCannotRun": "opencode ස්ථාපනය කර ඇති නමුත් ධාවනය කල නොහැක",
+  "error.opencodeMissing": "මෙම distro හි porkcode ස්ථාපනය කර නොමැත",
+  "error.opencodeCannotRun": "porkcode ස්ථාපනය කර ඇති නමුත් ධාවනය කල නොහැක",
   "error.opencodeNotInstalled": "PorkCode {{distro}} හි ස්ථාපනය කර නැත",
   "error.updateVersion":
     "PorkCode යාවත්කාලීන කිරීම අවසන් නමුත් {{distro}} තවමත් වාර්තා කරන්නේ {{installed}}; අපේක්ෂිත {{expected}}",

@@ -24,8 +24,8 @@ export const dict = {
   "server.connect.failed":
     "Kunne ikke oprette forbindelse. Tjek serveradressen og adgangskoden, og prøv derefter igen.",
   "server.connect.scan": "Scan QR kode",
-  "server.connect.scan.description": "Ret dit kamera mod QR-koden vist af opencode pair.",
-  "server.connect.scan.invalid": "Dette er ikke en PorkCode-parringskode. Scan koden vist af opencode pair.",
+  "server.connect.scan.description": "Ret dit kamera mod QR-koden vist af porkcode pair.",
+  "server.connect.scan.invalid": "Dette er ikke en PorkCode-parringskode. Scan koden vist af porkcode pair.",
   "server.connect.camera": "Parring af kamera",
   "server.connect.camera.starting": "Åbner kamera...",
   "server.connect.mixedContent":
@@ -444,7 +444,7 @@ export const dict = {
   "error.chain.responseBody": "Svarindhold:\n{{body}}",
   "error.chain.didYouMean": "Mente du: {{suggestions}}",
   "error.chain.modelNotFound": "Model ikke fundet: {{provider}}/{{model}}",
-  "error.chain.checkConfig": "Kontrollér udbyder- og modelnavnene i din konfiguration (opencode.json)",
+  "error.chain.checkConfig": "Kontrollér udbyder- og modelnavnene i din konfiguration (porkcode.json)",
   "error.chain.mcpFailed": 'MCP-server "{{name}}" fejlede. Bemærk, PorkCode understøtter ikke MCP-godkendelse endnu.',
   "error.chain.providerAuthFailed": "Udbydergodkendelse mislykkedes ({{provider}}): {{message}}",
   "error.chain.providerInitFailed":
@@ -821,7 +821,7 @@ export const dict = {
   "settings.extensions.tab.mcps": "MCP'er",
   "settings.extensions.tab.skills": "Færdigheder",
   "settings.extensions.availableAll": "Tilgængelig til alle projekter",
-  "settings.extensions.manageConfig": "Administrer i opencode.json",
+  "settings.extensions.manageConfig": "Administrer i porkcode.json",
   "settings.extensions.addSkills": "Sådan tilføjer du færdigheder",
   "project.settings.extensions.description": "Se tilgængelige udvidelser til dette projekt",
   "project.settings.extensions.tab.lsps": "LSP'er",
@@ -859,7 +859,7 @@ export const dict = {
   "desktop.menu.installCli": "Installér CLI...",
   "desktop.cli.installed.title": "CLI installeret",
   "desktop.cli.installed.message":
-    "CLI installeret i {{path}}\n\nGenstart terminalen for at bruge kommandoen 'opencode2'.",
+    "CLI installeret i {{path}}\n\nGenstart terminalen for at bruge kommandoen 'porkcode'.",
   "desktop.cli.failed.title": "Installationen mislykkedes",
   "desktop.cli.failed.message": "CLI kunne ikke installeres: {{error}}",
   "command.project.copyID": "Kopier projekt-id",

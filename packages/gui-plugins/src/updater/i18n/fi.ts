@@ -7,7 +7,7 @@ export default {
   "action.download": "Lataa PorkCode",
   "action.installing": "Asennetaan…",
   "toast.latest.title": "Olet ajan tasalla",
-  "toast.latest.description": "Käytät OpenCoden uusinta versiota.",
+  "toast.latest.description": "Käytät PorkCoden uusinta versiota.",
   "migration.title": "Siirry Betasta vakaaseen versioon",
   "migration.description":
     "PorkCode Beta siirtyy toistaiseksi PorkCode Stableen. Lataa versio {{version}} ja asenna sitten PorkCode levykuvasta, jotta saat jatkossakin päivityksiä.",

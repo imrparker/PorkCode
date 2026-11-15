@@ -40,8 +40,8 @@ export default {
   "error.installDistro": "Neizdevās instalēt distribūciju: {{distro}}",
   "error.installOpencode": "PorkCode instalēšana neizdevās",
   "error.alreadyAdded": "{{distro}} jau ir pievienota",
-  "error.opencodeMissing": "opencode nav instalēts šajā distribūcijā",
-  "error.opencodeCannotRun": "opencode ir instalēts, bet to nevar palaist",
+  "error.opencodeMissing": "porkcode nav instalēts šajā distribūcijā",
+  "error.opencodeCannotRun": "porkcode ir instalēts, bet to nevar palaist",
   "error.opencodeNotInstalled": "PorkCode nav instalēts {{distro}}",
   "error.updateVersion":
     "PorkCode atjaunināšana pabeigta, bet {{distro}} joprojām rāda {{installed}}; gaidīts {{expected}}",

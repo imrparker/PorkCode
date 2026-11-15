@@ -315,7 +315,7 @@ export const dict = {
   "error.chain.responseBody": "Tijelo odgovora:\n{{body}}",
   "error.chain.didYouMean": "Da li si mislio: {{suggestions}}",
   "error.chain.modelNotFound": "Model nije pronađen: {{provider}}/{{model}}",
-  "error.chain.checkConfig": "Provjeri nazive provajdera/modela u konfiguraciji (opencode.json)",
+  "error.chain.checkConfig": "Provjeri nazive provajdera/modela u konfiguraciji (porkcode.json)",
   "error.chain.mcpFailed": 'MCP server "{{name}}" nije uspio. Napomena: PorkCode još ne podržava MCP autentifikaciju.',
   "error.chain.providerAuthFailed": "Autentifikacija provajdera nije uspjela ({{provider}}): {{message}}",
   "error.chain.providerInitFailed":
@@ -626,7 +626,7 @@ export const dict = {
   "settings.extensions.tab.mcps": "MCP-ovi",
   "settings.extensions.tab.skills": "Vještine",
   "settings.extensions.availableAll": "Dostupan za sve projekte",
-  "settings.extensions.manageConfig": "Upravljajte u opencode.json",
+  "settings.extensions.manageConfig": "Upravljajte u porkcode.json",
   "settings.extensions.addSkills": "Kako dodati vještine",
   "project.settings.extensions.description": "Pogledajte proširenja dostupna za ovaj projekat",
   "project.settings.extensions.tab.lsps": "LSP-ovi",
@@ -668,7 +668,7 @@ export const dict = {
   "desktop.menu.installCli": "Instaliraj CLI...",
   "desktop.cli.installed.title": "CLI je instaliran",
   "desktop.cli.installed.message":
-    "CLI je instaliran u {{path}}\n\nPonovo pokrenite terminal da biste koristili naredbu 'opencode2'.",
+    "CLI je instaliran u {{path}}\n\nPonovo pokrenite terminal da biste koristili naredbu 'porkcode'.",
   "desktop.cli.failed.title": "Instalacija nije uspjela",
   "desktop.cli.failed.message": "Instalacija CLI-ja nije uspjela: {{error}}",
   "command.project.copyID": "Kopiraj ID projekta",
@@ -793,8 +793,8 @@ export const dict = {
   "server.connect.address.invalid": "Unesite ispravnu HTTP ili HTTPS adresu servera.",
   "server.connect.failed": "Povezivanje nije uspjelo. Provjerite adresu servera i lozinku, pa pokušajte ponovo.",
   "server.connect.scan": "Skeniraj QR kod",
-  "server.connect.scan.description": "Usmjerite kameru prema QR kodu koji prikazuje opencode pair.",
-  "server.connect.scan.invalid": "Ovo nije PorkCode kod za uparivanje. Skenirajte kod koji prikazuje opencode pair.",
+  "server.connect.scan.description": "Usmjerite kameru prema QR kodu koji prikazuje porkcode pair.",
+  "server.connect.scan.invalid": "Ovo nije PorkCode kod za uparivanje. Skenirajte kod koji prikazuje porkcode pair.",
   "server.connect.camera": "Kamera za uparivanje",
   "server.connect.camera.starting": "Otvaranje kamere…",
   "server.connect.mixedContent":

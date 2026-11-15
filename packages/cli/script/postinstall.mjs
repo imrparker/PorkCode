@@ -11,8 +11,8 @@ const directory = path.dirname(fileURLToPath(import.meta.url))
 const require = createRequire(import.meta.url)
 const packageJson = JSON.parse(fs.readFileSync(path.join(directory, "package.json"), "utf8"))
 const command = Object.keys(packageJson.bin ?? {})[0]
-if (!command) throw new Error("OpenCode package does not declare a binary")
-const sourceCommand = packageJson.opencodeSourceBinary ?? command
+if (!command) throw new Error("PorkCode package does not declare a binary")
+const sourceCommand = packageJson.porkcodeSourceBinary ?? command
 
 const platform = { darwin: "darwin", linux: "linux", win32: "windows" }[os.platform()] ?? os.platform()
 const nodeArch = { x64: "x64", arm64: "arm64", arm: "arm" }[os.arch()] ?? os.arch()

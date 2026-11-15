@@ -288,7 +288,7 @@ export const dict = {
   "error.chain.responseBody": "Trupi i përgjigjes:\n{{body}}",
   "error.chain.didYouMean": "A do të thuash: {{suggestions}}",
   "error.chain.modelNotFound": "Modeli nuk u gjet: {{provider}}/{{model}}",
-  "error.chain.checkConfig": "Kontrolloni emrat e ofruesit/modelit tuaj të konfigurimit (opencode.json).",
+  "error.chain.checkConfig": "Kontrolloni emrat e ofruesit/modelit tuaj të konfigurimit (porkcode.json).",
   "error.chain.mcpFailed": 'Serveri MCP "{{name}}" dështoi. Shënim, PorkCode nuk e mbështet ende vërtetimin MCP.',
   "error.chain.providerAuthFailed": "Autentifikimi i ofruesit dështoi ({{provider}}): {{message}}",
   "error.chain.providerInitFailed":
@@ -591,7 +591,7 @@ export const dict = {
   "settings.extensions.tab.mcps": "MCP-të",
   "settings.extensions.tab.skills": "Aftësitë",
   "settings.extensions.availableAll": "Në dispozicion për të gjitha projektet",
-  "settings.extensions.manageConfig": "Menaxho në opencode.json",
+  "settings.extensions.manageConfig": "Menaxho në porkcode.json",
   "settings.extensions.addSkills": "Si të shtoni aftësi",
   "project.settings.extensions.description": "Shikoni zgjerimet e disponueshme për këtë projekt",
   "project.settings.extensions.tab.lsps": "LSP-të",
@@ -602,7 +602,7 @@ export const dict = {
   "desktop.menu.installCli": "Instalo CLI-në...",
   "desktop.cli.installed.title": "CLI-ja u instalua",
   "desktop.cli.installed.message":
-    "CLI-ja u instalua te {{path}}\n\nRinisni terminalin për të përdorur komandën 'opencode2'.",
+    "CLI-ja u instalua te {{path}}\n\nRinisni terminalin për të përdorur komandën 'porkcode'.",
   "desktop.cli.failed.title": "Instalimi dështoi",
   "desktop.cli.failed.message": "Instalimi i CLI-së dështoi: {{error}}",
   "command.project.copyID": "Kopjo ID-në e projektit",
@@ -714,8 +714,8 @@ export const dict = {
   "server.connect.failed":
     "Nuk mund të lidhej. Kontrolloni adresën dhe fjalëkalimin e serverit, më pas provoni përsëri.",
   "server.connect.scan": "Skanoni kodin QR",
-  "server.connect.scan.description": "Drejtoje kamerën drejt kodit QR të treguar nga opencode pair.",
-  "server.connect.scan.invalid": "Ky nuk është një kod çiftimi PorkCode. Skanoni kodin e treguar nga opencode pair.",
+  "server.connect.scan.description": "Drejtoje kamerën drejt kodit QR të treguar nga porkcode pair.",
+  "server.connect.scan.invalid": "Ky nuk është një kod çiftimi PorkCode. Skanoni kodin e treguar nga porkcode pair.",
   "server.connect.camera": "Çiftimi i kamerës",
   "server.connect.camera.starting": "Hapja e kamerës…",
   "server.connect.mixedContent":

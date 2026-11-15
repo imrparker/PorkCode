@@ -40,7 +40,7 @@ export default {
   "error.installOpencode": "PorkCode gurmak şowsuz",
   "error.alreadyAdded": "{{distro}} eýýäm goşuldy",
   "error.opencodeMissing": "açyk kod bu distroda gurlanok",
-  "error.opencodeCannotRun": "opencode guruldy, ýöne işledip bilmedi",
+  "error.opencodeCannotRun": "porkcode guruldy, ýöne işledip bilmedi",
   "error.opencodeNotInstalled": "PorkCode {{distro}} gurulmady",
   "error.updateVersion":
     "PorkCode täzelenmesi gutardy, ýöne {{distro}} henizem {{installed}} habar berýär; garaşylýan {{expected}}",

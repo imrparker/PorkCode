@@ -297,7 +297,7 @@ export const dict = {
   "error.chain.responseBody": "جواب دا متن:\n\u2068{{body}}\u2069",
   "error.chain.didYouMean": "کی تہاڈا مطلب سی: \u2068{{suggestions}}\u2069",
   "error.chain.modelNotFound": "ماڈل نئیں لبیا: \u2068{{provider}}\u2069/\u2068{{model}}\u2069",
-  "error.chain.checkConfig": "اپنی کنفگ (opencode.json) وچ پرووائیڈر/ماڈل دے ناں چیک کرو",
+  "error.chain.checkConfig": "اپنی کنفگ (porkcode.json) وچ پرووائیڈر/ماڈل دے ناں چیک کرو",
   "error.chain.mcpFailed":
     'MCP سرور "\u2068{{name}}\u2069" ناکام ہو گیا۔ نوٹ، PorkCode ہلے تک MCP تصدیق دی حمایت نئیں کردا۔',
   "error.chain.providerAuthFailed":
@@ -574,7 +574,7 @@ export const dict = {
   "settings.extensions.tab.mcps": "MCPs",
   "settings.extensions.tab.skills": "مہارتاں",
   "settings.extensions.availableAll": "سارے پروجیکٹاں لئی دستیاب",
-  "settings.extensions.manageConfig": "opencode.json چ سنبھالو",
+  "settings.extensions.manageConfig": "porkcode.json چ سنبھالو",
   "settings.extensions.addSkills": "مہارتاں شامل کرن دا طریقہ",
   "project.settings.extensions.description": "اس پروجیکٹ لئی دستیاب ایکسٹینشن ویکھو",
   "project.settings.extensions.tab.lsps": "LSPs",
@@ -613,7 +613,7 @@ export const dict = {
   "desktop.menu.installCli": "CLI انسٹال کرو...",
   "desktop.cli.installed.title": "CLI انسٹال ہو گئی",
   "desktop.cli.installed.message":
-    "CLI \u2068{{path}}\u2069 تے انسٹال ہو گئی\n\n'opencode2' کمانڈ ورتن لئی اپنا ٹرمینل دوبارہ شروع کرو۔",
+    "CLI \u2068{{path}}\u2069 تے انسٹال ہو گئی\n\n'porkcode' کمانڈ ورتن لئی اپنا ٹرمینل دوبارہ شروع کرو۔",
   "desktop.cli.failed.title": "انسٹالیشن ناکام ہو گئی",
   "desktop.cli.failed.message": "CLI انسٹال نئیں ہو سکی: \u2068{{error}}\u2069",
   "command.project.copyID": "پروجیکٹ ID کاپی کرو",

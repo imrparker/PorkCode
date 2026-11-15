@@ -40,8 +40,8 @@ export default {
   "error.installDistro": "Distribütivi quraşdırmaq mümkün olmadı: {{distro}}",
   "error.installOpencode": "PorkCode quraşdırılması uğursuz oldu",
   "error.alreadyAdded": "{{distro}} artıq əlavə edilib",
-  "error.opencodeMissing": "Bu distribütivdə opencode quraşdırılmayıb",
-  "error.opencodeCannotRun": "opencode quraşdırılıb, lakin onu işə salmaq mümkün olmadı",
+  "error.opencodeMissing": "Bu distribütivdə porkcode quraşdırılmayıb",
+  "error.opencodeCannotRun": "porkcode quraşdırılıb, lakin onu işə salmaq mümkün olmadı",
   "error.opencodeNotInstalled": "PorkCode {{distro}} distribütivində quraşdırılmayıb",
   "error.updateVersion":
     "PorkCode yeniləməsi tamamlandı, lakin {{distro}} hələ də {{installed}} versiyasını bildirir; gözlənilən versiya: {{expected}}",

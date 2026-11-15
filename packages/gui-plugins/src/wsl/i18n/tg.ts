@@ -40,8 +40,8 @@ export default {
   "error.installDistro": "Насб кардани distro иҷро нашуд: {{distro}}",
   "error.installOpencode": "PorkCode насб карда нашуд",
   "error.alreadyAdded": "{{distro}} аллакай илова карда шудааст",
-  "error.opencodeMissing": "opencode дар ин паҳнкунӣ насб нашудааст",
-  "error.opencodeCannotRun": "opencode насб шудааст, аммо иҷро карда натавонист",
+  "error.opencodeMissing": "porkcode дар ин паҳнкунӣ насб нашудааст",
+  "error.opencodeCannotRun": "porkcode насб шудааст, аммо иҷро карда натавонист",
   "error.opencodeNotInstalled": "PorkCode дар {{distro}} насб нашудааст",
   "error.updateVersion":
     "PorkCode навсозӣ анҷом ёфт, аммо {{distro}} то ҳол гузориш медиҳад {{installed}}; интизорӣ {{expected}}",

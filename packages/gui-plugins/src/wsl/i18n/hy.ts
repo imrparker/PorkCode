@@ -40,8 +40,8 @@ export default {
   "error.installDistro": "Չհաջողվեց տեղադրել բաշխում՝ {{distro}}",
   "error.installOpencode": "PorkCode տեղադրումը ձախողվեց",
   "error.alreadyAdded": "{{distro}} արդեն ավելացված է",
-  "error.opencodeMissing": "opencode-ը տեղադրված չէ այս բաշխում",
-  "error.opencodeCannotRun": "opencode-ը տեղադրված է, բայց չի կարող գործարկվել",
+  "error.opencodeMissing": "porkcode-ը տեղադրված չէ այս բաշխում",
+  "error.opencodeCannotRun": "porkcode-ը տեղադրված է, բայց չի կարող գործարկվել",
   "error.opencodeNotInstalled": "PorkCode տեղադրված չէ {{distro}}",
   "error.updateVersion":
     "PorkCode թարմացումն ավարտված է, բայց {{distro}}-ը դեռ հայտնում է {{installed}}; սպասվում է {{expected}}",

@@ -39,8 +39,8 @@ export default {
   "error.installDistro": "Distro installimine ebaõnnestus: {{distro}}",
   "error.installOpencode": "PorkCode installimine ebaõnnestus",
   "error.alreadyAdded": "{{distro}} on juba lisatud",
-  "error.opencodeMissing": "opencode pole sellesse distrosse installitud",
-  "error.opencodeCannotRun": "opencode on installitud, kuid seda ei saa käivitada",
+  "error.opencodeMissing": "porkcode pole sellesse distrosse installitud",
+  "error.opencodeCannotRun": "porkcode on installitud, kuid seda ei saa käivitada",
   "error.opencodeNotInstalled": "PorkCode pole installitud asukohta {{distro}}",
   "error.updateVersion":
     "PorkCode värskendus on lõpetatud, kuid {{distro}} teatab endiselt {{installed}}; oodata {{expected}}",

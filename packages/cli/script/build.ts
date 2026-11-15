@@ -17,7 +17,7 @@ import { NativeArch } from "../../../script/native-arch"
 import { bundledModelsSnapshot, modelsSnapshotPlugin } from "../../core/script/models-snapshot"
 
 const dir = path.resolve(import.meta.dirname, "..")
-const binary = "opencode"
+const binary = "porkcode"
 const outdir = path.resolve(
   dir,
   process.argv.find((arg) => arg.startsWith("--outdir="))?.slice("--outdir=".length) ?? "dist",
@@ -209,7 +209,7 @@ export default { path: file, version: ${JSON.stringify(opencodePty.version)}, sh
     },
     define: {
       PORKCODE_VERSION: `'${Script.version}'`,
-      PORKCODE_CLI_NAME: "'opencode'",
+      PORKCODE_CLI_NAME: "'porkcode'",
       PORKCODE_CHANNEL: `'${Script.channel}'`,
       PORKCODE_ARTIFACT: `'cli'`,
       ...(highlights ? { PORKCODE_RELEASE_HIGHLIGHTS: JSON.stringify(highlights) } : {}),

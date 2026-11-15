@@ -40,8 +40,8 @@ export default {
   "error.installDistro": "Nepavyko įdiegti distributyvo: {{distro}}",
   "error.installOpencode": "PorkCode įdiegti nepavyko",
   "error.alreadyAdded": "{{distro}} jau pridėtas",
-  "error.opencodeMissing": "opencode šiame distributyve neįdiegtas",
-  "error.opencodeCannotRun": "opencode įdiegtas, bet jo paleisti nepavyko",
+  "error.opencodeMissing": "porkcode šiame distributyve neįdiegtas",
+  "error.opencodeCannotRun": "porkcode įdiegtas, bet jo paleisti nepavyko",
   "error.opencodeNotInstalled": "PorkCode neįdiegtas distributyve {{distro}}",
   "error.updateVersion":
     "PorkCode naujinimas baigtas, bet {{distro}} vis dar praneša {{installed}}; tikėtasi {{expected}}",

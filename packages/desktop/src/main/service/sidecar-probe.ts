@@ -24,6 +24,7 @@ export function startSidecarProbe() {
 // The fork channel's registration, at the same location BackgroundService.prepare reads; see SERVICE_FILE in constants.ts.
 function registrationFile() {
   const state = process.env.XDG_STATE_HOME ?? path.join(app.getPath("home"), ".local", "state")
+
   return path.join(state, "porkcode", SERVICE_FILE)
 }
 
@@ -37,7 +38,7 @@ export function takeSidecarProbe() {
 
 function bundledVersion() {
   try {
-    return readFileSync(path.join(process.resourcesPath, "opencode-cli.version"), "utf8").trim()
+    return readFileSync(path.join(process.resourcesPath, "porkcode-cli.version"), "utf8").trim()
   } catch {
     return ""
   }

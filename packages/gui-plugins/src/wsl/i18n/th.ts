@@ -40,8 +40,8 @@ export default {
   "error.installDistro": "ไม่สามารถติดตั้งดิสโทรได้: {{distro}}",
   "error.installOpencode": "การติดตั้ง PorkCode ล้มเหลว",
   "error.alreadyAdded": "เพิ่ม {{distro}} แล้ว",
-  "error.opencodeMissing": "ไม่ได้ติดตั้ง opencode ในดิสโทรนี้",
-  "error.opencodeCannotRun": "ติดตั้ง opencode แล้ว แต่ไม่สามารถเรียกใช้ได้",
+  "error.opencodeMissing": "ไม่ได้ติดตั้ง porkcode ในดิสโทรนี้",
+  "error.opencodeCannotRun": "ติดตั้ง porkcode แล้ว แต่ไม่สามารถเรียกใช้ได้",
   "error.opencodeNotInstalled": "ไม่ได้ติดตั้ง PorkCode ใน {{distro}}",
   "error.updateVersion":
     "อัปเดต PorkCode เสร็จแล้ว แต่ {{distro}} ยังคงรายงานเวอร์ชัน {{installed}} ทั้งที่ควรเป็น {{expected}}",

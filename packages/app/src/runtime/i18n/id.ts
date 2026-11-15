@@ -337,7 +337,7 @@ export const dict = {
   "error.chain.responseBody": "Isi respons:\n{{body}}",
   "error.chain.didYouMean": "Maksud Anda: {{suggestions}}",
   "error.chain.modelNotFound": "Model tidak ditemukan: {{provider}}/{{model}}",
-  "error.chain.checkConfig": "Periksa nama penyedia/model di konfigurasi Anda (opencode.json)",
+  "error.chain.checkConfig": "Periksa nama penyedia/model di konfigurasi Anda (porkcode.json)",
   "error.chain.mcpFailed": 'Server MCP "{{name}}" gagal. Catatan: PorkCode belum mendukung autentikasi MCP.',
   "error.chain.providerAuthFailed": "Autentikasi penyedia gagal ({{provider}}): {{message}}",
   "error.chain.providerInitFailed":
@@ -470,7 +470,7 @@ export const dict = {
   "settings.extensions.tab.mcps": "MCP",
   "settings.extensions.tab.skills": "Keahlian",
   "settings.extensions.availableAll": "Tersedia untuk semua proyek",
-  "settings.extensions.manageConfig": "Kelola di opencode.json",
+  "settings.extensions.manageConfig": "Kelola di porkcode.json",
   "settings.extensions.addSkills": "Cara menambahkan keahlian",
 
   "project.settings.extensions.description": "Lihat ekstensi yang tersedia untuk proyek ini",
@@ -674,7 +674,7 @@ export const dict = {
   "desktop.menu.installCli": "Instal CLI...",
   "desktop.cli.installed.title": "CLI Terinstal",
   "desktop.cli.installed.message":
-    "CLI terinstal di {{path}}\n\nMulai ulang terminal untuk menggunakan perintah 'opencode2'.",
+    "CLI terinstal di {{path}}\n\nMulai ulang terminal untuk menggunakan perintah 'porkcode'.",
   "desktop.cli.failed.title": "Instalasi Gagal",
   "desktop.cli.failed.message": "Gagal menginstal CLI: {{error}}",
   "command.project.copyID": "Salin ID Proyek",
@@ -794,8 +794,8 @@ export const dict = {
   "server.connect.address.invalid": "Masukkan alamat server HTTP atau HTTPS yang valid.",
   "server.connect.failed": "Tidak dapat terhubung. Periksa alamat server dan kata sandi, lalu coba lagi.",
   "server.connect.scan": "Pindai kode QR",
-  "server.connect.scan.description": "Arahkan kamera Anda ke kode QR yang ditampilkan oleh opencode pair.",
-  "server.connect.scan.invalid": "Ini bukan kode pemasangan PorkCode. Pindai kode yang ditampilkan oleh opencode pair.",
+  "server.connect.scan.description": "Arahkan kamera Anda ke kode QR yang ditampilkan oleh porkcode pair.",
+  "server.connect.scan.invalid": "Ini bukan kode pemasangan PorkCode. Pindai kode yang ditampilkan oleh porkcode pair.",
   "server.connect.camera": "Kamera pemasangan",
   "server.connect.camera.starting": "Membuka kamera…",
   "server.connect.mixedContent":

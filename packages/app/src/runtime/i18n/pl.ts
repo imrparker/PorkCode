@@ -284,7 +284,7 @@ export const dict = {
   "error.chain.responseBody": "Treść odpowiedzi:\n{{body}}",
   "error.chain.didYouMean": "Czy miałeś na myśli: {{suggestions}}",
   "error.chain.modelNotFound": "Model nie znaleziony: {{provider}}/{{model}}",
-  "error.chain.checkConfig": "Sprawdź nazwy dostawców i modeli w konfiguracji (opencode.json)",
+  "error.chain.checkConfig": "Sprawdź nazwy dostawców i modeli w konfiguracji (porkcode.json)",
   "error.chain.mcpFailed":
     "Serwer MCP „{{name}}” nie uruchomił się. Uwaga: PorkCode nie obsługuje jeszcze uwierzytelniania MCP.",
   "error.chain.providerAuthFailed": "Uwierzytelnianie dostawcy nie powiodło się ({{provider}}): {{message}}",
@@ -576,7 +576,7 @@ export const dict = {
   "settings.extensions.tab.mcps": "MCP",
   "settings.extensions.tab.skills": "Umiejętności",
   "settings.extensions.availableAll": "Dostępne dla wszystkich projektów",
-  "settings.extensions.manageConfig": "Zarządzaj w opencode.json",
+  "settings.extensions.manageConfig": "Zarządzaj w porkcode.json",
   "settings.extensions.addSkills": "Jak dodać umiejętności",
   "project.settings.extensions.description": "Wyświetl rozszerzenia dostępne dla tego projektu",
   "project.settings.extensions.tab.lsps": "LSP",
@@ -621,7 +621,7 @@ export const dict = {
   "desktop.menu.installCli": "Zainstaluj CLI...",
   "desktop.cli.installed.title": "CLI zostało zainstalowane",
   "desktop.cli.installed.message":
-    "CLI zainstalowano w {{path}}\n\nUruchom terminal ponownie, aby używać polecenia „opencode2”.",
+    "CLI zainstalowano w {{path}}\n\nUruchom terminal ponownie, aby używać polecenia „porkcode”.",
   "desktop.cli.failed.title": "Instalacja nie powiodła się",
   "desktop.cli.failed.message": "Nie udało się zainstalować CLI: {{error}}",
   "command.project.copyID": "Kopiuj identyfikator projektu",
@@ -751,8 +751,8 @@ export const dict = {
   "server.connect.address.invalid": "Wprowadź prawidłowy adres serwera HTTP lub HTTPS.",
   "server.connect.failed": "Nie można się połączyć. Sprawdź adres serwera i hasło, a następnie spróbuj ponownie.",
   "server.connect.scan": "Zeskanuj kod QR",
-  "server.connect.scan.description": "Skieruj kamerę na kod QR pokazany przez sparowanie opencode.",
-  "server.connect.scan.invalid": "To nie jest kod parowania PorkCode. Zeskanuj kod pokazany przez sparowanie opencode.",
+  "server.connect.scan.description": "Skieruj kamerę na kod QR pokazany przez sparowanie porkcode.",
+  "server.connect.scan.invalid": "To nie jest kod parowania PorkCode. Zeskanuj kod pokazany przez sparowanie porkcode.",
   "server.connect.camera": "Łączenie aparatu",
   "server.connect.camera.starting": "Otwieranie kamery…",
   "server.connect.mixedContent":

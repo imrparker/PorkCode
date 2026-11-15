@@ -287,7 +287,7 @@ export const dict = {
   "error.chain.responseBody": "Svarstovnur:\n{{body}}",
   "error.chain.didYouMean": "Meinti tú: {{suggestions}}",
   "error.chain.modelNotFound": "Fyrimynd ikki funnið: {{provider}}/{{model}}",
-  "error.chain.checkConfig": "Kanna tíni uppseting (opencode.json) veitara/modell nøvn",
+  "error.chain.checkConfig": "Kanna tíni uppseting (porkcode.json) veitara/modell nøvn",
   "error.chain.mcpFailed": 'MCP ambætarin "{{name}}" miseydnaðist. Viðmæli, PorkCode stuðlar ikki MCP sannroynd enn.',
   "error.chain.providerAuthFailed": "Veitaragóðkenning miseydnaðist ({{provider}}): {{message}}",
   "error.chain.providerInitFailed":
@@ -590,7 +590,7 @@ export const dict = {
   "settings.extensions.tab.mcps": "MCP-ar",
   "settings.extensions.tab.skills": "Førleikar",
   "settings.extensions.availableAll": "Tøkt fyri allar verkætlanir",
-  "settings.extensions.manageConfig": "Umsit í opencode.json",
+  "settings.extensions.manageConfig": "Umsit í porkcode.json",
   "settings.extensions.addSkills": "Hvussu førleikar verða lagdir afturat",
   "project.settings.extensions.description": "Vís víðkanir, sum eru tøkar fyri hesa verkætlanina",
   "project.settings.extensions.tab.lsps": "LSP-ar",
@@ -601,7 +601,7 @@ export const dict = {
   "desktop.menu.installCli": "Set CLI upp...",
   "desktop.cli.installed.title": "CLI er sett upp",
   "desktop.cli.installed.message":
-    "CLI varð sett upp í {{path}}\n\nEndurbyrja terminalin fyri at brúka 'opencode2'-stýriboðið.",
+    "CLI varð sett upp í {{path}}\n\nEndurbyrja terminalin fyri at brúka 'porkcode'-stýriboðið.",
   "desktop.cli.failed.title": "Uppsetingin miseydnaðist",
   "desktop.cli.failed.message": "Tað eydnaðist ikki at seta CLI upp: {{error}}",
   "command.project.copyID": "Avrita verkætlanar-ID",
@@ -711,8 +711,8 @@ export const dict = {
   "server.connect.address.invalid": "Skriva eina gylduga HTTP ella HTTPS ambætaraadressu.",
   "server.connect.failed": "Fekk ikki samband. Kanna ambætaraadressuna og loyniorðið, og royn síðani aftur.",
   "server.connect.scan": "Skanna QR-kotu",
-  "server.connect.scan.description": "Peika myndatólið á QR-kotuna, sum opencode pair vísir.",
-  "server.connect.scan.invalid": "Hetta er ikki ein PorkCode paringarkoda. Skanna kotuna, sum opencode pair vísir.",
+  "server.connect.scan.description": "Peika myndatólið á QR-kotuna, sum porkcode pair vísir.",
+  "server.connect.scan.invalid": "Hetta er ikki ein PorkCode paringarkoda. Skanna kotuna, sum porkcode pair vísir.",
   "server.connect.camera": "Para myndatól",
   "server.connect.camera.starting": "Opna myndatól...",
   "server.connect.mixedContent":

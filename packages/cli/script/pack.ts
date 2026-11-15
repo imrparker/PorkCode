@@ -18,9 +18,8 @@ await mkdir(archiveDir, { recursive: true })
 await packDistribution({
   root,
   name: pkg.name,
-  command: "opencode",
-  legacyCommand: "opencode2",
-  binary: "opencode",
+  command: "porkcode",
+  binary: "porkcode",
   packagePrefix: "@opencode/cli-",
   archive: (target) => target.startsWith("linux-"),
 })
@@ -28,8 +27,8 @@ if (existsSync(path.join(root, "node"))) {
   await packDistribution({
     root: path.join(root, "node"),
     name: "@opencode/cli-node",
-    command: "opencode2-node",
-    binary: "opencode2-node",
+    command: "porkcode-node",
+    binary: "porkcode-node",
     packagePrefix: "@opencode/cli-node-",
     archive: () => true,
   })
@@ -39,7 +38,6 @@ async function packDistribution(input: {
   root: string
   name: string
   command: string
-  legacyCommand?: string
   binary: string
   packagePrefix: string
   archive: (target: string) => boolean
@@ -75,9 +73,8 @@ async function packDistribution(input: {
         name: input.name,
         bin: {
           [input.command]: `./bin/${input.command}.exe`,
-          ...(input.legacyCommand ? { [input.legacyCommand]: `./bin/${input.command}.exe` } : {}),
         },
-        ...(input.command !== input.binary ? { opencodeSourceBinary: input.binary } : {}),
+        ...(input.command !== input.binary ? { porkcodeSourceBinary: input.binary } : {}),
         scripts: { postinstall: "node ./postinstall.mjs" },
         version,
         license: pkg.license,

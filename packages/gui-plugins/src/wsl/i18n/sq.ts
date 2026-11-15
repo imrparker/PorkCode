@@ -39,8 +39,8 @@ export default {
   "error.installDistro": "Instalimi i shpërndarjes dështoi: {{distro}}",
   "error.installOpencode": "Instalimi i PorkCode dështoi",
   "error.alreadyAdded": "{{distro}} është shtuar tashmë",
-  "error.opencodeMissing": "Opencode nuk është i instaluar në këtë shpërndarje",
-  "error.opencodeCannotRun": "Opencode është instaluar por nuk mund të ekzekutohet",
+  "error.opencodeMissing": "PorkCode nuk është i instaluar në këtë shpërndarje",
+  "error.opencodeCannotRun": "PorkCode është instaluar por nuk mund të ekzekutohet",
   "error.opencodeNotInstalled": "PorkCode nuk është i instaluar në {{distro}}",
   "error.updateVersion":
     "Përditësimi i PorkCode përfundoi, por {{distro}} ende raporton {{installed}}; pritet {{expected}}",

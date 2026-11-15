@@ -78,13 +78,13 @@ const setup: Plugin.MainSetup = (ctx) => {
     }
 
     // Remote access is a setting of the background service, so it changes through the CLI the app runs, as with
-    // `opencode pair --remote`. A hung command ends at its timeout, so the next one always runs.
+    // `porkcode pair --remote`. A hung command ends at its timeout, so the next one always runs.
     const attempt = effect.attempt
     const controller = new AbortController()
 
     commands.set(attempt, controller)
     execFile(
-      cli.command[0] ?? "opencode",
+      cli.command[0] ?? "porkcode",
       [...cli.command.slice(1), "service", ...effect.args],
       { signal: AbortSignal.any([ctx.signal, controller.signal]), timeout: effect.timeoutMs, windowsHide: true },
       (error, stdout, stderr) => {

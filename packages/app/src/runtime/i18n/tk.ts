@@ -287,7 +287,7 @@ export const dict = {
   "error.chain.responseBody": "Jogap beriji organ:\n{{body}}",
   "error.chain.didYouMean": "Diýjek bolduňmy: {{suggestions}}",
   "error.chain.modelNotFound": "Model tapylmady: {{provider}} / {{model}}",
-  "error.chain.checkConfig": "Konfigurasiýaňyzy (opencode.json) üpjün edijiniň / model atlaryny barlaň",
+  "error.chain.checkConfig": "Konfigurasiýaňyzy (porkcode.json) üpjün edijiniň / model atlaryny barlaň",
   "error.chain.mcpFailed": 'MCP serweri "{{name}}" şowsuz. Üns beriň, PorkCode entek MCP tassyklamasyny goldamaýar.',
   "error.chain.providerAuthFailed": "Prowaýderiň tassyklamasy şowsuz ({{provider}}): {{message}}",
   "error.chain.providerInitFailed":
@@ -558,7 +558,7 @@ export const dict = {
   "settings.extensions.tab.mcps": "MCP-ler",
   "settings.extensions.tab.skills": "Başarnyklar",
   "settings.extensions.availableAll": "Ähli taslamalar üçin elýeterli",
-  "settings.extensions.manageConfig": "opencode.json-da dolandyryň",
+  "settings.extensions.manageConfig": "porkcode.json-da dolandyryň",
   "settings.extensions.addSkills": "Başarnyklary nädip goşmaly",
   "project.settings.extensions.description": "Bu taslama üçin elýeterli giňeltmeleri görüň",
   "project.settings.extensions.tab.lsps": "LSP-ler",
@@ -600,7 +600,7 @@ export const dict = {
   "desktop.menu.installCli": "CLI gurmak...",
   "desktop.cli.installed.title": "CLI guruldy",
   "desktop.cli.installed.message":
-    "CLI {{path}} ýoluna guruldy\n\n'opencode2' buýrugyny ulanmak üçin terminaly täzeden açyň.",
+    "CLI {{path}} ýoluna guruldy\n\n'porkcode' buýrugyny ulanmak üçin terminaly täzeden açyň.",
   "desktop.cli.failed.title": "Gurmak başa barmady",
   "desktop.cli.failed.message": "CLI gurup bolmady: {{error}}",
   "command.project.copyID": "Taslama ID-sini nusgala",
@@ -721,8 +721,8 @@ export const dict = {
   "server.connect.address.invalid": "Dogry HTTP ýa-da HTTPS serwer salgysyny giriziň.",
   "server.connect.failed": "Birikip bilmedim Serweriň salgysyny we parolyny barlaň, soňra gaýtadan synanyşyň.",
   "server.connect.scan": "QR koduny skanirläň",
-  "server.connect.scan.description": "Kamerany opencode pair görkezýän QR koda gönükdiriň.",
-  "server.connect.scan.invalid": "Bu PorkCode jübütleme kody däl. opencode pair görkezýän kody skanirläň.",
+  "server.connect.scan.description": "Kamerany porkcode pair görkezýän QR koda gönükdiriň.",
+  "server.connect.scan.invalid": "Bu PorkCode jübütleme kody däl. porkcode pair görkezýän kody skanirläň.",
   "server.connect.camera": "Jübüt kamera",
   "server.connect.camera.starting": "Kamerany açmak…",
   "server.connect.mixedContent":

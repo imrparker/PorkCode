@@ -18,10 +18,10 @@ describe("configuredLanguageServers", () => {
     expect(
       configuredLanguageServers([
         global,
-        { type: "directory", path: "/project/.opencode" },
+        { type: "directory", path: "/project/.porkcode" },
         {
           type: "document",
-          path: "/project/opencode.jsonc",
+          path: "/project/porkcode.jsonc",
           info: {
             lsp: {
               typescript: { disabled: true },

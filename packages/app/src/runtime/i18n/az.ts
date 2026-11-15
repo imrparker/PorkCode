@@ -291,7 +291,7 @@ export const dict = {
   "error.chain.responseBody": "Cavab gövdəsi:\n{{body}}",
   "error.chain.didYouMean": "Bunu nəzərdə tuturdunuz: {{suggestions}}",
   "error.chain.modelNotFound": "Model tapılmadı: {{provider}}/{{model}}",
-  "error.chain.checkConfig": "Konfiqurasiyanızdakı (opencode.json) provayder/model adlarını yoxlayın",
+  "error.chain.checkConfig": "Konfiqurasiyanızdakı (porkcode.json) provayder/model adlarını yoxlayın",
   "error.chain.mcpFailed":
     'MCP server "{{name}}" uğursuz oldu. Qeyd: PorkCode hələ MCP autentifikasiyasını dəstəkləmir.',
   "error.chain.providerAuthFailed": "Provayder autentifikasiyası uğursuz oldu ({{provider}}): {{message}}",
@@ -565,7 +565,7 @@ export const dict = {
   "settings.extensions.tab.mcps": "MCP-lər",
   "settings.extensions.tab.skills": "Bacarıqlar",
   "settings.extensions.availableAll": "Bütün layihələr üçün mövcuddur",
-  "settings.extensions.manageConfig": "opencode.json-da idarə edin",
+  "settings.extensions.manageConfig": "porkcode.json-da idarə edin",
   "settings.extensions.addSkills": "Bacarıqları necə əlavə etməli",
   "project.settings.extensions.description": "Bu layihə üçün mövcud genişləndirmələrə baxın",
   "project.settings.extensions.tab.lsps": "LSP-lər",
@@ -608,7 +608,7 @@ export const dict = {
   "desktop.menu.installCli": "CLI quraşdır...",
   "desktop.cli.installed.title": "CLI quraşdırıldı",
   "desktop.cli.installed.message":
-    "CLI {{path}} ünvanına quraşdırıldı\n\n'opencode2' əmrindən istifadə etmək üçün terminalı yenidən başladın.",
+    "CLI {{path}} ünvanına quraşdırıldı\n\n'porkcode' əmrindən istifadə etmək üçün terminalı yenidən başladın.",
   "desktop.cli.failed.title": "Quraşdırma uğursuz oldu",
   "desktop.cli.failed.message": "CLI quraşdırmaq mümkün olmadı: {{error}}",
   "command.project.copyID": "Layihə ID-sini kopyala",
@@ -728,8 +728,8 @@ export const dict = {
   "server.connect.address.invalid": "Etibarlı HTTP və ya HTTPS server ünvanını daxil edin.",
   "server.connect.failed": "Bağlana bilmədik. Server ünvanını və şifrəni yoxlayın, sonra yenidən cəhd edin.",
   "server.connect.scan": "QR kodu skan edin",
-  "server.connect.scan.description": "Kameranızı opencode pair tərəfindən göstərilən QR koda yönəldin.",
-  "server.connect.scan.invalid": "Bu, PorkCode qoşulma kodu deyil. opencode pair tərəfindən göstərilən kodu skan edin.",
+  "server.connect.scan.description": "Kameranızı porkcode pair tərəfindən göstərilən QR koda yönəldin.",
+  "server.connect.scan.invalid": "Bu, PorkCode qoşulma kodu deyil. porkcode pair tərəfindən göstərilən kodu skan edin.",
   "server.connect.camera": "Kamera cütləşdirilir",
   "server.connect.camera.starting": "Kamera açılır…",
   "server.connect.mixedContent":

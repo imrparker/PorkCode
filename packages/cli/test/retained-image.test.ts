@@ -15,8 +15,8 @@ windows("retain hard-links the running image for the scope and sweeps only links
     const fs = yield* FileSystem.FileSystem
     const directory = yield* fs.makeTempDirectoryScoped({ prefix: "opencode-retained-" })
     // pid 999999999 does not exist; pid 4 is System, alive but not openable (EPERM).
-    const kept = ["opencode-service-4-aa.exe", `opencode-service-${process.pid}-bb.exe`, "unrelated.exe"]
-    yield* Effect.forEach([...kept, "opencode-upgrade-999999999-cc.exe"], (name) =>
+    const kept = ["porkcode-service-4-aa.exe", `porkcode-service-${process.pid}-bb.exe`, "unrelated.exe"]
+    yield* Effect.forEach([...kept, "porkcode-upgrade-999999999-cc.exe"], (name) =>
       fs.writeFileString(path.join(directory, name), name),
     )
     const image = statSync(realpathSync(process.execPath))
@@ -24,7 +24,7 @@ windows("retain hard-links the running image for the scope and sweeps only links
       Effect.gen(function* () {
         const link = yield* RetainedImage.retain(directory, "upgrade")
         if (!link) return yield* Effect.die("Expected a link")
-        expect(path.basename(link)).toMatch(new RegExp(`^opencode-upgrade-${process.pid}-[0-9a-f]{8}\\.exe$`))
+        expect(path.basename(link)).toMatch(new RegExp(`^porkcode-upgrade-${process.pid}-[0-9a-f]{8}\\.exe$`))
         expect(statSync(link).ino).toBe(image.ino)
         expect(statSync(link).nlink).toBe(image.nlink + 1)
         expect((yield* fs.readDirectory(directory)).sort()).toEqual([...kept, path.basename(link)].sort())
@@ -52,11 +52,11 @@ windows("relocate moves only retained links out of a directory", () =>
     const cache = path.join(root, "cache")
     const tmp = path.join(root, "tmp")
     yield* fs.makeDirectory(cache)
-    yield* fs.writeFileString(path.join(cache, "opencode-upgrade-1-ab.exe"), "link")
+    yield* fs.writeFileString(path.join(cache, "porkcode-upgrade-1-ab.exe"), "link")
     yield* fs.writeFileString(path.join(cache, "models.json"), "{}")
     yield* RetainedImage.relocate(cache, tmp)
     expect(yield* fs.readDirectory(cache)).toEqual(["models.json"])
-    expect(yield* fs.readDirectory(tmp)).toEqual(["opencode-upgrade-1-ab.exe"])
+    expect(yield* fs.readDirectory(tmp)).toEqual(["porkcode-upgrade-1-ab.exe"])
   }),
 )
 
@@ -66,8 +66,8 @@ windows("installed accepts package-manager and curl binaries only", () =>
     const original = process.execPath
     yield* Effect.addFinalizer(() => Effect.sync(() => (process.execPath = original)))
     const cases = [
-      [path.join(home, ".bun", "install", "global", "node_modules", "@opencode", "cli", "bin", "opencode.exe"), true],
-      [path.join(home, ".opencode", "bin", "opencode.exe"), true],
+      [path.join(home, ".bun", "install", "global", "node_modules", "@opencode", "cli", "bin", "porkcode.exe"), true],
+      [path.join(home, ".porkcode", "bin", "porkcode.exe"), true],
       [
         path.join(
           home,
@@ -81,7 +81,7 @@ windows("installed accepts package-manager and curl binaries only", () =>
         ),
         true,
       ],
-      [path.join(home, "AppData", "Local", "Programs", "OpenCode", "resources", "opencode-cli.exe"), false],
+      [path.join(home, "AppData", "Local", "Programs", "PorkCode", "resources", "porkcode-cli.exe"), false],
       [path.join(home, "node_modules", "bun", "bin", "bun.exe"), false],
     ] as const
     const results = cases.map(([executable]) => {

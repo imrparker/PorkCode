@@ -19,7 +19,7 @@ describe("new session project selection", () => {
 
     const controls: PromptProjectControls = {
       available: [generic, current],
-      directory: "/repo/.opencode/worktree/feature",
+      directory: "/repo/.porkcode/worktree/feature",
       projectID: "current",
       select() {},
       add() {},
@@ -38,6 +38,7 @@ describe("new session project selection", () => {
       worktree: "/remote",
       server: { key: "remote", name: "Remote", kind: "remote" as const },
     }
+
     const local = {
       id: "shared",
       worktree: "/local",
@@ -63,6 +64,7 @@ describe("new session project selection", () => {
   test("lists every server's projects in one list: used first, then the rest, each by recent activity", () => {
     const local = { key: "sidecar", name: "hailmary", kind: "current" as const }
     const apollo = { key: "http://apollo:4096", name: "apollo", kind: "remote" as const }
+
     const entry = (id: string, server: typeof local | typeof apollo, active: number, used: boolean) => ({
       id,
       worktree: `/${id}`,
@@ -76,9 +78,9 @@ describe("new session project selection", () => {
       available: [
         entry("local-unused", local, 9, false),
         entry("local-used", local, 2, true),
-        entry("opencode", local, 1, true),
+        entry("porkcode", local, 1, true),
         entry("apollo-unused", apollo, 5, false),
-        entry("opencode", apollo, 3, true),
+        entry("porkcode", apollo, 3, true),
       ],
       directory: "/elsewhere",
       server: "sidecar",
@@ -89,9 +91,9 @@ describe("new session project selection", () => {
     createRoot((dispose) => {
       const controller = createPromptProjectController({ controls: () => controls })
       expect(controller.projects().map((project) => `${project.server?.name}:${project.id}`)).toEqual([
-        "apollo:opencode",
+        "apollo:porkcode",
         "hailmary:local-used",
-        "hailmary:opencode",
+        "hailmary:porkcode",
         "hailmary:local-unused",
         "apollo:apollo-unused",
       ])

@@ -287,7 +287,7 @@ export const dict = {
   "error.chain.responseBody": "Òrgan de resposta:\n{{body}}",
   "error.chain.didYouMean": "Volíeu dir: {{suggestions}}",
   "error.chain.modelNotFound": "No s'ha trobat el model: {{provider}}/{{model}}",
-  "error.chain.checkConfig": "Comproveu els noms del vostre proveïdor/model de configuració (opencode.json).",
+  "error.chain.checkConfig": "Comproveu els noms del vostre proveïdor/model de configuració (porkcode.json).",
   "error.chain.mcpFailed":
     'El servidor MCP "{{name}}" ha fallat. Tingueu en compte que PorkCode encara no admet l\'autenticació MCP.',
   "error.chain.providerAuthFailed": "L'autenticació del proveïdor ha fallat ({{provider}}): {{message}}",
@@ -597,7 +597,7 @@ export const dict = {
   "settings.extensions.tab.mcps": "MCP",
   "settings.extensions.tab.skills": "Habilitats",
   "settings.extensions.availableAll": "Disponible per a tots els projectes",
-  "settings.extensions.manageConfig": "Gestiona-ho a opencode.json",
+  "settings.extensions.manageConfig": "Gestiona-ho a porkcode.json",
   "settings.extensions.addSkills": "Com afegir habilitats",
   "project.settings.extensions.description": "Consulteu les extensions disponibles per a aquest projecte",
   "project.settings.extensions.tab.lsps": "LSP",
@@ -608,7 +608,7 @@ export const dict = {
   "desktop.menu.installCli": "Instal·la la CLI...",
   "desktop.cli.installed.title": "CLI instal·lada",
   "desktop.cli.installed.message":
-    "La CLI s'ha instal·lat a {{path}}\n\nReinicieu el terminal per utilitzar l'ordre 'opencode2'.",
+    "La CLI s'ha instal·lat a {{path}}\n\nReinicieu el terminal per utilitzar l'ordre 'porkcode'.",
   "desktop.cli.failed.title": "La instal·lació ha fallat",
   "desktop.cli.failed.message": "No s'ha pogut instal·lar la CLI: {{error}}",
   "command.project.copyID": "Copia l'ID del projecte",
@@ -727,9 +727,9 @@ export const dict = {
   "server.connect.failed":
     "No s'ha pogut connectar. Comproveu l'adreça i la contrasenya del servidor i torneu-ho a provar.",
   "server.connect.scan": "Escaneja el codi QR",
-  "server.connect.scan.description": "Apunteu la càmera al codi QR que mostra opencode pair.",
+  "server.connect.scan.description": "Apunteu la càmera al codi QR que mostra porkcode pair.",
   "server.connect.scan.invalid":
-    "Aquest no és un codi d'aparellament PorkCode. Escaneja el codi mostrat per opencode pair.",
+    "Aquest no és un codi d'aparellament PorkCode. Escaneja el codi mostrat per porkcode pair.",
   "server.connect.camera": "Càmera d'aparellament",
   "server.connect.camera.starting": "Obertura de la càmera...",
   "server.connect.mixedContent":

@@ -35,7 +35,7 @@ test("generates reusable keybind schemas and preserves descriptions and numeric 
   )
 })
 
-test("includes the published schema when creating cli.json", async () => {
+test("creates cli.json without a hosted schema", async () => {
   await using directory = await tmpdir()
 
   const config = await run(
@@ -48,14 +48,14 @@ test("includes the published schema when creating cli.json", async () => {
     }),
   )
 
-  expect(config).toEqual({ $schema: "https://opencode.ai/v2/cli.json", animations: false })
+  expect(config).toEqual({ animations: false })
   expect(await Bun.file(path.join(directory.path, "cli.json")).json()).toEqual(config)
 })
 
 test("preserves the schema in an existing cli.json", async () => {
   await using directory = await tmpdir()
   const file = path.join(directory.path, "cli.json")
-  await Bun.write(file, JSON.stringify({ $schema: "https://opencode.ai/v2/cli.json", animations: true }))
+  await Bun.write(file, JSON.stringify({ $schema: "https://example.invalid/cli.json", animations: true }))
 
   const config = await run(
     directory.path,
@@ -67,7 +67,7 @@ test("preserves the schema in an existing cli.json", async () => {
     }),
   )
 
-  expect(config).toEqual({ $schema: "https://opencode.ai/v2/cli.json", animations: false })
+  expect(config).toEqual({ $schema: "https://example.invalid/cli.json", animations: false })
   expect(await Bun.file(file).json()).toEqual(config)
 })
 
@@ -189,7 +189,6 @@ test("migrates tui and kv config into cli.json", async () => {
   )
 
   expect(config).toMatchObject({
-    $schema: "https://opencode.ai/v2/cli.json",
     theme: { name: "legacy", mode: "light" },
     keybinds: {
       leader: "ctrl+o",
@@ -243,13 +242,11 @@ test("migrates before the first update and does not remigrate afterward", async 
   )
 
   expect(config).toEqual({
-    $schema: "https://opencode.ai/v2/cli.json",
     theme: { name: "legacy" },
     animations: false,
     mouse: false,
   })
   expect(await Bun.file(path.join(directory.path, "cli.json")).json()).toEqual({
-    $schema: "https://opencode.ai/v2/cli.json",
     theme: { name: "legacy" },
     animations: false,
     mouse: false,

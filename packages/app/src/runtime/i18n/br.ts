@@ -23,9 +23,9 @@ export const dict = {
   "server.connect.address.invalid": "Insira um endereço de servidor HTTP ou HTTPS válido.",
   "server.connect.failed": "Não foi possível conectar. Verifique o endereço e a senha do servidor e tente novamente.",
   "server.connect.scan": "Digitalize o código QR",
-  "server.connect.scan.description": "Aponte sua câmera para o código QR mostrado por opencode pair.",
+  "server.connect.scan.description": "Aponte sua câmera para o código QR mostrado por porkcode pair.",
   "server.connect.scan.invalid":
-    "Este não é um código de emparelhamento PorkCode. Digitalize o código mostrado por opencode pair.",
+    "Este não é um código de emparelhamento PorkCode. Digitalize o código mostrado por porkcode pair.",
   "server.connect.camera": "Câmera de emparelhamento",
   "server.connect.camera.starting": "Abrindo a câmera…",
   "server.connect.mixedContent":
@@ -497,7 +497,7 @@ export const dict = {
   "error.chain.responseBody": "Corpo da resposta:\n{{body}}",
   "error.chain.didYouMean": "Você quis dizer: {{suggestions}}",
   "error.chain.modelNotFound": "Modelo não encontrado: {{provider}}/{{model}}",
-  "error.chain.checkConfig": "Verifique os nomes de provedor/modelo na sua configuração (opencode.json)",
+  "error.chain.checkConfig": "Verifique os nomes de provedor/modelo na sua configuração (porkcode.json)",
   "error.chain.mcpFailed": 'Servidor MCP "{{name}}" falhou. Nota: PorkCode ainda não suporta autenticação MCP.',
   "error.chain.providerAuthFailed": "Autenticação do provedor falhou ({{provider}}): {{message}}",
   "error.chain.providerInitFailed":
@@ -788,7 +788,7 @@ export const dict = {
   "settings.extensions.tab.mcps": "MCP",
   "settings.extensions.tab.skills": "Habilidades",
   "settings.extensions.availableAll": "Disponível para todos os projetos",
-  "settings.extensions.manageConfig": "Gerenciar em opencode.json",
+  "settings.extensions.manageConfig": "Gerenciar em porkcode.json",
   "settings.extensions.addSkills": "Como adicionar habilidades",
   "project.settings.extensions.description": "Ver extensões disponíveis para este projeto",
   "project.settings.extensions.tab.lsps": "LSPs",
@@ -828,7 +828,7 @@ export const dict = {
   "settings.workspaces.sessions.many": "{{count}} sessões em {{project}}",
   "desktop.menu.installCli": "Instalar CLI...",
   "desktop.cli.installed.title": "CLI instalada",
-  "desktop.cli.installed.message": "CLI instalada em {{path}}\n\nReinicie o terminal para usar o comando 'opencode2'.",
+  "desktop.cli.installed.message": "CLI instalada em {{path}}\n\nReinicie o terminal para usar o comando 'porkcode'.",
   "desktop.cli.failed.title": "Falha na instalação",
   "desktop.cli.failed.message": "Falha ao instalar a CLI: {{error}}",
   "command.project.copyID": "Copiar ID do projeto",

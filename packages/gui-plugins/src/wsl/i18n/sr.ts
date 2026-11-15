@@ -40,8 +40,8 @@ export default {
   "error.installDistro": "Инсталација дистрибуције није успела: {{distro}}",
   "error.installOpencode": "PorkCode инсталација није успела",
   "error.alreadyAdded": "{{distro}} је већ додат",
-  "error.opencodeMissing": "opencode није инсталиран у овој дистрибуцији",
-  "error.opencodeCannotRun": "opencode је инсталиран, али не може да се покрене",
+  "error.opencodeMissing": "porkcode није инсталиран у овој дистрибуцији",
+  "error.opencodeCannotRun": "porkcode је инсталиран, али не може да се покрене",
   "error.opencodeNotInstalled": "PorkCode није инсталиран у {{distro}}",
   "error.updateVersion":
     "PorkCode ажурирање је завршено, али {{distro}} и даље извештава {{installed}}; очекивано {{expected}}",

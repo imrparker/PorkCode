@@ -128,7 +128,7 @@ export function mount(input: {
           ),
           Ubuntu: {
             distro: "Ubuntu",
-            resolvedPath: "/usr/bin/opencode",
+            resolvedPath: "/usr/bin/porkcode",
             version: "old",
             expectedVersion: "current",
             matchesDesktop: false,

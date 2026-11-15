@@ -50,7 +50,7 @@ export const dict = {
   "desktop.menu.ariaLabel": "PorkCode དཀར་ཆག།",
   "desktop.cli.installed.title": "CLI གཞི་བཙུགས་འབད་ཡོདཔ།",
   "desktop.cli.installed.message":
-    "CLI འདི་ {{path}} ལུ་གཞི་བཙུགས་འབད་ཡི།\n\n'opencode2' བརྡ་བཀོད་ལག་ལེན་འཐབ་ནིའི་དོན་ལུ་ ཊར་མི་ནཱལ་ལོག་འགོ་བཙུགས།",
+    "CLI འདི་ {{path}} ལུ་གཞི་བཙུགས་འབད་ཡི།\n\n'porkcode' བརྡ་བཀོད་ལག་ལེན་འཐབ་ནིའི་དོན་ལུ་ ཊར་མི་ནཱལ་ལོག་འགོ་བཙུགས།",
   "desktop.cli.failed.title": "གཞི་བཙུགས་འཐུས་ཤོར་བྱུང་ཡོདཔ།",
   "desktop.cli.failed.message": "CLI གཞི་བཙུགས་འབད་མ་ཚུགས།: {{error}}",
   "desktop.recovery.action.relaunch": "བསྐྱར་འགོ་བཙུགས།",
@@ -299,7 +299,7 @@ export const dict = {
   "error.chain.responseBody": "ལན་འདེབས་ཕུང་པོ།:\n{{body}}",
   "error.chain.didYouMean": "ཁྱོད་ཀྱིས་: {{suggestions}} ཟེར་སླབ་དགོཔ་ཨིན་ན?",
   "error.chain.modelNotFound": "དཔེ་ཚད་འཚོལ་མ་ཐོབ།: {{provider}}/{{model}}",
-  "error.chain.checkConfig": "ཁྱོད་ཀྱི་རིམ་སྒྲིག་ (opencode.json) བྱིན་མི་/དཔེ་ཚད་མིང་ཚུ་ཞིབ་དཔྱད་འབད།",
+  "error.chain.checkConfig": "ཁྱོད་ཀྱི་རིམ་སྒྲིག་ (porkcode.json) བྱིན་མི་/དཔེ་ཚད་མིང་ཚུ་ཞིབ་དཔྱད་འབད།",
   "error.chain.mcpFailed":
     'MCP སར་བར་ "{{name}}" འཐུས་ཤོར་བྱུང་ཡོདཔ། དྲན་འཛིན་ PorkCode གིས་ ད་ལྟོ་ཡང་ MCP བདེན་བཤད་ལུ་རྒྱབ་སྐྱོར་མི་འབད།',
   "error.chain.providerAuthFailed": "བྱིན་མི་བདེན་བཤད་འཐུས་ཤོར་བྱུང་ཡོདཔ།({{provider}}): {{message}}",
@@ -590,7 +590,7 @@ export const dict = {
   "settings.extensions.tab.mcps": "MCPs",
   "settings.extensions.tab.skills": "རིག་རྩལ་ཚུ།",
   "settings.extensions.availableAll": "ལས་གཞི་ཆ་མཉམ་ལུ་འཐོབ་ཚུགས།",
-  "settings.extensions.manageConfig": "opencode.json ནང་འཛིན་སྐྱོང་འཐབ།",
+  "settings.extensions.manageConfig": "porkcode.json ནང་འཛིན་སྐྱོང་འཐབ།",
   "settings.extensions.addSkills": "རིག་རྩལ་ཚུ་ག་དེ་སྦེ་ཁ་སྐོང་རྐྱབ་ནི་ཨིན་ན།",
   "project.settings.extensions.description": "ལས་གཞི་འདི་ལུ་འཐོབ་ཚུགས་པའི་རྒྱ་བསྐྱེད་ཚུ་བལྟ།",
   "project.settings.extensions.tab.lsps": "LSPs",
@@ -725,9 +725,9 @@ export const dict = {
   "server.connect.address.invalid": "ནུས་ཅན་ HTTP ཡང་ན་ HTTPS སར་བར་ཁ་བྱང་ཅིག་བཙུགས།",
   "server.connect.failed": "མཐུད་མ་ཚུགས། སར་བར་ཁ་བྱང་དང་ཆོག་ཡིག་ཞིབ་དཔྱད་འབད་ཞིནམ་ལས་ ལོག་སྟེ་འབད་རྩོལ་བསྐྱེད།",
   "server.connect.scan": "QR གསང་གྲངས་པར་བཤུས་",
-  "server.connect.scan.description": "ཁྱོད་རའི་པར་ཆས་འདི་ opencode pair གིས་སྟོན་མི་ QR གསང་ཡིག་ལུ་སྟོན་དགོ།",
+  "server.connect.scan.description": "ཁྱོད་རའི་པར་ཆས་འདི་ porkcode pair གིས་སྟོན་མི་ QR གསང་ཡིག་ལུ་སྟོན་དགོ།",
   "server.connect.scan.invalid":
-    "འདི་ PorkCode ཆ་སྒྲིག་ཨང་རྟགས་ཅིག་མེན། opencode pair གིས་སྟོན་ཡོད་པའི་ཨང་རྟགས་འདི་པར་བཤུས་འབད།",
+    "འདི་ PorkCode ཆ་སྒྲིག་ཨང་རྟགས་ཅིག་མེན། porkcode pair གིས་སྟོན་ཡོད་པའི་ཨང་རྟགས་འདི་པར་བཤུས་འབད།",
   "server.connect.camera": "པར་ཆས་ཆ་སྒྲིག་འབད་དོ།",
   "server.connect.camera.starting": "པར་ཆས་ཁ་ཕྱེ་དོ...",
   "server.connect.mixedContent":

@@ -40,8 +40,8 @@ export default {
   "error.installDistro": "Gagal memasang distro: {{distro}}",
   "error.installOpencode": "Pemasangan PorkCode gagal",
   "error.alreadyAdded": "{{distro}} telah pun ditambah",
-  "error.opencodeMissing": "opencode tidak dipasang dalam distro ini",
-  "error.opencodeCannotRun": "opencode dipasang tetapi tidak dapat dijalankan",
+  "error.opencodeMissing": "porkcode tidak dipasang dalam distro ini",
+  "error.opencodeCannotRun": "porkcode dipasang tetapi tidak dapat dijalankan",
   "error.opencodeNotInstalled": "PorkCode tidak dipasang dalam {{distro}}",
   "error.updateVersion":
     "Kemas kini PorkCode selesai tetapi {{distro}} masih melaporkan {{installed}}; sepatutnya {{expected}}",
