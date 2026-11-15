@@ -27,7 +27,7 @@ const environment = {
   XDG_DATA_HOME: path.join(home, ".local", "share"),
   XDG_CACHE_HOME: path.join(home, ".cache"),
   XDG_STATE_HOME: path.join(home, ".local", "state"),
-  PORKCODE_CONFIG_DIR: path.join(home, ".config", "opencode"),
+  PORKCODE_CONFIG_DIR: path.join(home, ".config", "porkcode"),
   PORKCODE_CONFIG: undefined,
   PORKCODE_CONFIG_CONTENT: undefined,
   TMPDIR: temporary,
