@@ -292,11 +292,11 @@ export const layer = (options?: Options) =>
           options?.content !== undefined
             ? yield* ConfigVariable.substitute({
                 type: "virtual",
-                source: "OPENCODE_CONFIG_CONTENT",
+                source: "PORKCODE_CONFIG_CONTENT",
                 dir: location.directory,
                 text: options.content,
               }).pipe(
-                Effect.flatMap((text) => parseInfo(text, "OPENCODE_CONFIG_CONTENT")),
+                Effect.flatMap((text) => parseInfo(text, "PORKCODE_CONFIG_CONTENT")),
                 Effect.map((info) => (info ? [new Document({ type: "document", info })] : [])),
                 Effect.orDie,
               )

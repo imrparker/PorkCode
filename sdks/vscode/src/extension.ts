@@ -53,7 +53,7 @@ export function activate(context: vscode.ExtensionContext) {
         preserveFocus: false,
       },
       env: {
-        OPENCODE_CALLER: "vscode",
+        PORKCODE_CALLER: "vscode",
       },
     })
 

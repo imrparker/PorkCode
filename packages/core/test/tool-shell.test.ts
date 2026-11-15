@@ -889,11 +889,11 @@ describe("ShellTool", () => {
             const sessions = yield* Session.Service
             yield* sessions.environment({
               sessionID,
-              variables: { OPENCODE_SESSION_ENV_TEST: "from-session" },
+              variables: { PORKCODE_SESSION_ENV_TEST: "from-session" },
             })
             const command = isWindows
-              ? "[Console]::Out.Write($env:OPENCODE_SESSION_ENV_TEST)"
-              : 'printf %s "$OPENCODE_SESSION_ENV_TEST"'
+              ? "[Console]::Out.Write($env:PORKCODE_SESSION_ENV_TEST)"
+              : 'printf %s "$PORKCODE_SESSION_ENV_TEST"'
 
             const settled = yield* executeTool(registry, call({ command }))
 
@@ -915,15 +915,15 @@ describe("ShellTool", () => {
             const sessions = yield* Session.Service
             yield* sessions.environment({
               sessionID,
-              variables: { AGENT: "0", OPENCODE: "0", AI_AGENT: "", OPENCODE_SESSION_ID: "stale" },
+              variables: { AGENT: "0", PORKCODE: "0", AI_AGENT: "", PORKCODE_SESSION_ID: "stale" },
             })
             const command = isWindows
-              ? '[Console]::Out.Write("$env:AGENT|$env:OPENCODE|$env:AI_AGENT|$env:OPENCODE_SESSION_ID")'
-              : 'printf %s "$AGENT|$OPENCODE|$AI_AGENT|$OPENCODE_SESSION_ID"'
+              ? '[Console]::Out.Write("$env:AGENT|$env:PORKCODE|$env:AI_AGENT|$env:PORKCODE_SESSION_ID")'
+              : 'printf %s "$AGENT|$PORKCODE|$AI_AGENT|$PORKCODE_SESSION_ID"'
             const settled = yield* executeTool(registry, call({ command }))
 
             expect(settled.status).toBe("completed")
-            expect(settled.content?.[0]).toEqual({ type: "text", text: `1|1|opencode|${sessionID}` })
+            expect(settled.content?.[0]).toEqual({ type: "text", text: `1|1|porkcode|${sessionID}` })
           }),
         )
       }),

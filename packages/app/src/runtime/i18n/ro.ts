@@ -764,8 +764,8 @@ export const dict = {
   "project.settings.color.description":
     "Folosit pentru pictograma proiectului când nu este setată nicio imagine personalizată",
   "project.settings.worktree.startup.description": "Rulează o dată după crearea unui nou arbore de lucru",
-  "project.settings.worktree.startup.hint.base": "Utilizați $OPENCODE_WORKTREE_BASE pentru arborele de lucru de bază.",
-  "project.settings.worktree.startup.hint.new": "Utilizați $OPENCODE_WORKTREE_PATH pentru noul arbore de lucru.",
+  "project.settings.worktree.startup.hint.base": "Utilizați $PORKCODE_WORKTREE_BASE pentru arborele de lucru de bază.",
+  "project.settings.worktree.startup.hint.new": "Utilizați $PORKCODE_WORKTREE_PATH pentru noul arbore de lucru.",
   "project.settings.extensions.empty.mcps.title": "Nu MCPs încă",
   "project.settings.extensions.empty.mcps.description": "MCPs disponibil pentru PorkCode va apărea aici",
   "project.settings.extensions.empty.plugins.title": "Nu există încă pluginuri",

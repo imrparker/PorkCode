@@ -129,7 +129,7 @@ const setup: Plugin.Setup<typeof definition> = (ctx) => {
  * have it: beta builds and the desktop dev server.
  */
 function betaNotes(ctx: SetupContext<typeof definition>) {
-  if (!import.meta.env.OPENCODE_BETA_NOTES) return
+  if (!import.meta.env.PORKCODE_BETA_NOTES) return
 
   const Page = lazy(() => import("./beta-page"))
 
@@ -161,7 +161,7 @@ function whatsNew(ctx: SetupContext<typeof definition>) {
 
   const start = initWhatsNew({
     version: ctx.app.version,
-    commit: import.meta.env.OPENCODE_COMMIT,
+    commit: import.meta.env.PORKCODE_COMMIT,
     channel: ctx.app.channel === "beta" ? "beta" : "stable",
     previousVersion: seen.value.version,
     previousCommit: seen.value.commit,

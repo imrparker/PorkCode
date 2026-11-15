@@ -21,7 +21,7 @@ import type definition from "./index"
  */
 export function readBetaNotes(previousCommit: string | undefined) {
   return Option.getOrUndefined(
-    Option.flatMap(decodeEmbeddedNotes(import.meta.env.OPENCODE_BETA_NOTES), (embedded) =>
+    Option.flatMap(decodeEmbeddedNotes(import.meta.env.PORKCODE_BETA_NOTES), (embedded) =>
       sliceBetaNotes(embedded, previousCommit),
     ),
   )

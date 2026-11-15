@@ -198,9 +198,9 @@ export const Plugin = {
                 (invocation) =>
                   Effect.gen(function* () {
                     invocation.env.AGENT = "1"
-                    invocation.env.OPENCODE = "1"
-                    invocation.env.AI_AGENT ||= "opencode"
-                    invocation.env.OPENCODE_SESSION_ID = context.sessionID
+                    invocation.env.PORKCODE = "1"
+                    invocation.env.AI_AGENT ||= "porkcode"
+                    invocation.env.PORKCODE_SESSION_ID = context.sessionID
                     finalTimeout = yield* prepare(invocation, context)
                   }),
               )

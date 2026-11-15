@@ -770,8 +770,8 @@ export const dict = {
   "project.settings.color.description":
     "S'utilitza per a la icona del projecte quan no s'ha establert cap imatge personalitzada",
   "project.settings.worktree.startup.description": "S'executa una vegada després de crear un nou arbre de treball",
-  "project.settings.worktree.startup.hint.base": "Utilitzeu $OPENCODE_WORKTREE_BASE per a l'arbre de treball base.",
-  "project.settings.worktree.startup.hint.new": "Utilitzeu $OPENCODE_WORKTREE_PATH per al nou arbre de treball.",
+  "project.settings.worktree.startup.hint.base": "Utilitzeu $PORKCODE_WORKTREE_BASE per a l'arbre de treball base.",
+  "project.settings.worktree.startup.hint.new": "Utilitzeu $PORKCODE_WORKTREE_PATH per al nou arbre de treball.",
   "project.settings.extensions.empty.mcps.title": "Encara no MCPs",
   "project.settings.extensions.empty.mcps.description": "MCPs disponible per a PorkCode apareixerà aquí",
   "project.settings.extensions.empty.plugins.title": "Encara no hi ha connectors",

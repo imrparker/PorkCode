@@ -27,7 +27,7 @@ export const builtins = [
   Merman,
   Latex,
   // The storybook is a development tool; keep its route and palette commands out of
-  // normal launches and register it only for OPENCODE_STORY runs.
-  ...(process.env.OPENCODE_STORY ? [Storybook] : []),
+  // normal launches and register it only for PORKCODE_STORY runs.
+  ...(process.env.PORKCODE_STORY ? [Storybook] : []),
   DiffViewer,
 ]

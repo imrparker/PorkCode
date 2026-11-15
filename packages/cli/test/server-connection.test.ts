@@ -1,6 +1,6 @@
 import { NodeFileSystem, NodeServices } from "@effect/platform-node"
 import { Global } from "@opencode/util/global"
-import { OPENCODE_VERSION } from "../src/version"
+import { PORKCODE_VERSION } from "../src/version"
 import { expect, test } from "bun:test"
 import { Console, Effect, FileSystem, Option, Scope } from "effect"
 import { Command } from "effect/cli"
@@ -20,7 +20,7 @@ test("resolution groups Effect-native lifecycle operations only for the managed 
     port: 0,
     fetch() {
       return Response.json({
-        version: OPENCODE_VERSION,
+        version: PORKCODE_VERSION,
         pid: process.pid,
         urls: [],
       })
@@ -37,7 +37,7 @@ test("resolution groups Effect-native lifecycle operations only for the managed 
       registration,
       JSON.stringify({
         id,
-        version: OPENCODE_VERSION,
+        version: PORKCODE_VERSION,
         url: server.url.toString(),
         pid: process.pid,
       }),
@@ -72,7 +72,7 @@ test("service options only require a matching version when requested", async () 
 
   try {
     expect((await runPromise(ServiceConfig.options())).version).toBeUndefined()
-    expect((await runPromise(ServiceConfig.options({ checkVersion: true }))).version).toBe(OPENCODE_VERSION)
+    expect((await runPromise(ServiceConfig.options({ checkVersion: true }))).version).toBe(PORKCODE_VERSION)
   } finally {
     await fs.rm(root, { recursive: true, force: true })
   }
@@ -122,7 +122,7 @@ test("global --server and --standalone flags parse in any position for server-co
   const runArgs = (args: ReadonlyArray<string>) =>
     Effect.runPromise(
       Command.runWith(bindTree(Commands).pipe(Command.withGlobalFlags([PrintLogs])), {
-        version: OPENCODE_VERSION,
+        version: PORKCODE_VERSION,
         renderErrors: false,
       })(args).pipe(Effect.provideService(Console.Console, silentConsole), Effect.provide(NodeServices.layer)),
     )

@@ -95,7 +95,7 @@ try {
         main: "worker.js",
         compatibility_date: "2026-07-15",
         compatibility_flags: ["nodejs_compat"],
-        durable_objects: { bindings: [{ name: "OPENCODE", class_name: "OpenCodeDO" }] },
+        durable_objects: { bindings: [{ name: "PORKCODE", class_name: "OpenCodeDO" }] },
         migrations: [{ tag: "v1", new_sqlite_classes: ["OpenCodeDO"] }],
       }),
     ),
@@ -156,7 +156,7 @@ export class OpenCodeDO {
 
 export default {
   fetch(request, env) {
-    return env.OPENCODE.get(env.OPENCODE.idFromName("packed-consumer")).fetch(request)
+    return env.PORKCODE.get(env.PORKCODE.idFromName("packed-consumer")).fetch(request)
   },
 }
 `,
@@ -171,7 +171,7 @@ const miniflare = new Miniflare({
   compatibilityFlags: ["nodejs_compat"],
   modules: true,
   scriptPath: fileURLToPath(new URL("./dist/worker.js", import.meta.url)),
-  durableObjects: { OPENCODE: { className: "OpenCodeDO", useSQLite: true } },
+  durableObjects: { PORKCODE: { className: "OpenCodeDO", useSQLite: true } },
 })
 
 try {

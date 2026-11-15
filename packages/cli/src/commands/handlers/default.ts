@@ -9,7 +9,7 @@ import { ServerConnection } from "../../services/server-connection"
 import { Updater } from "../../services/updater"
 import { UpdatePreflight } from "../../services/update-preflight"
 import { Npm } from "@opencode/util/npm"
-import { OPENCODE_ARTIFACT, OPENCODE_CHANNEL, OPENCODE_HIGHLIGHTS, OPENCODE_VERSION } from "../../version"
+import { PORKCODE_ARTIFACT, PORKCODE_CHANNEL, PORKCODE_HIGHLIGHTS, PORKCODE_VERSION } from "../../version"
 import { Env } from "../../env"
 import { Service } from "@opencode/client/effect/service"
 import { OpenCode } from "@opencode/client/promise"
@@ -95,10 +95,10 @@ export default Runtime.handler(Commands, (input) =>
     const service = server.service
     yield* run({
       app: {
-        name: process.env.OPENCODE_CLIENT ?? OPENCODE_ARTIFACT,
-        version: OPENCODE_VERSION,
-        channel: process.env.OPENCODE_TUI_CHANNEL ?? OPENCODE_CHANNEL,
-        highlights: OPENCODE_HIGHLIGHTS,
+        name: process.env.PORKCODE_CLIENT ?? PORKCODE_ARTIFACT,
+        version: PORKCODE_VERSION,
+        channel: process.env.PORKCODE_TUI_CHANNEL ?? PORKCODE_CHANNEL,
+        highlights: PORKCODE_HIGHLIGHTS,
       },
       server: {
         endpoint: server.endpoint,

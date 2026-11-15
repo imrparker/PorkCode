@@ -10,9 +10,9 @@ export async function buildAppArchive(channel: string, version: string, options?
   const root = path.resolve(import.meta.dirname, "../../app")
   await $`bun run build`.cwd(root).env({
     ...process.env,
-    OPENCODE_CHANNEL: channel,
-    VITE_OPENCODE_SERVER_MODE: "origin",
-    VITE_OPENCODE_VERSION: version,
+    PORKCODE_CHANNEL: channel,
+    VITE_PORKCODE_SERVER_MODE: "origin",
+    VITE_PORKCODE_VERSION: version,
   })
   return AppArchive.encode(
     await Promise.all(

@@ -12,7 +12,7 @@ import {
 } from "./utils"
 import { verifyBundles } from "./verify-bundles"
 
-// Prepares resources/ (icons, metainfo, the bundled CLI) for OPENCODE_CHANNEL and builds the app into out/.
+// Prepares resources/ (icons, metainfo, the bundled CLI) for PORKCODE_CHANNEL and builds the app into out/.
 // The CLI comes from ../cli/dist when it holds the target; a published upstream CLI is only bundled behind an
 // explicit override, because its baked channel registers where a packaged PorkCode never looks.
 const dir = path.resolve(import.meta.dir, "..")
@@ -31,10 +31,10 @@ const built = await exists(path.join(cli, getCurrentCli().package.replace("@open
 
 // A published upstream CLI registers in upstream's service.json on upstream's port, so the app would spawn it,
 // watch it exit against an installed OpenCode service, and time out waiting for its own registration file.
-if (!built && process.env.OPENCODE_DESKTOP_ALLOW_UPSTREAM_CLI !== "1")
+if (!built && process.env.PORKCODE_DESKTOP_ALLOW_UPSTREAM_CLI !== "1")
   throw new Error(
-    `Desktop builds bundle the CLI from ${cli}; build it first with OPENCODE_CHANNEL=${FORK_CLI_CHANNEL} ` +
-      "(README: Building the Windows installer). Set OPENCODE_DESKTOP_ALLOW_UPSTREAM_CLI=1 to bundle a " +
+    `Desktop builds bundle the CLI from ${cli}; build it first with PORKCODE_CHANNEL=${FORK_CLI_CHANNEL} ` +
+      "(README: Building the Windows installer). Set PORKCODE_DESKTOP_ALLOW_UPSTREAM_CLI=1 to bundle a " +
       "published upstream CLI anyway.",
   )
 
@@ -48,7 +48,7 @@ if (!built) {
 // The channel is compiled into the executable, so verify the copy that actually landed in resources/.
 // Cross-arch packaging cannot run the target binary (Windows x64 refuses ARM64 executables), so the
 // spawn check runs only when the bundled CLI matches this host; cross builds rely on building the
-// CLI with OPENCODE_CHANNEL=porkcode themselves.
+// CLI with PORKCODE_CHANNEL=porkcode themselves.
 if (built && getCurrentCli().cpu === process.arch) await verifyBundledCliChannel()
 if (built && getCurrentCli().cpu !== process.arch)
   console.warn(`Skipping bundled-CLI channel verification for ${getCurrentCli().target}; this host cannot run it`)

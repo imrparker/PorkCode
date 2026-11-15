@@ -7,12 +7,12 @@ import { RemoteCli } from "./remote-cli"
 // complete private discovery contract; no remote Python/Node runtime is needed.
 const registrationScript = `status=$("$cli" service status) || exit 0
 if [ "$status" = stopped ]; then exit 0; fi
-printf 'OPENCODE_SSH_STATUS=%s\\n' "$status"
+printf 'PORKCODE_SSH_STATUS=%s\\n' "$status"
 for file in "\${XDG_STATE_HOME:-$HOME/.local/state}"/opencode/service*.json; do
   if [ ! -f "$file" ]; then continue; fi
-  printf 'OPENCODE_SSH_REGISTRATION_BEGIN\\n'
+  printf 'PORKCODE_SSH_REGISTRATION_BEGIN\\n'
   cat "$file"
-  printf '\\nOPENCODE_SSH_REGISTRATION_END\\n'
+  printf '\\nPORKCODE_SSH_REGISTRATION_END\\n'
 done
 `
 
@@ -40,13 +40,13 @@ const Registration = Schema.fromJsonString(
 export function parseRegistration(output: string) {
   const status = output
     .split(/\r?\n/)
-    .findLast((line) => line.startsWith("OPENCODE_SSH_STATUS="))
-    ?.slice("OPENCODE_SSH_STATUS=".length)
+    .findLast((line) => line.startsWith("PORKCODE_SSH_STATUS="))
+    ?.slice("PORKCODE_SSH_STATUS=".length)
 
   if (!status) return undefined
 
   for (const match of output.matchAll(
-    /OPENCODE_SSH_REGISTRATION_BEGIN\r?\n([\s\S]*?)\r?\nOPENCODE_SSH_REGISTRATION_END/g,
+    /PORKCODE_SSH_REGISTRATION_BEGIN\r?\n([\s\S]*?)\r?\nPORKCODE_SSH_REGISTRATION_END/g,
   )) {
     const result = Schema.decodeUnknownOption(Registration)(match[1])
 
@@ -112,7 +112,7 @@ export const bootstrap = Effect.fn("Ssh.bootstrap")(function* (input: {
 
     const target = output
       .split(/\r?\n/)
-      .findLast((line) => line.startsWith("OPENCODE_REMOTE_TARGET="))
+      .findLast((line) => line.startsWith("PORKCODE_REMOTE_TARGET="))
       ?.split("=")[1]
 
     const url = yield* Effect.try({ try: () => RemoteCli.archiveUrl(target ?? "", version), catch: SshFailure.from })

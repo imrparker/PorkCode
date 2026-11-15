@@ -84,7 +84,7 @@ bun dev api <operationId> --param key=value
 
 ## Auditing installed `opencode` sessions
 
-Installed (released) sessions use `~/.local/share/opencode/opencode.db` and `~/.local/share/opencode/log/opencode.log`. A local/dev checkout uses `opencode-local.db` and `opencode-local.log` instead, and `OPENCODE_DB` overrides the database. Run `opencode service status` before `opencode api`, because `opencode api` starts a server when none is healthy.
+Installed (released) sessions use `~/.local/share/opencode/opencode.db` and `~/.local/share/opencode/log/opencode.log`. A local/dev checkout uses `opencode-local.db` and `opencode-local.log` instead, and `PORKCODE_DB` overrides the database. Run `opencode service status` before `opencode api`, because `opencode api` starts a server when none is healthy.
 
 For a supplied `ses_...` ID, compare three sources:
 
@@ -118,8 +118,8 @@ grep 'run=8fc3b1d5' ~/.local/share/opencode/log/opencode-local.log
 grep 'role=server' ~/.local/share/opencode/log/opencode-local.log
 ```
 
-- `OPENCODE_LOG_LEVEL` controls verbosity (default `INFO`); set it before starting `bun dev` or `serve` to get `DEBUG` output for a specific repro.
-- `OPENCODE_PRINT_LOGS=1` additionally tees log output to stderr of the process that emitted it, which is useful when a process fails before you'd think to check the shared log file.
+- `PORKCODE_LOG_LEVEL` controls verbosity (default `INFO`); set it before starting `bun dev` or `serve` to get `DEBUG` output for a specific repro.
+- `PORKCODE_PRINT_LOGS=1` additionally tees log output to stderr of the process that emitted it, which is useful when a process fails before you'd think to check the shared log file.
 - `termctrl logs <session>` surfaces stdout/stderr for a Terminal Control session specifically (e.g. inspector output or startup failures before the TUI renderer starts) — use the log file above for anything emitted by a separate server/daemon process instead.
 
 ## Heap snapshots
@@ -130,9 +130,9 @@ On every platform, including Windows, capture the running background server with
 opencode debug heap-dump
 ```
 
-It discovers the already-running service (never starts or replaces one), calls `POST /api/debug/heap-dump`, waits until the file is complete, and prints its server-local path. Pass `--server <url>` (with `OPENCODE_PASSWORD`) for a server started with `serve`, and `--directory <dir>` to write somewhere other than the server's log directory (the server creates it; a server that predates the option ignores it and the CLI warns). A 404 means the running server predates the endpoint.
+It discovers the already-running service (never starts or replaces one), calls `POST /api/debug/heap-dump`, waits until the file is complete, and prints its server-local path. Pass `--server <url>` (with `PORKCODE_PASSWORD`) for a server started with `serve`, and `--directory <dir>` to write somewhere other than the server's log directory (the server creates it; a server that predates the option ignores it and the CLI warns). A 404 means the running server predates the endpoint.
 
-For desktop memory, run **Capture heap snapshots** from the desktop command palette (`packages/gui-plugins/src/debug/main.ts`). It writes `~/Downloads/opencode-heap-<time>/` with the desktop's own (local) server, which writes straight into the folder, every app window renderer, and the Electron main process. Heap snapshots only hold GC-managed objects, so it also records Chromium's memory-infra dump (`memory-infra.json`, open in Perfetto) and summarizes it per process and allocator in `memory.json` (MiB: `malloc`, `partition_alloc`, `cc/tile_memory`, `gpu`, `v8`, …), next to each window's DOM size and decoded images and the server's `process.memoryUsage()`. `manifest.json` (PIDs, `app.getAppMetrics()` before and after) is written last. Start with `memory.json` when a process is larger than its heap snapshot. In a dev desktop build you can drive it over CDP (`OPENCODE_DESKTOP_REMOTE_DEBUGGING_PORT`, default 9222): press `Control+Shift+P`, type `heap snapshots`, press Enter.
+For desktop memory, run **Capture heap snapshots** from the desktop command palette (`packages/gui-plugins/src/debug/main.ts`). It writes `~/Downloads/opencode-heap-<time>/` with the desktop's own (local) server, which writes straight into the folder, every app window renderer, and the Electron main process. Heap snapshots only hold GC-managed objects, so it also records Chromium's memory-infra dump (`memory-infra.json`, open in Perfetto) and summarizes it per process and allocator in `memory.json` (MiB: `malloc`, `partition_alloc`, `cc/tile_memory`, `gpu`, `v8`, …), next to each window's DOM size and decoded images and the server's `process.memoryUsage()`. `manifest.json` (PIDs, `app.getAppMetrics()` before and after) is written last. Start with `memory.json` when a process is larger than its heap snapshot. In a dev desktop build you can drive it over CDP (`PORKCODE_DESKTOP_REMOTE_DEBUGGING_PORT`, default 9222): press `Control+Shift+P`, type `heap snapshots`, press Enter.
 
 The Unix `SIGUSR1` listener in `packages/cli/src/heap.ts` shares the same writer (`packages/util/src/heap-snapshot.ts`) and is still useful for a process that is not an HTTP server, such as a TUI client:
 

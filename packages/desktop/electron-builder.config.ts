@@ -31,7 +31,7 @@ const metainfoFpm = (appId: string) =>
 const previewCompressionFpm = (target: "deb" | "rpm") => [`--${target}-compression-level`, "1"]
 
 function resolveChannel() {
-  const raw = process.env.OPENCODE_CHANNEL
+  const raw = process.env.PORKCODE_CHANNEL
 
   if (raw === "dev" || raw === "beta" || raw === "prod") return raw
 
@@ -73,9 +73,9 @@ const getBase = (appId: string): Configuration => {
     // "com.imrparker.porkcode.desktop".
     // https://developer.gnome.org/documentation/guidelines/maintainer/integrating.html
     // https://www.electron.build/docs/linux/
-    // Release builds take their version from OPENCODE_VERSION instead of rewriting package.json.
-    extraMetadata: process.env.OPENCODE_VERSION
-      ? { desktopName, version: process.env.OPENCODE_VERSION }
+    // Release builds take their version from PORKCODE_VERSION instead of rewriting package.json.
+    extraMetadata: process.env.PORKCODE_VERSION
+      ? { desktopName, version: process.env.PORKCODE_VERSION }
       : { desktopName },
     files: [
       "out/**/*",
@@ -116,7 +116,7 @@ const getBase = (appId: string): Configuration => {
     afterPack: async (context) => {
       const arch = Arch[context.arch]
 
-      // The --arm64 flag picks Electron while OPENCODE_TARGET picks the CLI and node-pty, so they can disagree.
+      // The --arm64 flag picks Electron while PORKCODE_TARGET picks the CLI and node-pty, so they can disagree.
       if (arch !== "x64" && arch !== "arm64") throw new Error(`Unsupported desktop architecture: ${arch}`)
 
       if (arch !== target.cpu) throw new Error(`Packaging ${arch} Electron with the ${target.target} CLI`)

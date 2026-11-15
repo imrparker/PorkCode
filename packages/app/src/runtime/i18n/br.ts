@@ -66,8 +66,8 @@ export const dict = {
   "project.settings.color.description":
     "Usado para o ícone do projeto quando nenhuma imagem personalizada está definida",
   "project.settings.worktree.startup.description": "Executa uma vez após a criação de uma novo espaço de trabalho",
-  "project.settings.worktree.startup.hint.base": "Use $OPENCODE_WORKTREE_BASE para o espaço de trabalho base.",
-  "project.settings.worktree.startup.hint.new": "Use $OPENCODE_WORKTREE_PATH para o novo espaço de trabalho.",
+  "project.settings.worktree.startup.hint.base": "Use $PORKCODE_WORKTREE_BASE para o espaço de trabalho base.",
+  "project.settings.worktree.startup.hint.new": "Use $PORKCODE_WORKTREE_PATH para o novo espaço de trabalho.",
   "project.settings.extensions.empty.mcps.title": "Ainda não há MCPs",
   "project.settings.extensions.empty.mcps.description": "MCPs disponível para PorkCode aparecerá aqui",
   "project.settings.extensions.empty.plugins.title": "Ainda não há plug-ins",

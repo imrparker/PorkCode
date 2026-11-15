@@ -1,6 +1,6 @@
 interface ImportMetaEnv {
-  readonly OPENCODE_CHANNEL: string
-  readonly OPENCODE_VERSION?: string
+  readonly PORKCODE_CHANNEL: string
+  readonly PORKCODE_VERSION?: string
 }
 
 interface ImportMeta {

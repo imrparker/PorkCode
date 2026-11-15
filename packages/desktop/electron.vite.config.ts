@@ -5,7 +5,7 @@ import { pickerPlugin } from "./script/picker"
 import { nodePtyPackage } from "./script/utils"
 
 function resolveChannel() {
-  const raw = process.env.OPENCODE_CHANNEL
+  const raw = process.env.PORKCODE_CHANNEL
 
   if (raw === "local" || raw === "dev" || raw === "beta" || raw === "prod") return raw
 
@@ -54,7 +54,7 @@ export default defineConfig(async ({ command }) => {
       },
       define: {
         // Local renderer/server mode still uses the dev application identity and updater policy.
-        "import.meta.env.OPENCODE_CHANNEL": JSON.stringify(channel === "local" ? "dev" : channel),
+        "import.meta.env.PORKCODE_CHANNEL": JSON.stringify(channel === "local" ? "dev" : channel),
       },
       build: {
         minify: command === "build",
@@ -116,12 +116,12 @@ export default defineConfig(async ({ command }) => {
         bundledDev: true,
       },
       define: {
-        "import.meta.env.OPENCODE_VERSION": JSON.stringify(process.env.OPENCODE_VERSION),
-        "import.meta.env.VITE_OPENCODE_CHANNEL": JSON.stringify(channel),
-        "import.meta.env.OPENCODE_COMMIT": betaNotes ? JSON.stringify(betaNotes.sha) : "undefined",
-        "import.meta.env.OPENCODE_BETA_NOTES": betaNotes ? JSON.stringify(JSON.stringify(betaNotes)) : "undefined",
-        "import.meta.env.OPENCODE_TEST_ONBOARDING": JSON.stringify(
-          command === "serve" && process.env.OPENCODE_TEST_ONBOARDING === "1",
+        "import.meta.env.PORKCODE_VERSION": JSON.stringify(process.env.PORKCODE_VERSION),
+        "import.meta.env.VITE_PORKCODE_CHANNEL": JSON.stringify(channel),
+        "import.meta.env.PORKCODE_COMMIT": betaNotes ? JSON.stringify(betaNotes.sha) : "undefined",
+        "import.meta.env.PORKCODE_BETA_NOTES": betaNotes ? JSON.stringify(JSON.stringify(betaNotes)) : "undefined",
+        "import.meta.env.PORKCODE_TEST_ONBOARDING": JSON.stringify(
+          command === "serve" && process.env.PORKCODE_TEST_ONBOARDING === "1",
         ),
       },
       plugins: [pickerPlugin(), appPlugin, initialChunk],

@@ -56,8 +56,8 @@ export const layer = Layer.effect(
 )
 
 const make = Effect.fn("DesktopCli.resolve")(function* () {
-  const development = !app.isPackaged && process.env.OPENCODE_DESKTOP_CLI_DEV
-  const version = process.env.OPENCODE_VERSION ?? "local"
+  const development = !app.isPackaged && process.env.PORKCODE_DESKTOP_CLI_DEV
+  const version = process.env.PORKCODE_VERSION ?? "local"
 
   const cli = development
     ? {
@@ -69,12 +69,12 @@ const make = Effect.fn("DesktopCli.resolve")(function* () {
           "run",
           "--cwd",
           development,
-          "--define=OPENCODE_VERSION=process.env.OPENCODE_VERSION",
+          "--define=PORKCODE_VERSION=process.env.PORKCODE_VERSION",
           "src/index.ts",
         ],
         binary: undefined,
       }
-    : yield* resolveBundledCli(!app.isPackaged && process.env.OPENCODE_DESKTOP_ISOLATED_SERVER === "1")
+    : yield* resolveBundledCli(!app.isPackaged && process.env.PORKCODE_DESKTOP_ISOLATED_SERVER === "1")
 
   return cli satisfies Resolved
 })

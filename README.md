@@ -52,8 +52,8 @@ LM Studio, Ollama, and vLLM need no config when they run on their default port. 
 
 | Flag | Effect |
 | --- | --- |
-| `OPENCODE_ENABLE_MODELS_FETCH=1` | Fetch the community [models.dev](https://models.dev) catalog for model metadata. The upstream vendor's own hosted providers are filtered out. |
-| `OPENCODE_ENABLE_AUTOUPDATE=1` | Turn update checks back on, against a feed you run yourself. |
+| `PORKCODE_ENABLE_MODELS_FETCH=1` | Fetch the community [models.dev](https://models.dev) catalog for model metadata. The upstream vendor's own hosted providers are filtered out. |
+| `PORKCODE_ENABLE_AUTOUPDATE=1` | Turn update checks back on, against a feed you run yourself. |
 
 ## Development
 
@@ -79,42 +79,42 @@ Tests live in each package. Run them from that package's directory, for example 
 
 ## Building the Windows installer
 
-The desktop app bundles the CLI into a per-user NSIS installer. Build order matters: CLI first, then the app, then wrap it. Both steps take their target from `OPENCODE_TARGET` (`windows-x64` or `windows-arm64`, defaulting to the host); set it in both when cross-packaging.
+The desktop app bundles the CLI into a per-user NSIS installer. Build order matters: CLI first, then the app, then wrap it. Both steps take their target from `PORKCODE_TARGET` (`windows-x64` or `windows-arm64`, defaulting to the host); set it in both when cross-packaging.
 
 ```powershell
 # 1. CLI binary for the target. The desktop bundles the baseline variant on x64,
 #    so keep --baseline there; ARM64 has no baseline variant.
-#    Keep OPENCODE_CHANNEL=porkcode. It gives PorkCode its own background
+#    Keep PORKCODE_CHANNEL=porkcode. It gives PorkCode its own background
 #    service registration (service-porkcode.json), port, and database, so it
 #    never shares or replaces an installed OpenCode service. The packaged
 #    desktop app looks for exactly that file; with the variable unset the
 #    channel falls back to your git branch name, and the app then times out at
 #    startup waiting for a registration its CLI will never write.
 cd packages\cli
-$env:OPENCODE_CHANNEL = "porkcode"
-$env:OPENCODE_VERSION = "0.0.1"
+$env:PORKCODE_CHANNEL = "porkcode"
+$env:PORKCODE_VERSION = "0.0.1"
 bun run script/build.ts --single --baseline   # on an ARM64 host: --single alone
 
 # 2. Desktop app against that CLI. The APP packaging channel is prod, which
 #    is correct here and separate from the CLI channel above. bun run build
 #    bundles only what ../cli/dist holds and checks the executable's channel;
-#    OPENCODE_DESKTOP_ALLOW_UPSTREAM_CLI=1 bundles a published upstream CLI
+#    PORKCODE_DESKTOP_ALLOW_UPSTREAM_CLI=1 bundles a published upstream CLI
 #    anyway, which registers where PorkCode will not look.
 cd ..\desktop
-$env:OPENCODE_CHANNEL = "prod"
-Remove-Item Env:OPENCODE_VERSION -ErrorAction SilentlyContinue
+$env:PORKCODE_CHANNEL = "prod"
+Remove-Item Env:PORKCODE_VERSION -ErrorAction SilentlyContinue
 bun run build
 
 # 3. Unpacked app first, then the NSIS installer around it.
 bun run script/pack.ts
 Copy-Item dist\win-unpacked $env:TEMP\porkcode-app -Recurse   # win-arm64-unpacked for ARM64
-$env:OPENCODE_DESKTOP_APP = "$env:TEMP\porkcode-app"
+$env:PORKCODE_DESKTOP_APP = "$env:TEMP\porkcode-app"
 bun run script/pack.ts
 ```
 
 The result is `dist/desktop/porkcode-desktop-win-<arch>.exe` at the repository root. It is unsigned, so SmartScreen shows a warning on first run. Click "More info", then "Run anyway". Don't commit installers to git. Attach them to a GitHub Release if you want to distribute them.
 
-An installed app stages its bundled CLI under `%APPDATA%\<app id>\cli\<version>-<arch>` and reuses that copy, so after changing the CLI channel without bumping `OPENCODE_VERSION`, delete that directory before reinstalling.
+An installed app stages its bundled CLI under `%APPDATA%\<app id>\cli\<version>-<arch>` and reuses that copy, so after changing the CLI channel without bumping `PORKCODE_VERSION`, delete that directory before reinstalling.
 
 ## Attribution and license
 

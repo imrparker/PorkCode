@@ -11,8 +11,8 @@ const setup: Plugin.MainSetup = async (ctx) => {
   const build = ctx.app
   const lifecycle = builtin.lifecycle
   const enabled = build.packaged
-  // PorkCode offline default, mirroring OPENCODE_ENABLE_AUTOUPDATE on the CLI updater: background checks only run when opted in.
-  const autoCheck = ["1", "true"].includes((process.env.OPENCODE_ENABLE_AUTOUPDATE ?? "").toLowerCase())
+  // PorkCode offline default, mirroring PORKCODE_ENABLE_AUTOUPDATE on the CLI updater: background checks only run when opted in.
+  const autoCheck = ["1", "true"].includes((process.env.PORKCODE_ENABLE_AUTOUPDATE ?? "").toLowerCase())
   // Holds no resources, so it needs no cleanup.
   const context = logContext(ctx.log.write)
   const runPromise = Effect.runPromiseWith(context)

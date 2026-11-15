@@ -48,12 +48,12 @@ export const preferApplicationEnvironment = Effect.gen(function* () {
     // Without the opt-in, an explicitly launched XDG_STATE_HOME (e.g. a side-by-side install that
     // must not share the service registration in ~/.local/state with another channel) is dropped on
     // Windows, where there is no shell environment to preserve it from.
-    if (!shellEnv?.XDG_STATE_HOME && process.env.OPENCODE_DESKTOP_KEEP_XDG_STATE !== "1") delete process.env.XDG_STATE_HOME
+    if (!shellEnv?.XDG_STATE_HOME && process.env.PORKCODE_DESKTOP_KEEP_XDG_STATE !== "1") delete process.env.XDG_STATE_HOME
     Object.assign(process.env, {
       ...shellEnv,
-      OPENCODE_EXPERIMENTAL_ICON_DISCOVERY: "true",
-      OPENCODE_EXPERIMENTAL_FILEWATCHER: "true",
-      OPENCODE_CLIENT: "desktop",
+      PORKCODE_EXPERIMENTAL_ICON_DISCOVERY: "true",
+      PORKCODE_EXPERIMENTAL_FILEWATCHER: "true",
+      PORKCODE_CLIENT: "desktop",
     })
   })
 })
@@ -62,7 +62,7 @@ export const prepareDesktop = Effect.gen(function* () {
   const path = yield* Path.Path
   const paths = yield* DesktopPaths.resolve
 
-  if (app.isPackaged || process.env.OPENCODE_DESKTOP_DISABLE_PROTOCOL_REGISTRATION !== "1")
+  if (app.isPackaged || process.env.PORKCODE_DESKTOP_DISABLE_PROTOCOL_REGISTRATION !== "1")
     app.setAsDefaultProtocolClient("opencode")
   const runFork = Effect.runForkWith(yield* Effect.context())
   setProtocolReporter((level, message, data) =>

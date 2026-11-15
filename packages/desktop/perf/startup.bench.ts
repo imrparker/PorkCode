@@ -62,15 +62,15 @@ export default bench({
     install: app("opencode", { gpuCache: "cold" }),
     // A contributor's `bun dev:desktop` in each variant's checkout, isolated under the launch's home.
     dev: command("bun dev:desktop", {
-      unset: ["OPENCODE_*", "OTEL_*", "SENTRY_*"],
+      unset: ["PORKCODE_*", "OTEL_*", "SENTRY_*"],
       env: {
-        OPENCODE_CONFIG_DIR: "{home}/config",
-        OPENCODE_DB: "{home}/data/opencode.db",
-        OPENCODE_TEST_HOME: "{home}/home",
-        OPENCODE_TEST_ONBOARDING: "0",
-        OPENCODE_DESKTOP_TEST_ROOT: "{home}",
-        OPENCODE_DESKTOP_REMOTE_DEBUGGING_PORT: "0",
-        OPENCODE_DESKTOP_DISABLE_PROTOCOL_REGISTRATION: "1",
+        PORKCODE_CONFIG_DIR: "{home}/config",
+        PORKCODE_DB: "{home}/data/opencode.db",
+        PORKCODE_TEST_HOME: "{home}/home",
+        PORKCODE_TEST_ONBOARDING: "0",
+        PORKCODE_DESKTOP_TEST_ROOT: "{home}",
+        PORKCODE_DESKTOP_REMOTE_DEBUGGING_PORT: "0",
+        PORKCODE_DESKTOP_DISABLE_PROTOCOL_REGISTRATION: "1",
         // The test root moves XDG_CACHE_HOME, which would make every start transpile the source CLI
         // from scratch; a contributor's dev start reuses Bun's own cache.
         BUN_RUNTIME_TRANSPILER_CACHE_PATH: process.env.BUN_RUNTIME_TRANSPILER_CACHE_PATH ?? bunTranspilerCache(),

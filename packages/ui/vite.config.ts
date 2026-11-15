@@ -45,7 +45,7 @@ function providerIconsPlugin() {
 }
 
 async function fetchProviderIcons() {
-  const url = process.env.OPENCODE_MODELS_URL || "https://models.dev"
+  const url = process.env.PORKCODE_MODELS_URL || "https://models.dev"
 
   const providers = await fetch(`${url}/api.json`)
     .then((res) => res.json())

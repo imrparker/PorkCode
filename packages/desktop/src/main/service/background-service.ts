@@ -120,7 +120,7 @@ const prepare = Effect.fn("BackgroundService.prepare")(function* (mode: Backgrou
   yield* Effect.logInfo("starting v2 background service")
   const path = yield* Path.Path
   const desktopCli = yield* DesktopCli.Service
-  const isolated = !app.isPackaged && process.env.OPENCODE_DESKTOP_ISOLATED_SERVER === "1"
+  const isolated = !app.isPackaged && process.env.PORKCODE_DESKTOP_ISOLATED_SERVER === "1"
   const cli = yield* desktopCli.resolve
   const version = serviceVersion({ channel: CHANNEL, isolated, mode, version: cli.version })
 
@@ -130,7 +130,7 @@ const prepare = Effect.fn("BackgroundService.prepare")(function* (mode: Backgrou
   const stateDir = process.env.XDG_STATE_HOME ?? path.join(app.getPath("home"), ".local", "state")
   // Packaged PorkCode talks only to its own channel's registration; see SERVICE_FILE in constants.ts.
   const file =
-    process.env.OPENCODE_DESKTOP_SERVER_CHANNEL === "local"
+    process.env.PORKCODE_DESKTOP_SERVER_CHANNEL === "local"
       ? path.join(stateDir, "opencode", "service-local.json")
       : app.isPackaged
         ? path.join(stateDir, "opencode", SERVICE_FILE)

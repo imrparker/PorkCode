@@ -82,10 +82,10 @@ export async function createAcpFixture(
       const acp = spawnAcp({
         env: isolatedEnv(root, {
           USERPROFILE: root,
-          OPENCODE_CONFIG: undefined,
-          OPENCODE_CONFIG_CONTENT: undefined,
-          OPENCODE_DISABLE_AUTOUPDATE: "true",
-          OPENCODE_MODELS_PATH: models,
+          PORKCODE_CONFIG: undefined,
+          PORKCODE_CONFIG_CONTENT: undefined,
+          PORKCODE_DISABLE_AUTOUPDATE: "true",
+          PORKCODE_MODELS_PATH: models,
         }),
       })
       processes.add(acp)

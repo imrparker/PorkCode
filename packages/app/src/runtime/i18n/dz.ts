@@ -767,8 +767,8 @@ export const dict = {
   "project.settings.color.description":
     "སྲོལ་སྒྲིག་གཟུགས་བརྙན་གཞི་སྒྲིག་མ་འབད་བའི་སྐབས་ལས་འགུལ་ངོས་དཔར་གྱི་དོན་ལུ་ལག་ལེན་འཐབ་ཡོདཔ་ཨིན།",
   "project.settings.worktree.startup.description": "ལཱ་གི་ཤིང་གསརཔ་གསར་བསྐྲུན་འབད་བའི་ཤུལ་ལས་ཚར་གཅིག་གཡོག་བཀོལཝ་ཨིན།",
-  "project.settings.worktree.startup.hint.base": "གཞི་རྟེན་ལཱ་ཤིང་གི་དོན་ལུ་ $OPENCODE_WORKTREE_BASE ལག་ལེན་འཐབ།",
-  "project.settings.worktree.startup.hint.new": "ལཱ་གི་ཤིང་གསརཔ་གི་དོན་ལུ་ $OPENCODE_WORKTREE_PATH ལག་ལེན་འཐབ།",
+  "project.settings.worktree.startup.hint.base": "གཞི་རྟེན་ལཱ་ཤིང་གི་དོན་ལུ་ $PORKCODE_WORKTREE_BASE ལག་ལེན་འཐབ།",
+  "project.settings.worktree.startup.hint.new": "ལཱ་གི་ཤིང་གསརཔ་གི་དོན་ལུ་ $PORKCODE_WORKTREE_PATH ལག་ལེན་འཐབ།",
   "project.settings.extensions.empty.mcps.title": "ད་ལྟོ་ MCPs མེད།",
   "project.settings.extensions.empty.mcps.description": "MCPs ལུ་ཐོབ་ཚུགས་པའི་ PorkCode འདི་ན་འབྱུངམ་ཨིན།",
   "project.settings.extensions.empty.plugins.title": "ད་ལྟོ་པ་ལག་ཨིནསི་མེད།",

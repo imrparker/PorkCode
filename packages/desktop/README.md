@@ -23,15 +23,15 @@ Both read the same environment as every other release package:
 
 | Variable           | Meaning                                                                                                         |
 | ------------------ | --------------------------------------------------------------------------------------------------------------- |
-| `OPENCODE_CHANNEL` | `dev` (default), `beta`, or `latest`/`prod`. Picks the app identity, icons and bundled CLI.                     |
-| `OPENCODE_VERSION` | Version stamped into the app and its packages.                                                                  |
-| `OPENCODE_TARGET`  | `darwin-arm64`, `darwin-x64`, `windows-arm64`, `windows-x64`, `linux-x64`, `linux-arm64`. Defaults to the host. |
+| `PORKCODE_CHANNEL` | `dev` (default), `beta`, or `latest`/`prod`. Picks the app identity, icons and bundled CLI.                     |
+| `PORKCODE_VERSION` | Version stamped into the app and its packages.                                                                  |
+| `PORKCODE_TARGET`  | `darwin-arm64`, `darwin-x64`, `windows-arm64`, `windows-x64`, `linux-x64`, `linux-arm64`. Defaults to the host. |
 
 The CLI is placed outside `app.asar` in the application's resources directory, and packaging fails if it is missing.
 `bun run build` bundles only the CLI that `packages/cli/dist` holds for the target, and checks that the bundled executable
-was built with `OPENCODE_CHANNEL=porkcode`: a published upstream CLI carries an upstream channel, so it registers in
+was built with `PORKCODE_CHANNEL=porkcode`: a published upstream CLI carries an upstream channel, so it registers in
 upstream's `service.json` on upstream's port and a packaged PorkCode times out waiting for its own registration file.
-Set `OPENCODE_DESKTOP_ALLOW_UPSTREAM_CLI=1` to bundle one anyway.
+Set `PORKCODE_DESKTOP_ALLOW_UPSTREAM_CLI=1` to bundle one anyway.
 
 `bun dev` is separate from packaging: it uses local renderer/server mode, the dev app identity, and the CLI source by
 default. `bun dev --download-server <version>` instead downloads that CLI version for local development.
@@ -52,7 +52,7 @@ unless release notes are turned off in Settings.
 
 `perf/startup.bench.ts` times a launch with [strobe](https://github.com/anomalyco/strobe), from process spawn to what a
 person waits for, in pairs of launches of two builds with an interval per case. Every launch runs in a private home
-(its own `%APPDATA%`, XDG folders, database, config and service registration, the developer's `OPENCODE_*`, `OTEL_*`
+(its own `%APPDATA%`, XDG folders, database, config and service registration, the developer's `PORKCODE_*`, `OTEL_*`
 and `SENTRY_*` environment removed), so it never touches the developer's app, profile or live service.
 
 | Case                            | Launch                                                                              | Ends on      |
@@ -64,7 +64,7 @@ and `SENTRY_*` environment removed), so it never touches the developer's app, pr
 | dev start to Home               | `bun dev:desktop` with Vite's caches and `out` deleted.                             | Home         |
 
 ```bash
-# A returning user's launches of two packaged builds (pack each with OPENCODE_CHANNEL=beta or prod), or two installed
+# A returning user's launches of two packaged builds (pack each with PORKCODE_CHANNEL=beta or prod), or two installed
 # channels.
 strobe bench perf/startup.bench.ts --target desktop --base exe:<old>/OpenCode.exe --head exe:<new>/OpenCode.exe
 strobe bench perf/startup.bench.ts --target desktop --base app:opencode --head app:opencode-beta

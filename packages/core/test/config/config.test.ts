@@ -313,7 +313,7 @@ describe("Config", () => {
     Effect.acquireDisposable(Effect.promise(() => tmpdir())).pipe(
       Effect.flatMap((tmp) => {
         // The global config dir is the project's own .opencode (as isolated
-        // hosts pin OPENCODE_CONFIG_DIR), and the location is the project under
+        // hosts pin PORKCODE_CONFIG_DIR), and the location is the project under
         // a symlinked spelling, so the walk reaches the same directory under a
         // different string than the global root.
         const real = path.join(tmp.path, "real")
@@ -548,7 +548,7 @@ describe("Config", () => {
                 integration,
                 ConfigIntegration.make({
                   integrationID: integration,
-                  connection: { type: "env", name: "OPENCODE_API_KEY" },
+                  connection: { type: "env", name: "PORKCODE_API_KEY" },
                   info: decodeInfo(named("console")),
                 }),
               ),
@@ -592,7 +592,7 @@ describe("Config", () => {
                 integration,
                 ConfigIntegration.make({
                   integrationID: integration,
-                  connection: { type: "env", name: "OPENCODE_API_KEY" },
+                  connection: { type: "env", name: "PORKCODE_API_KEY" },
                   organization: "Acme",
                   info: decodeInfo({ policies: [shell("shell:rm*", "allow"), shell("shell:*", "deny")] }),
                 }),
@@ -1267,7 +1267,7 @@ describe("Config", () => {
             `${path.join(project, "opencode.json")}:$:invalid`,
             `${malformed}:$:invalid`,
             "https://invalid.example.com:$:invalid",
-            "OPENCODE_CONFIG_CONTENT:$:invalid",
+            "PORKCODE_CONFIG_CONTENT:$:invalid",
           ].toSorted(),
         )
         expect(JSON.stringify(output)).not.toContain("secret")
@@ -1676,9 +1676,9 @@ describe("Config", () => {
   it.live("substitutes environment variables and relative file contents", () =>
     withEnv(
       {
-        OPENCODE_TEST_FLAG: "false",
-        OPENCODE_TEST_MCP_TOKEN: String.raw`C:\Users\new\"secret"`,
-        OPENCODE_TEST_MISSING: undefined,
+        PORKCODE_TEST_FLAG: "false",
+        PORKCODE_TEST_MCP_TOKEN: String.raw`C:\Users\new\"secret"`,
+        PORKCODE_TEST_MISSING: undefined,
       },
       () =>
         withTempDir((tmp) =>
@@ -1690,15 +1690,15 @@ describe("Config", () => {
                   path.join(tmp.path, "opencode.jsonc"),
                   `{
                       // Ignored reference: {file:.}
-                      "username": "user-{env:OPENCODE_TEST_MISSING}",
-                      "snapshots": {env:OPENCODE_TEST_FLAG},
+                      "username": "user-{env:PORKCODE_TEST_MISSING}",
+                      "snapshots": {env:PORKCODE_TEST_FLAG},
                       "mcp": {
                         "servers": {
                           "remote": {
                             "type": "remote",
                             "url": "https://example.com/mcp",
                             "headers": {
-                              "Authorization": "Bearer {env:OPENCODE_TEST_MCP_TOKEN}",
+                              "Authorization": "Bearer {env:PORKCODE_TEST_MCP_TOKEN}",
                               "X-Token": "{file:token.txt}",
                               "X-Missing": "Bearer {file:~/.opencode-test-missing/key}",
                               "X-Folder": "{file:.}"

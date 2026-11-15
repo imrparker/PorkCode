@@ -14,7 +14,7 @@ test.each([
   // Other channels keep their own file, and none of them is the fork's.
   { reported: "/home/pk/.local/share/opencode/opencode-dev.db", expected: false },
   { reported: "/home/pk/.local/share/opencode/opencode-local.db", expected: false },
-  // An OPENCODE_DB override would answer a path that says nothing about the compiled-in channel, so the guard
+  // An PORKCODE_DB override would answer a path that says nothing about the compiled-in channel, so the guard
   // unsets both overrides before asking; any directory is accepted as long as the file is the channel's own.
   { reported: "C:\\custom\\opencode-porkcode.db", expected: true },
   { reported: ":memory:", expected: false },

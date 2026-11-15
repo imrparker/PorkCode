@@ -65,8 +65,8 @@ export const dict = {
   "project.settings.color.description":
     "Bruges til projektikonet, når der ikke er indstillet et brugerdefineret billede",
   "project.settings.worktree.startup.description": "Kører én gang efter oprettelse af et nyt arbejdsområde",
-  "project.settings.worktree.startup.hint.base": "Brug $OPENCODE_WORKTREE_BASE til basisarbejdsområdet.",
-  "project.settings.worktree.startup.hint.new": "Brug $OPENCODE_WORKTREE_PATH til det nye arbejdsområde.",
+  "project.settings.worktree.startup.hint.base": "Brug $PORKCODE_WORKTREE_BASE til basisarbejdsområdet.",
+  "project.settings.worktree.startup.hint.new": "Brug $PORKCODE_WORKTREE_PATH til det nye arbejdsområde.",
   "project.settings.extensions.empty.mcps.title": "Ingen MCPs endnu",
   "project.settings.extensions.empty.mcps.description": "MCPs tilgængelig for PorkCode vises her",
   "project.settings.extensions.empty.plugins.title": "Ingen plugins endnu",

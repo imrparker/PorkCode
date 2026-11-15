@@ -582,14 +582,14 @@ describe("codemode_vm follows the flag registry", () => {
     })
   })
 
-  test("a release build opts in with OPENCODE_FLAGS, config, all or all_flags", async () => {
+  test("a release build opts in with PORKCODE_FLAGS, config, all or all_flags", async () => {
     expect(await engine({ channel: "latest", overrides: "codemode_vm" })).toBe("vm")
     expect(await engine({ channel: "latest", entries: [document({ codemode_vm: true })] })).toBe("vm")
     expect(await engine({ channel: "latest", overrides: "all" })).toBe("vm")
     expect(await engine({ channel: "latest", entries: [document({ all_flags: true })] })).toBe("vm")
   })
 
-  test("a dev build opts out with OPENCODE_FLAGS or config", async () => {
+  test("a dev build opts out with PORKCODE_FLAGS or config", async () => {
     expect(await engine({ channel: "dev", overrides: "-codemode_vm" })).toBe("legacy")
     expect(await engine({ channel: "dev", overrides: "all,-codemode_vm" })).toBe("legacy")
     expect(await engine({ channel: "dev", entries: [document({ codemode_vm: false })] })).toBe("legacy")

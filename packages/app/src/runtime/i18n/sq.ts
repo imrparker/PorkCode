@@ -756,8 +756,8 @@ export const dict = {
   "project.settings.color.description":
     "Përdoret për ikonën e projektit kur nuk është vendosur asnjë imazh i personalizuar",
   "project.settings.worktree.startup.description": "Ekzekutohet një herë pas krijimit të një peme të re pune",
-  "project.settings.worktree.startup.hint.base": "Përdorni $OPENCODE_WORKTREE_BASE për pemën bazë të punës.",
-  "project.settings.worktree.startup.hint.new": "Përdorni $OPENCODE_WORKTREE_PATH për pemën e re të punës.",
+  "project.settings.worktree.startup.hint.base": "Përdorni $PORKCODE_WORKTREE_BASE për pemën bazë të punës.",
+  "project.settings.worktree.startup.hint.new": "Përdorni $PORKCODE_WORKTREE_PATH për pemën e re të punës.",
   "project.settings.extensions.empty.mcps.title": "Nuk ka ende MCPs",
   "project.settings.extensions.empty.mcps.description": "MCPs i disponueshëm për PorkCode do të shfaqet këtu",
   "project.settings.extensions.empty.plugins.title": "Nuk ka ende shtojca",

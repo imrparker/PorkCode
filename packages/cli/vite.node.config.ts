@@ -42,7 +42,7 @@ import { getRawAsset, isSea } from "node:sea"
 export default () =>
   isSea()
     ? new Uint8Array(getRawAsset(${JSON.stringify(appArchiveAsset)}))
-    : readFileSync(path.join(process.env.OPENCODE_NODE_ASSETS_DIR, ${JSON.stringify(appArchiveAsset)}))`
+    : readFileSync(path.join(process.env.PORKCODE_NODE_ASSETS_DIR, ${JSON.stringify(appArchiveAsset)}))`
     },
   }
 }
@@ -232,18 +232,18 @@ if (__ocIsSea()) {
     }
   }
 }
-process.env.OPENCODE_NODE_ASSETS_DIR = __ocAssetRoot
+process.env.PORKCODE_NODE_ASSETS_DIR = __ocAssetRoot
 process.env.OTUI_ASSET_ROOT = __ocAssetRoot
-process.env.OPENCODE_NODE_PTY_PATH = __ocPath.join(__ocAssetRoot, ${JSON.stringify(input.target.nodePtyEntryAsset)})
-process.env.OPENCODE_PARCEL_WATCHER_PATH = __ocPath.join(__ocAssetRoot, ${JSON.stringify(input.target.parcelWatcherAsset)})
-process.env.OPENCODE_PHOTON_WASM_PATH = __ocPath.join(__ocAssetRoot, ${JSON.stringify(photonWasmAsset)})
+process.env.PORKCODE_NODE_PTY_PATH = __ocPath.join(__ocAssetRoot, ${JSON.stringify(input.target.nodePtyEntryAsset)})
+process.env.PORKCODE_PARCEL_WATCHER_PATH = __ocPath.join(__ocAssetRoot, ${JSON.stringify(input.target.parcelWatcherAsset)})
+process.env.PORKCODE_PHOTON_WASM_PATH = __ocPath.join(__ocAssetRoot, ${JSON.stringify(photonWasmAsset)})
 process.env.FFF_BINARY_PATH = __ocPath.join(__ocAssetRoot, ${JSON.stringify(input.target.fffAsset)})
-process.env.OPENCODE_FFF_FFI_PATH = __ocPath.join(__ocAssetRoot, ${JSON.stringify(input.target.fffFfiAsset)})
-if (__ocPersistentPty && !process.env.OPENCODE_PTY_BIN) process.env.OPENCODE_PTY_BIN = __ocPath.join(__ocAssetRoot, __ocPersistentPty)
+process.env.PORKCODE_FFF_FFI_PATH = __ocPath.join(__ocAssetRoot, ${JSON.stringify(input.target.fffFfiAsset)})
+if (__ocPersistentPty && !process.env.PORKCODE_PTY_BIN) process.env.PORKCODE_PTY_BIN = __ocPath.join(__ocAssetRoot, __ocPersistentPty)
 try {
-  globalThis.__OPENCODE_FFF_FFI = require(process.env.OPENCODE_FFF_FFI_PATH)
+  globalThis.__OPENCODE_FFF_FFI = require(process.env.PORKCODE_FFF_FFI_PATH)
 } catch {}
-globalThis.__OPENCODE_PHOTON_WASM_PATH = process.env.OPENCODE_PHOTON_WASM_PATH
+globalThis.__OPENCODE_PHOTON_WASM_PATH = process.env.PORKCODE_PHOTON_WASM_PATH
 if (process.platform === "linux") process.env.OPENTUI_LIBC = "glibc"`
 }
 
@@ -275,12 +275,12 @@ export function mainConfig(input: NodeBuildInput): UserConfig {
     resolve,
     esbuild: { jsx: "automatic" },
     define: {
-      OPENCODE_VERSION: JSON.stringify(input.version),
-      OPENCODE_CLI_NAME: JSON.stringify("opencode2-node"),
-      OPENCODE_CHANNEL: JSON.stringify(input.channel),
-      OPENCODE_ARTIFACT: JSON.stringify("cli-node"),
-      ...(input.highlights ? { OPENCODE_RELEASE_HIGHLIGHTS: JSON.stringify(input.highlights) } : {}),
-      OPENCODE_LIBC: input.target.platform === "linux" ? JSON.stringify("glibc") : "undefined",
+      PORKCODE_VERSION: JSON.stringify(input.version),
+      PORKCODE_CLI_NAME: JSON.stringify("opencode2-node"),
+      PORKCODE_CHANNEL: JSON.stringify(input.channel),
+      PORKCODE_ARTIFACT: JSON.stringify("cli-node"),
+      ...(input.highlights ? { PORKCODE_RELEASE_HIGHLIGHTS: JSON.stringify(input.highlights) } : {}),
+      PORKCODE_LIBC: input.target.platform === "linux" ? JSON.stringify("glibc") : "undefined",
       FFF_LIBC: input.target.platform === "linux" ? JSON.stringify("gnu") : "undefined",
       "process.env.WS_NO_BUFFER_UTIL": JSON.stringify("1"),
     },
@@ -299,8 +299,8 @@ export function mainConfig(input: NodeBuildInput): UserConfig {
 }
 
 export default mainConfig({
-  version: process.env.OPENCODE_VERSION ?? "local",
-  channel: process.env.OPENCODE_CHANNEL ?? "local",
+  version: process.env.PORKCODE_VERSION ?? "local",
+  channel: process.env.PORKCODE_CHANNEL ?? "local",
   assetHash: "local",
   target: nodeTarget(process.platform, process.arch),
 })

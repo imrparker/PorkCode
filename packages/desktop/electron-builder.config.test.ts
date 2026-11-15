@@ -19,22 +19,22 @@ const channels = [
 ] as const
 
 function load(channel: string, target?: string): Configuration {
-  const previous = process.env.OPENCODE_CHANNEL
-  const previousTarget = process.env.OPENCODE_TARGET
-  process.env.OPENCODE_CHANNEL = channel
+  const previous = process.env.PORKCODE_CHANNEL
+  const previousTarget = process.env.PORKCODE_TARGET
+  process.env.PORKCODE_CHANNEL = channel
 
-  if (target !== undefined) process.env.OPENCODE_TARGET = target
-  else delete process.env.OPENCODE_TARGET
+  if (target !== undefined) process.env.PORKCODE_TARGET = target
+  else delete process.env.PORKCODE_TARGET
 
   try {
     return getConfig()
   } finally {
-    delete process.env.OPENCODE_CHANNEL
-    delete process.env.OPENCODE_TARGET
+    delete process.env.PORKCODE_CHANNEL
+    delete process.env.PORKCODE_TARGET
 
-    if (previous !== undefined) process.env.OPENCODE_CHANNEL = previous
+    if (previous !== undefined) process.env.PORKCODE_CHANNEL = previous
 
-    if (previousTarget !== undefined) process.env.OPENCODE_TARGET = previousTarget
+    if (previousTarget !== undefined) process.env.PORKCODE_TARGET = previousTarget
   }
 }
 

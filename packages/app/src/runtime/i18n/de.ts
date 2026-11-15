@@ -73,8 +73,8 @@ export const dict = {
     "Wird für das Projektsymbol verwendet, wenn kein benutzerdefiniertes Bild festgelegt ist",
   "project.settings.worktree.startup.description":
     "Wird einmal ausgeführt, nachdem ein neuer Arbeitsbereich erstellt wurde",
-  "project.settings.worktree.startup.hint.base": "Verwenden Sie $OPENCODE_WORKTREE_BASE für den Basisarbeitsbaum.",
-  "project.settings.worktree.startup.hint.new": "Verwenden Sie $OPENCODE_WORKTREE_PATH für den neuen Arbeitsbereich.",
+  "project.settings.worktree.startup.hint.base": "Verwenden Sie $PORKCODE_WORKTREE_BASE für den Basisarbeitsbaum.",
+  "project.settings.worktree.startup.hint.new": "Verwenden Sie $PORKCODE_WORKTREE_PATH für den neuen Arbeitsbereich.",
   "project.settings.extensions.empty.mcps.title": "Noch kein MCPs",
   "project.settings.extensions.empty.mcps.description": "MCPs verfügbar für PorkCode wird hier angezeigt",
   "project.settings.extensions.empty.plugins.title": "Noch keine Plugins",

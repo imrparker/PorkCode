@@ -87,19 +87,19 @@ async function cli(args: string[], env: Record<string, string> = {}, entry = "fi
   const root = await mkdtemp(path.join(os.tmpdir(), "opencode-upgrade-"))
   try {
     const child = Bun.spawn(
-      [process.execPath, "--define", 'OPENCODE_VERSION="0.0.0-beta-old"', path.join(import.meta.dir, entry), ...args],
+      [process.execPath, "--define", 'PORKCODE_VERSION="0.0.0-beta-old"', path.join(import.meta.dir, entry), ...args],
       {
         cwd: path.join(import.meta.dir, ".."),
         env: {
           ...process.env,
-          OPENCODE_TEST_HOME: root,
+          PORKCODE_TEST_HOME: root,
           XDG_DATA_HOME: path.join(root, "data"),
           XDG_CONFIG_HOME: path.join(root, "config"),
           XDG_CACHE_HOME: path.join(root, "cache"),
           XDG_STATE_HOME: path.join(root, "state"),
-          OPENCODE_DISABLE_AUTOUPDATE: "1",
+          PORKCODE_DISABLE_AUTOUPDATE: "1",
           // The fork gates the upgrade command behind an opt-in; these tests exercise that flow directly.
-          OPENCODE_ENABLE_AUTOUPDATE: "1",
+          PORKCODE_ENABLE_AUTOUPDATE: "1",
           ...env,
         },
         stdout: "pipe",

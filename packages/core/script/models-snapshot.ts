@@ -8,7 +8,7 @@ const MINIMUM_PROVIDERS = 100
 export const committedSnapshot = new URL("../src/models-dev/snapshot.txt", import.meta.url)
 
 export async function fetchModelsSnapshot() {
-  const source = process.env.OPENCODE_MODELS_URL || "https://models.dev"
+  const source = process.env.PORKCODE_MODELS_URL || "https://models.dev"
   let response = await fetch(`${source}${ModelsDev.catalogPath}`, { signal: AbortSignal.timeout(30_000) })
   // Sources without the experimental v2 path, models.dev included, serve the v1 catalog at /api.json.
   if (response.status === 404) response = await fetch(`${source}/api.json`, { signal: AbortSignal.timeout(30_000) })
@@ -66,7 +66,7 @@ async function validateModelsSnapshot(text: string) {
 }
 
 export async function bundledModelsSnapshot() {
-  const file = process.env.OPENCODE_MODELS_SNAPSHOT
+  const file = process.env.PORKCODE_MODELS_SNAPSHOT
   if (!file) return Bun.file(committedSnapshot).text()
   const snapshot = await validateModelsSnapshot(await Bun.file(file).text())
   console.log(`bundling models.dev catalog from ${file} (${snapshot.providers} providers)`)

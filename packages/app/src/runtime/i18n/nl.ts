@@ -66,8 +66,8 @@ export const dict = {
   "project.settings.color.description":
     "Wordt gebruikt voor het projectpictogram als er geen aangepaste afbeelding is ingesteld",
   "project.settings.worktree.startup.description": "Wordt één keer uitgevoerd na het maken van een nieuwe werkruimte",
-  "project.settings.worktree.startup.hint.base": "Gebruik $OPENCODE_WORKTREE_BASE voor de basiswerkruimte.",
-  "project.settings.worktree.startup.hint.new": "Gebruik $OPENCODE_WORKTREE_PATH voor de nieuwe werkruimte.",
+  "project.settings.worktree.startup.hint.base": "Gebruik $PORKCODE_WORKTREE_BASE voor de basiswerkruimte.",
+  "project.settings.worktree.startup.hint.new": "Gebruik $PORKCODE_WORKTREE_PATH voor de nieuwe werkruimte.",
   "project.settings.extensions.empty.mcps.title": "Nog geen MCPs",
   "project.settings.extensions.empty.mcps.description": "MCPs beschikbaar voor PorkCode wordt hier weergegeven",
   "project.settings.extensions.empty.plugins.title": "Nog geen plug-ins",

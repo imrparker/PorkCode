@@ -270,7 +270,7 @@ export const run = Effect.fn("Tui.run")(function* (input: TuiInput) {
             }),
           )
         }
-        if (process.env.OPENCODE_DRIVE) {
+        if (process.env.PORKCODE_DRIVE) {
           const { Drive } = yield* Effect.promise(() => import("@opencode/simulation/frontend"))
           return yield* Drive.create(options, input.app.version)
         }
@@ -364,21 +364,21 @@ export const run = Effect.fn("Tui.run")(function* (input: TuiInput) {
                             >
                               <TuiStartupProvider
                                 value={{
-                                  initialRoute: process.env.OPENCODE_STORY
+                                  initialRoute: process.env.PORKCODE_STORY
                                     ? {
                                         type: "plugin",
                                         id: "opencode.storybook",
                                         name: "storybook",
-                                        // OPENCODE_STORY=1 opens the index; any other value opens that story.
+                                        // PORKCODE_STORY=1 opens the index; any other value opens that story.
                                         data:
-                                          process.env.OPENCODE_STORY === "1"
+                                          process.env.PORKCODE_STORY === "1"
                                             ? undefined
-                                            : { story: process.env.OPENCODE_STORY },
+                                            : { story: process.env.PORKCODE_STORY },
                                       }
-                                    : process.env.OPENCODE_ROUTE
-                                      ? JSON.parse(process.env.OPENCODE_ROUTE)
+                                    : process.env.PORKCODE_ROUTE
+                                      ? JSON.parse(process.env.PORKCODE_ROUTE)
                                       : undefined,
-                                  skipInitialLoading: Boolean(process.env.OPENCODE_FAST_BOOT),
+                                  skipInitialLoading: Boolean(process.env.PORKCODE_FAST_BOOT),
                                 }}
                               >
                                 <ClipboardProvider value={clipboard}>
@@ -733,7 +733,7 @@ function App() {
     if (config.data.highlights === false) return
     if (route.data.type !== "home" || dialog.stack.length > 0 || promptRef.current?.current.text) return
     if (args.prompt || args.continue || args.sessionID || args.newSessionID) return
-    if (process.env.OPENCODE_DRIVE || process.env.OPENCODE_STORY || process.env.OPENCODE_ROUTE) return
+    if (process.env.PORKCODE_DRIVE || process.env.PORKCODE_STORY || process.env.PORKCODE_ROUTE) return
     void claim(storage, {
       version: app.version,
       count: items.length,

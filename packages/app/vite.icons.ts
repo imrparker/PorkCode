@@ -45,8 +45,8 @@ export function icons(channel: string): Plugin {
       order: "pre",
       handler(html) {
         return html
-          .replace("%OPENCODE_FAVICON%", `/${prefix}/favicon.ico`)
-          .replace("%OPENCODE_APPLE_TOUCH_ICON%", `/${prefix}/apple-touch-icon.png`)
+          .replace("%PORKCODE_FAVICON%", `/${prefix}/favicon.ico`)
+          .replace("%PORKCODE_APPLE_TOUCH_ICON%", `/${prefix}/apple-touch-icon.png`)
       },
     },
   }

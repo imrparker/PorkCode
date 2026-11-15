@@ -10,7 +10,7 @@ const Manifest = Schema.fromJsonString(Schema.Struct({ version: Schema.NonEmptyS
 export type Channel = "dev" | "beta" | "prod"
 
 export function resolveChannel(): Channel {
-  const raw = process.env.OPENCODE_CHANNEL
+  const raw = process.env.PORKCODE_CHANNEL
 
   if (raw === "dev" || raw === "beta" || raw === "prod") return raw
 
@@ -69,7 +69,7 @@ function nativeTarget() {
   throw new Error(`Unsupported platform: ${platform}/${arch}`)
 }
 
-export function getCurrentCli(target = process.env.OPENCODE_TARGET ?? nativeTarget()) {
+export function getCurrentCli(target = process.env.PORKCODE_TARGET ?? nativeTarget()) {
   const binaryConfig = CLI_BINARIES.find((item) => item.target === target)
 
   if (!binaryConfig) throw new Error(`CLI configuration not available for target '${target}'`)
@@ -141,7 +141,7 @@ export function windowsify(path: string) {
 // The channel the fork's bundled CLI must be built with. A CLI from any other channel registers in upstream's
 // service.json on upstream's port, so a packaged PorkCode spawns it, watches it exit against an installed OpenCode
 // service, and times out waiting for its own registration file (SERVICE_FILE in src/main/constants.ts). Keep in
-// sync with the OPENCODE_CHANNEL define in packages/cli.
+// sync with the PORKCODE_CHANNEL define in packages/cli.
 export const FORK_CLI_CHANNEL = "porkcode"
 
 function forkCliDatabaseName(channel = FORK_CLI_CHANNEL) {
@@ -149,7 +149,7 @@ function forkCliDatabaseName(channel = FORK_CLI_CHANNEL) {
 }
 
 // A reported database belongs to the fork CLI only when it is that channel's own file. Upstream builds answer
-// `opencode.db`; another channel or an OPENCODE_DB override answers something else. Separators are normalized
+// `opencode.db`; another channel or an PORKCODE_DB override answers something else. Separators are normalized
 // because the executable prints its platform's paths and build hosts run Windows, Linux and macOS alike.
 export function isForkCliDatabase(reported: string, channel = FORK_CLI_CHANNEL) {
   const normalized = reported.trim().replaceAll("\\", "/")
@@ -163,7 +163,7 @@ export function isForkCliDatabase(reported: string, channel = FORK_CLI_CHANNEL) 
 export async function verifyBundledCliChannel(dest = windowsify("resources/opencode-cli")) {
   const result = Bun.spawnSync({
     cmd: [dest, "debug", "paths", "db"],
-    env: { ...process.env, OPENCODE_DB: undefined, OPENCODE_DISABLE_CHANNEL_DB: undefined },
+    env: { ...process.env, PORKCODE_DB: undefined, PORKCODE_DISABLE_CHANNEL_DB: undefined },
     stderr: "pipe",
   })
 
@@ -175,7 +175,7 @@ export async function verifyBundledCliChannel(dest = windowsify("resources/openc
   if (!isForkCliDatabase(database))
     throw new Error(
       `Bundled CLI at ${dest} is not a PorkCode build: it uses database ${database || "(none reported)"}, expected ` +
-        `${forkCliDatabaseName()}. Build the CLI with OPENCODE_CHANNEL=${FORK_CLI_CHANNEL} first ` +
+        `${forkCliDatabaseName()}. Build the CLI with PORKCODE_CHANNEL=${FORK_CLI_CHANNEL} first ` +
         "(README: Building the Windows installer).",
     )
 

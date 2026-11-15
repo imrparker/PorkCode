@@ -2,11 +2,11 @@ import { app } from "electron"
 
 type Channel = "local" | "dev" | "beta" | "prod"
 
-const raw = import.meta.env.OPENCODE_CHANNEL
+const raw = import.meta.env.PORKCODE_CHANNEL
 
 export const CHANNEL: Channel = raw === "local" || raw === "dev" || raw === "beta" || raw === "prod" ? raw : "dev"
 
-export const VERSION = app.isPackaged ? app.getVersion() : (process.env.OPENCODE_VERSION ?? app.getVersion())
+export const VERSION = app.isPackaged ? app.getVersion() : (process.env.PORKCODE_VERSION ?? app.getVersion())
 
 const appNames: Record<string, string> = {
   dev: "PorkCode Dev",
@@ -27,7 +27,7 @@ export const APP_NAME = app.isPackaged ? appNames[CHANNEL] : "PorkCode Dev"
 // keeping upstream's ai.opencode.desktop made PorkCode a second instance of OpenCode on the same data.
 export const APP_ID = app.isPackaged ? appIDs[CHANNEL] : "com.imrparker.porkcode.dev"
 
-// The bundled CLI is built with OPENCODE_CHANNEL=porkcode (see the README installer recipe): its daemon registers
+// The bundled CLI is built with PORKCODE_CHANNEL=porkcode (see the README installer recipe): its daemon registers
 // under this file, on a hash-derived port and a fork-owned database, instead of the shared service.json. That keeps
 // PorkCode from adopting or replacing an installed OpenCode background service while their versions diverge.
 // Keep in sync with filename() in packages/cli/src/services/service-config.ts.

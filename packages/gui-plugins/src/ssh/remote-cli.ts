@@ -69,7 +69,7 @@ if [ "$arch" = x64 ]; then target="$target-baseline"; fi
 if [ "$os" = linux ]; then
   if [ -f /etc/alpine-release ] || (ldd --version 2>&1 | grep -qi musl); then target="$target-musl"; fi
 fi
-printf 'OPENCODE_REMOTE_TARGET=%s\\n' "$target"
+printf 'PORKCODE_REMOTE_TARGET=%s\\n' "$target"
 `
 
 export function archiveUrl(target: string, version: string) {

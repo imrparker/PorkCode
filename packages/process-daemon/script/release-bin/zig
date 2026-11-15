@@ -1,13 +1,13 @@
 #!/bin/sh
 set -eu
 
-if [ -z "${OPENCODE_REAL_ZIG:-}" ]; then
-  echo "OPENCODE_REAL_ZIG is required" >&2
+if [ -z "${PORKCODE_REAL_ZIG:-}" ]; then
+  echo "PORKCODE_REAL_ZIG is required" >&2
   exit 1
 fi
 
 if [ "${1:-}" = "build" ]; then
-  exec "$OPENCODE_REAL_ZIG" "$@" -Dcpu=baseline
+  exec "$PORKCODE_REAL_ZIG" "$@" -Dcpu=baseline
 fi
 
-exec "$OPENCODE_REAL_ZIG" "$@"
+exec "$PORKCODE_REAL_ZIG" "$@"
