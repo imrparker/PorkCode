@@ -30,6 +30,12 @@
   ; https://github.com/electron/electron/issues/49143#issuecomment-3618354787
   nsExec::ExecToLog '"$SYSDIR\icacls.exe" "$INSTDIR" /grant "*S-1-15-2-2:(OI)(CI)(RX)"'
   Pop $0
+  ; The deep-link scheme moved from opencode:// to porkcode://. Drop the old registration only when it
+  ; still points at this install (an upstream OpenCode app registered under its own path stays alone).
+  ReadRegStr $R0 HKCU "Software\Classes\opencode\shell\open\command" ""
+  ${If} $R0 == '"$INSTDIR\${APP_EXECUTABLE_FILENAME}" "%1"'
+    DeleteRegKey HKCU "Software\Classes\opencode"
+  ${EndIf}
   !insertmacro leaveSharedInstall
 !macroend
 
@@ -63,8 +69,13 @@
     ; the CLI shares it, and deleting user credentials on uninstall would be wrong.
     RMDir /r "$APPDATA\${APP_ID}"
     RMDir /r "$LOCALAPPDATA\@opencodedesktop-updater"
-    ; Drop our opencode:// deep-link registration only when it still points at this install, so Windows
-    ; never keeps a dead handler; another app's registration of the same scheme is left alone.
+    ; Drop our deep-link registrations only when they still point at this install, so Windows never
+    ; keeps a dead handler; another app's registration of the same scheme is left alone. The opencode://
+    ; check covers installs that predate the rename to porkcode://.
+    ReadRegStr $R0 HKCU "Software\Classes\porkcode\shell\open\command" ""
+    ${If} $R0 == '"$INSTDIR\${APP_EXECUTABLE_FILENAME}" "%1"'
+      DeleteRegKey HKCU "Software\Classes\porkcode"
+    ${EndIf}
     ReadRegStr $R0 HKCU "Software\Classes\opencode\shell\open\command" ""
     ${If} $R0 == '"$INSTDIR\${APP_EXECUTABLE_FILENAME}" "%1"'
       DeleteRegKey HKCU "Software\Classes\opencode"

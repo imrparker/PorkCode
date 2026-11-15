@@ -179,7 +179,7 @@ const getBase = (appId: string): Configuration => {
     },
     protocols: {
       name: "PorkCode",
-      schemes: ["opencode"],
+      schemes: ["porkcode"],
     },
     win: {
       icon: `resources/icons/icon.ico`,
@@ -243,7 +243,7 @@ export function getConfig() {
         ...base,
         appId,
         productName: "PorkCode Beta",
-        protocols: { name: "PorkCode Beta", schemes: ["opencode"] },
+        protocols: { name: "PorkCode Beta", schemes: ["porkcode"] },
         publish: {
           provider: "generic",
           url: "https://github.com/imrparker/PorkCode/releases/download/desktop-beta/",
@@ -262,7 +262,7 @@ export function getConfig() {
         ...base,
         appId,
         productName: "PorkCode",
-        protocols: { name: "PorkCode", schemes: ["opencode"] },
+        protocols: { name: "PorkCode", schemes: ["porkcode"] },
         // An Icon Composer package compiles to Assets.car, which macOS 26 and later draw the app icon from
         // (Dock, Finder, system dialogs and the system icon styles). Older macOS keeps using the ICNS.
         mac: { ...base.mac, icon: "resources/icons/icon.icon" },

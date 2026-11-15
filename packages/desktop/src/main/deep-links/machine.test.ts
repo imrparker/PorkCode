@@ -7,9 +7,9 @@ import {
   type DeepLinkState,
 } from "./machine"
 
-const project = "opencode://open?project=/repo"
+const project = "porkcode://open?project=/repo"
 
-const otherProject = "opencode://open?project=/other"
+const otherProject = "porkcode://open?project=/other"
 
 // Folds events through the machine and keeps the commands of each step.
 function replay(events: readonly DeepLinkEvent[], from = createDeepLinkState()) {
