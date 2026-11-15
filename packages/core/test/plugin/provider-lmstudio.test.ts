@@ -300,7 +300,9 @@ describe("LMStudioPlugin", () => {
             (model) => model !== undefined,
           )
 
-          expect(yield* integrations.get(Integration.ID.make("lmstudio"))).toBeUndefined()
+          // The plugin keeps its own key-method integration registered so Settings can list the backend
+          // and store a key even while it answers; what takeover removes is the Models.dev binding.
+          expect(yield* integrations.get(Integration.ID.make("lmstudio"))).toBeDefined()
           expect((yield* providers.get(providerID))?.integrationID).toBeUndefined()
           expect(yield* modelState.get(providerID, Model.ID.make("static-model"))).toBeUndefined()
           expect((yield* providers.available()).map((provider) => provider.id)).toContain(providerID)

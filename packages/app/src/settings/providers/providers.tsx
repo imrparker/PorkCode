@@ -53,6 +53,7 @@ const LOCAL_BACKENDS = [
   { id: "lmstudio", name: "LM Studio", url: "http://127.0.0.1:1234" },
   { id: "ollama", name: "Ollama", url: "http://127.0.0.1:11434" },
   { id: "vllm", name: "vLLM", url: "http://127.0.0.1:8000" },
+  { id: "llamacpp", name: "llama.cpp", url: "http://127.0.0.1:8080" },
 ] as const
 
 export const SettingsProviders: Component<{

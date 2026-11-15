@@ -181,7 +181,9 @@ describe("VLLMPlugin", () => {
             modelState.get(providerID, Model.ID.make("discovered-model")),
             (model) => model !== undefined,
           )
-          expect(yield* integrations.get(Integration.ID.make("vllm"))).toBeUndefined()
+          // The plugin keeps its own key-method integration registered so Settings can list the backend
+          // and store a key even while it answers; what takeover removes is the Models.dev binding.
+          expect(yield* integrations.get(Integration.ID.make("vllm"))).toBeDefined()
           expect((yield* providers.get(providerID))?.integrationID).toBeUndefined()
           expect((yield* providers.get(providerID))?.activation).toBe("enabled")
           expect(yield* modelState.get(providerID, Model.ID.make("static-model"))).toBeUndefined()

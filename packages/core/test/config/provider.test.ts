@@ -738,6 +738,38 @@ describe("ConfigProviderPlugin.Plugin", () => {
     }),
   )
 
+  it.effect("defaults a configured endpoint without a package to OpenAI compatibility", () =>
+    Effect.gen(function* () {
+      const providers = yield* Provider.Service
+      yield* addPlugin([
+        new Document({
+          type: "document",
+          info: decode({
+            providers: {
+              gateway: {
+                name: "LAN Gateway",
+                settings: { baseURL: "http://192.168.0.40:8080/v1" },
+                models: { qwen3: {} },
+              },
+              legacy: {
+                name: "Legacy",
+                headers: { "x-api-version": "1" },
+                models: {},
+              },
+            },
+          }),
+        }),
+      ])
+
+      // The built-in OpenAI-compatible wrapper needs only a baseURL, so an endpoint config without a package uses it.
+      expect((yield* providers.get(Provider.ID.make("gateway")))?.package).toBe(
+        "@opencode/ai/providers/openai-compatible",
+      )
+      // Without a baseURL there is nothing to point the wrapper at; the provider stays package-less ("").
+      expect((yield* providers.get(Provider.ID.make("legacy")))?.package).toBe("")
+    }),
+  )
+
   it.effect("preserves plugin-supplied variants on custom models when config omits variants", () =>
     Effect.gen(function* () {
       const models = yield* Model.Service

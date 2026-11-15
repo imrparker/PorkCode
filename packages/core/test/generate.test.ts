@@ -487,3 +487,78 @@ describe("image generation", () => {
 })
 
 const PNG = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0, 0, 0, 13, 0x49, 0x48, 0x44, 0x52])
+
+// PorkCode's core supported path: a user-configured Anthropic-compatible endpoint with a custom
+// baseURL and API key must reach that endpoint, not api.anthropic.com.
+describe("configured Anthropic-compatible endpoints", () => {
+  const gatewayModel = Info.make({
+    ...Info.default(Provider.ID.make("gateway"), ID.make("claude-x")),
+    package: "@opencode/ai/providers/anthropic-compatible",
+    settings: { baseURL: "https://gateway.test/v1" },
+  })
+  const gatewayProviders = Layer.mock(Provider.Service, {
+    get: () =>
+      Effect.succeed(
+        Provider.Info.make({ ...Provider.Info.empty(Provider.ID.make("gateway")), activation: "enabled", settings: { apiKey: "sk-test" } }),
+      ),
+  })
+  const gatewayModels = Layer.mock(Model.Service, {
+    get: (_providerID, modelID) => Effect.succeed(modelID === "claude-x" ? gatewayModel : undefined),
+  })
+
+  const requests: { url: string; headers: Record<string, string>; body: unknown }[] = []
+  const http = Layer.succeed(
+    HttpClient.HttpClient,
+    HttpClient.make((request) =>
+      Effect.gen(function* () {
+        const text = request.body._tag === "Uint8Array" ? new TextDecoder().decode(request.body.body) : ""
+        requests.push({ url: request.url, headers: request.headers, body: text ? JSON.parse(text) : undefined })
+        return HttpClientResponse.fromWeb(
+          request,
+          new Response(
+            [
+              `event: message_start\ndata: ${JSON.stringify({ type: "message_start", message: { id: "msg_1", role: "assistant", model: "claude-x", content: [], usage: { input_tokens: 5, output_tokens: 0 } } })}\n\n`,
+              `event: content_block_start\ndata: ${JSON.stringify({ type: "content_block_start", index: 0, content_block: { type: "text", text: "" } })}\n\n`,
+              `event: content_block_delta\ndata: ${JSON.stringify({ type: "content_block_delta", index: 0, delta: { type: "text_delta", text: "OK" } })}\n\n`,
+              `event: content_block_stop\ndata: ${JSON.stringify({ type: "content_block_stop", index: 0 })}\n\n`,
+              `event: message_delta\ndata: ${JSON.stringify({ type: "message_delta", delta: { stop_reason: "end_turn" }, usage: { output_tokens: 1 } })}\n\n`,
+              `event: message_stop\ndata: ${JSON.stringify({ type: "message_stop" })}\n\n`,
+            ].join(""),
+            { headers: { "content-type": "text/event-stream" } },
+          ),
+        )
+      }),
+    ),
+  )
+  const executor = RequestExecutor.layer.pipe(Layer.provide(http))
+  const gatewayResolver = ModelResolver.layer.pipe(
+    Layer.provide(Layer.mergeAll(gatewayProviders, gatewayModels, integrations, npm, aisdk)),
+  )
+  const gatewayIt = testEffect(
+    Generate.layer.pipe(
+      Layer.provide(
+        Layer.mergeAll(gatewayResolver, LLMClient.layer.pipe(Layer.provide(executor)), gatewayModels, executor),
+      ),
+    ),
+  )
+
+  gatewayIt.effect("sends the configured baseURL and API key to /messages", () =>
+    Effect.gen(function* () {
+      const generate = yield* Generate.Service
+      expect(
+        yield* generate.text({
+          prompt: "Return exactly OK",
+          model: Ref.make({ providerID: Provider.ID.make("gateway"), id: ID.make("claude-x") }),
+        }),
+      ).toBe("OK")
+
+      expect(requests).toHaveLength(1)
+      const request = requests[0]!
+      // The wrapper appends the protocol path to the configured baseURL; nothing goes upstream.
+      expect(request.url).toBe("https://gateway.test/v1/messages")
+      expect(request.headers["x-api-key"]).toBe("sk-test")
+      expect(request.headers["anthropic-version"]).toBe("2023-06-01")
+      expect(request.body).toMatchObject({ model: "claude-x" })
+    }),
+  )
+})

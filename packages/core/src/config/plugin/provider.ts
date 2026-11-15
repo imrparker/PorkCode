@@ -200,6 +200,9 @@ function overlayProvider(
     if (item.settings !== undefined) provider.settings = Provider.mergeOverlay(provider.settings, item.settings)
     if (item.headers !== undefined) provider.headers = Provider.mergeHeaders(provider.headers, item.headers)
     if (item.body !== undefined) provider.body = Provider.mergeOverlay(provider.body, item.body)
+    // A configured endpoint with no package is a generic OpenAI-compatible server: the built-in
+    // wrapper needs only a baseURL. Catalog entries and explicit packages already set one; "" means unset.
+    if (!provider.package && provider.settings?.baseURL) provider.package = "@opencode/ai/providers/openai-compatible"
   })
   return { current, source, changed }
 }
