@@ -172,7 +172,8 @@ function skipOnboarding(ctx: LaunchContext<unknown>) {
 const services = new Map<string, number>()
 
 async function warmService(ctx: LaunchContext<unknown>) {
-  const registration = join(ctx.home!, ".local", "state", "opencode", "service.json")
+  // The bundled CLI is built with PORKCODE_CHANNEL=porkcode; see SERVICE_FILE in src/main/constants.ts.
+  const registration = join(ctx.home!, ".local", "state", "porkcode", "service-porkcode.json")
 
   if (await answers(registration)) return
 

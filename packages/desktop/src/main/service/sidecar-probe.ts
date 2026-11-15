@@ -24,7 +24,7 @@ export function startSidecarProbe() {
 // The fork channel's registration, at the same location BackgroundService.prepare reads; see SERVICE_FILE in constants.ts.
 function registrationFile() {
   const state = process.env.XDG_STATE_HOME ?? path.join(app.getPath("home"), ".local", "state")
-  return path.join(state, "opencode", SERVICE_FILE)
+  return path.join(state, "porkcode", SERVICE_FILE)
 }
 
 /** The probe's result, once: a later connect must not adopt a service that may have exited since boot. */

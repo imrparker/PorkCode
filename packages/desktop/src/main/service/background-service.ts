@@ -131,9 +131,9 @@ const prepare = Effect.fn("BackgroundService.prepare")(function* (mode: Backgrou
   // Packaged PorkCode talks only to its own channel's registration; see SERVICE_FILE in constants.ts.
   const file =
     process.env.PORKCODE_DESKTOP_SERVER_CHANNEL === "local"
-      ? path.join(stateDir, "opencode", "service-local.json")
+      ? path.join(stateDir, "porkcode", "service-local.json")
       : app.isPackaged
-        ? path.join(stateDir, "opencode", SERVICE_FILE)
+        ? path.join(stateDir, "porkcode", SERVICE_FILE)
         : undefined
 
   return { cli, client, file, isolated, version }

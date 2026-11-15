@@ -145,11 +145,12 @@ export function windowsify(path: string) {
 export const FORK_CLI_CHANNEL = "porkcode"
 
 function forkCliDatabaseName(channel = FORK_CLI_CHANNEL) {
-  return `opencode-${channel.replace(/[^a-zA-Z0-9._-]/g, "-")}.db`
+  return `porkcode-${channel.replace(/[^a-zA-Z0-9._-]/g, "-")}.db`
 }
 
 // A reported database belongs to the fork CLI only when it is that channel's own file. Upstream builds answer
-// `opencode.db`; another channel or an PORKCODE_DB override answers something else. Separators are normalized
+// `opencode.db`; another channel (or a pre-isolation PorkCode build answering `opencode-porkcode.db`, or a
+// PORKCODE_DB override) answers something else. Separators are normalized
 // because the executable prints its platform's paths and build hosts run Windows, Linux and macOS alike.
 export function isForkCliDatabase(reported: string, channel = FORK_CLI_CHANNEL) {
   const normalized = reported.trim().replaceAll("\\", "/")
