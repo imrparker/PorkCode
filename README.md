@@ -53,7 +53,7 @@ LM Studio, Ollama, and vLLM need no config when they run on their default port. 
 | Flag | Effect |
 | --- | --- |
 | `PORKCODE_ENABLE_MODELS_FETCH=1` | Fetch the community [models.dev](https://models.dev) catalog for model metadata. The upstream vendor's own hosted providers are filtered out. |
-| `PORKCODE_ENABLE_AUTOUPDATE=1` | Turn update checks back on, against a feed you run yourself. |
+| `PORKCODE_ENABLE_AUTOUPDATE=1` | Let the desktop app check its own PorkCode release feed in the background. The CLI never fetches updates; rebuild from source to upgrade. |
 
 ## Development
 

@@ -68,19 +68,6 @@ windows("installed accepts package-manager and curl binaries only", () =>
     const cases = [
       [path.join(home, ".bun", "install", "global", "node_modules", "@opencode", "cli", "bin", "porkcode.exe"), true],
       [path.join(home, ".porkcode", "bin", "porkcode.exe"), true],
-      [
-        path.join(
-          home,
-          "AppData",
-          "Local",
-          "Microsoft",
-          "WinGet",
-          "Packages",
-          "Anomaly.OpenCode_Microsoft.Winget.Source_8wekyb3d8bbwe",
-          "opencode.exe",
-        ),
-        true,
-      ],
       [path.join(home, "AppData", "Local", "Programs", "PorkCode", "resources", "porkcode-cli.exe"), false],
       [path.join(home, "node_modules", "bun", "bin", "bun.exe"), false],
     ] as const

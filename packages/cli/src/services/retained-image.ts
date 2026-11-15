@@ -60,7 +60,6 @@ export function installed(home: string) {
   const executable = path.resolve(process.execPath)
   return (
     executable.split(path.sep).includes("node_modules") ||
-    /[\\/]winget[\\/]packages[\\/]/i.test(executable) ||
     executable === path.resolve(home, ".porkcode", "bin", "porkcode.exe")
   )
 }

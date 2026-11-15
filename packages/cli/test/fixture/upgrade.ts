@@ -11,6 +11,7 @@ await Effect.runPromise(
   Command.runWith(Commands.commands.upgrade.spec.pipe(Command.withHandler(upgrade)), { version: "test" })(
     process.argv.slice(2),
   ).pipe(
+    // Every member dies on call, so the tests prove the short-circuit never touches the updater.
     Effect.provideService(Updater.Service, {
       run: () => Effect.die("Manual upgrades must not check for automatic updates"),
       check: () => Effect.die("Manual upgrades must not check for TUI updates"),
@@ -20,18 +21,6 @@ await Effect.runPromise(
         Effect.sync(() => {
           record("method")
           return Updater.methods.find((method) => method === (process.env.UPGRADE_TEST_METHOD ?? "npm"))
-        }),
-      latest: (method) =>
-        Effect.suspend(() => {
-          record({ latest: method })
-          return process.env.UPGRADE_TEST_LATEST_ERROR
-            ? Effect.fail(new Error("Update check failed"))
-            : Effect.succeed("0.0.0-beta-new")
-        }),
-      upgrade: (method, version) =>
-        Effect.suspend(() => {
-          record({ method, version })
-          return process.env.UPGRADE_TEST_INSTALL_ERROR ? Effect.fail(new Error("Permission denied")) : Effect.void
         }),
     }),
     Effect.provide(NodeServices.layer),

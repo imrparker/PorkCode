@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test"
 import { mkdtemp, rm } from "node:fs/promises"
 import os from "node:os"
 import path from "node:path"
+import { isolatedEnv } from "./fixture/environment"
 
 describe("upgrade command", () => {
   test("is registered in root help and documents its options", async () => {
@@ -15,97 +16,37 @@ describe("upgrade command", () => {
     expect(help.stdout).toContain("-m")
   })
 
-  test("detects the installation method and resolves the latest version", async () => {
+  test("reports the rebuild guidance without touching the updater", async () => {
     const result = await cli([])
     expect(result.exitCode).toBe(0)
-    expect(result.events).toEqual(["method", { latest: "npm" }, { method: "npm", version: "0.0.0-beta-new" }])
-    expect(result.stdout).toContain("Upgrade complete")
+    expect(result.events).toEqual([])
+    expect(result.stdout).toContain("PorkCode does not publish update feeds")
+    expect(result.stdout).toContain("pulling the repository and rebuilding")
   })
 
-  test("resolves the latest version for an explicit method without detection", async () => {
-    const result = await cli(["--method", "pnpm"], { UPGRADE_TEST_METHOD: "brew" })
+  test("short-circuits explicit targets and methods", async () => {
+    const result = await cli(["2.0.0", "--method", "npm"])
     expect(result.exitCode).toBe(0)
-    expect(result.events).toEqual([{ latest: "pnpm" }, { method: "pnpm", version: "0.0.0-beta-new" }])
+    expect(result.events).toEqual([])
+    expect(result.stdout).toContain("PorkCode does not publish update feeds")
   })
 
-  test("accepts an explicit version and method without detection or a version lookup", async () => {
-    const result = await cli(["v0.0.0-beta-target", "--method", "pnpm"])
-    expect(result.exitCode).toBe(0)
-    expect(result.events).toEqual([{ method: "pnpm", version: "v0.0.0-beta-target" }])
-    expect(result.stdout).toContain("0.0.0-beta-old → 0.0.0-beta-target")
-  })
-
-  test("accepts the short method flag and an explicit major upgrade", async () => {
-    const result = await cli(["2.0.0", "-m", "bun"])
-    expect(result.exitCode).toBe(0)
-    expect(result.events).toEqual([{ method: "bun", version: "2.0.0" }])
-  })
-
-  test("accepts vp as an explicit installation method", async () => {
-    const result = await cli(["2.0.0", "--method", "vp"])
-    expect(result.exitCode).toBe(0)
-    expect(result.events).toEqual([{ method: "vp", version: "2.0.0" }])
-  })
-
-  test("skips the already installed version", async () => {
-    const result = await cli(["v0.0.0-beta-old"])
-    expect(result.exitCode).toBe(0)
-    expect(result.events).toEqual(["method"])
-    expect(result.stdout).toContain("already installed")
-  })
-
-  test("requires an explicit method when detection fails", async () => {
-    const result = await cli([], { UPGRADE_TEST_METHOD: "unknown" })
-    expect(result.exitCode).toBe(1)
-    expect(result.events).toEqual(["method"])
-    expect(result.stdout).toContain("Pass --method")
-  })
-
-  test("rejects unsupported methods before attempting an upgrade", async () => {
-    const result = await cli(["--method", "apt"])
+  test.each(["apt", "brew", "winget"])("rejects %s as an installation method before running anything", async (method) => {
+    const result = await cli(["--method", method])
     expect(result.exitCode).not.toBe(0)
     expect(result.events).toEqual([])
-  })
-
-  test("reports version lookup failures without installing", async () => {
-    const result = await cli([], { UPGRADE_TEST_LATEST_ERROR: "1" })
-    expect(result.exitCode).toBe(1)
-    expect(result.events).toEqual(["method", { latest: "npm" }])
-    expect(result.stdout).toContain("Update check failed")
-  })
-
-  test("reports installation failures with a nonzero exit code", async () => {
-    const result = await cli([], { UPGRADE_TEST_INSTALL_ERROR: "1" })
-    expect(result.exitCode).toBe(1)
-    expect(result.stdout).toContain("Upgrade failed")
-    expect(result.stdout).toContain("Permission denied")
-    expect(result.stdout).not.toContain("Upgrade complete")
   })
 })
 
 async function cli(args: string[], env: Record<string, string> = {}, entry = "fixture/upgrade.ts") {
-  const root = await mkdtemp(path.join(os.tmpdir(), "opencode-upgrade-"))
+  const root = await mkdtemp(path.join(os.tmpdir(), "porkcode-upgrade-"))
   try {
-    const child = Bun.spawn(
-      [process.execPath, "--define", 'PORKCODE_VERSION="0.0.0-beta-old"', path.join(import.meta.dir, entry), ...args],
-      {
-        cwd: path.join(import.meta.dir, ".."),
-        env: {
-          ...process.env,
-          PORKCODE_TEST_HOME: root,
-          XDG_DATA_HOME: path.join(root, "data"),
-          XDG_CONFIG_HOME: path.join(root, "config"),
-          XDG_CACHE_HOME: path.join(root, "cache"),
-          XDG_STATE_HOME: path.join(root, "state"),
-          PORKCODE_DISABLE_AUTOUPDATE: "1",
-          // The fork gates the upgrade command behind an opt-in; these tests exercise that flow directly.
-          PORKCODE_ENABLE_AUTOUPDATE: "1",
-          ...env,
-        },
-        stdout: "pipe",
-        stderr: "pipe",
-      },
-    )
+    const child = Bun.spawn([process.execPath, path.join(import.meta.dir, entry), ...args], {
+      cwd: path.join(import.meta.dir, ".."),
+      env: isolatedEnv(root, env),
+      stdout: "pipe",
+      stderr: "pipe",
+    })
     const [stdout, stderr, exitCode] = await Promise.all([
       new Response(child.stdout).text(),
       new Response(child.stderr).text(),

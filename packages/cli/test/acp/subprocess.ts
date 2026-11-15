@@ -84,7 +84,6 @@ export async function createAcpFixture(
           USERPROFILE: root,
           PORKCODE_CONFIG: undefined,
           PORKCODE_CONFIG_CONTENT: undefined,
-          PORKCODE_DISABLE_AUTOUPDATE: "true",
           PORKCODE_MODELS_PATH: models,
         }),
       })
