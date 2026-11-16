@@ -9,14 +9,12 @@ import { Accordion } from "@opencode/ui/accordion"
 import { StickyAccordionHeader } from "@opencode/ui/sticky-accordion-header"
 import { showToast } from "@opencode/ui/toast"
 import { useI18n } from "@opencode/ui/context/i18n"
-import { useTheme } from "@opencode/ui/theme/context"
 import { File } from "@opencode/session-ui/file"
 import { Markdown } from "@opencode/session-ui/markdown"
 import type { SessionMessageInfo } from "@opencode/client/promise"
 import { lastAssistantWithUsage } from "@opencode/client/solid"
 import { createKeyed, usePlugin, type MountedSession } from "@opencode/plugin/gui"
 import { catalogModel, syncCatalog } from "./catalog"
-import { TokenJar, jarRemaining } from "./token-jar"
 import { fetchSessionExport, sessionExportFilename } from "./export"
 import { createSessionContextFormatter } from "./format"
 import {
@@ -92,10 +90,6 @@ export default function SessionContextTab(props: { session: MountedSession }) {
   const layout = ctx.layout
   const system = ctx.system
   const i18n = useI18n()
-  const theme = useTheme()
-
-  // The token jar desk scene only paints under Pork Default; other themes see the plain stats grid.
-  const skeuo = createMemo(() => theme.themeId() === "pork-default")
   const data = () => props.session.server.data
   syncCatalog(() => props.session)
 
@@ -148,21 +142,6 @@ export default function SessionContextTab(props: { session: MountedSession }) {
   })
 
   const formatter = createMemo(() => createSessionContextFormatter(i18n.locale()))
-
-  // The jar's change trays: one per token denomination.
-  const trays = createMemo(() => {
-    const tokens = context()?.tokens
-
-    if (!tokens) return []
-
-    return [
-      { key: "input", label: ctx.t("jar.tray.input"), value: tokens.input },
-      { key: "output", label: ctx.t("jar.tray.output"), value: tokens.output },
-      { key: "reasoning", label: ctx.t("jar.tray.reasoning"), value: tokens.reasoning },
-      { key: "cache-read", label: ctx.t("jar.tray.cacheRead"), value: tokens.cache.read },
-      { key: "cache-write", label: ctx.t("jar.tray.cacheWrite"), value: tokens.cache.write },
-    ]
-  })
 
   // A root session's cost includes its subagent sessions, as in the TUI.
   const cost = createMemo(() => usd().format(props.session.id ? data().session.cost(props.session.id) : 0))
@@ -416,9 +395,6 @@ export default function SessionContextTab(props: { session: MountedSession }) {
       }
     >
       <div data-slot="session-usage-content" class="px-4 pt-4 pb-6 flex flex-col gap-6 md:px-6 md:pb-10 md:gap-10">
-        <Show when={skeuo() && context()}>
-          <TokenJar remaining={jarRemaining(context()?.usage)} cost={cost()} trays={trays()} />
-        </Show>
         <div class="grid grid-cols-1 @[32rem]:grid-cols-2 gap-4">
           <For each={stats}>{(stat) => <Stat label={ctx.t(stat.label)} value={stat.value()} />}</For>
         </div>

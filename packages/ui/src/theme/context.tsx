@@ -3,7 +3,7 @@
 import { createMemo, createSignal, onCleanup, onMount, untrack } from "solid-js"
 import { makeEventListener } from "@solid-primitives/event-listener"
 import { createSimpleContext } from "../context/helper"
-import defaultThemeJson from "./themes/pork-default.json"
+import oc2ThemeJson from "./themes/oc-2.json"
 import { resolveThemeVariant, themeToCss } from "./resolve"
 import { resolveThemeVariantV2, themeV2ToCss } from "./v2/resolve"
 import type { DesktopTheme } from "./types"
@@ -33,18 +33,6 @@ const STORAGE_KEYS = {
 } as const
 
 const THEME_STYLE_ID = "oc-theme"
-
-// The window and browser-chrome background per theme id, so the native frame matches the theme's deepest
-// surface. Themes not listed keep the neutral default; the preload script mirrors these pairs.
-const WINDOW_BACKGROUNDS: Record<string, readonly [light: string, dark: string]> = {
-  "pork-default": ["#f4f6f8", "#191919"],
-}
-
-function windowBackground(themeId: string, isDark: boolean) {
-  const background = WINDOW_BACKGROUNDS[themeId] ?? ["#fafafa", "#080808"]
-
-  return background[isDark ? 1 : 0]
-}
 
 let files: Record<string, () => Promise<{ default: DesktopTheme }>> | undefined
 
@@ -105,7 +93,6 @@ const names = new Map(
     orng: "Orng",
     "osaka-jade": "Osaka Jade",
     palenight: "Palenight",
-    "pork-default": "Pork Default",
     rosepine: "Rose Pine",
     shadesofpurple: "Shades of Purple",
     solarized: "Solarized",
@@ -117,8 +104,9 @@ const names = new Map(
   }),
 )
 
-// SAFETY: pork-default.json follows desktop-theme.schema.json; JSON modules only widen its colors to `string`.
-const defaultTheme = defaultThemeJson as DesktopTheme
+// SAFETY: oc-2.json follows desktop-theme.schema.json; JSON modules only widen its colors to `string`, and
+// v2/resolve.test.ts resolves the same file as a DesktopTheme.
+const oc2Theme = oc2ThemeJson as DesktopTheme
 
 // Storage access throws where localStorage is missing or blocked; every caller treats that as no stored value.
 function read(key: string) {
@@ -179,12 +167,12 @@ function applyThemeCss(theme: DesktopTheme, themeId: string, mode: "light" | "da
   ensureThemeStyleElement().textContent = fullCss
   document.documentElement.dataset.theme = themeId
   document.documentElement.dataset.colorScheme = mode
-  document.documentElement.style.backgroundColor = windowBackground(themeId, isDark)
+  document.documentElement.style.backgroundColor = isDark ? "#080808" : "#fafafa"
 
   // Update theme-color meta tag to match light/dark mode
   const meta = document.querySelector('meta[name="theme-color"]')
 
-  if (meta) meta.setAttribute("content", windowBackground(themeId, isDark))
+  if (meta) meta.setAttribute("content", isDark ? "#080808" : "#fafafa")
 }
 
 function cacheThemeVariants(theme: DesktopTheme) {
@@ -210,7 +198,7 @@ export const { use: useTheme, provider: ThemeProvider } = createSimpleContext({
       themeId: read(STORAGE_KEYS.THEME_ID) || props.defaultTheme || DEFAULT_THEME_ID,
       scheme: parseColorScheme(read(STORAGE_KEYS.COLOR_SCHEME)),
       systemMode: getSystemMode(),
-      defaultTheme,
+      defaultTheme: oc2Theme,
       bundled: knownThemes(),
     })
 

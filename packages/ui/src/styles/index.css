@@ -38,6 +38,3 @@
 
 @import "./utilities.css" layer(utilities);
 @import "./animations.css" layer(utilities);
-
-/* Pork Default frosted-material layer: unlayered on purpose, see the file header for why. */
-@import "./frosted-surfaces.css";

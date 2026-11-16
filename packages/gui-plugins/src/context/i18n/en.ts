@@ -29,9 +29,4 @@ export default {
   "export.success.description": "Saved session to {{filename}}",
   "export.failed.title": "Failed to export session",
   "export.failed.description": "An error occurred while exporting the session",
-  "jar.tray.input": "Input",
-  "jar.tray.output": "Output",
-  "jar.tray.reasoning": "Reasoning",
-  "jar.tray.cacheRead": "Cache R",
-  "jar.tray.cacheWrite": "Cache W",
 }

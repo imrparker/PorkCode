@@ -4,11 +4,9 @@ import { Button } from "@opencode/ui/button"
 import { Menu } from "@opencode/ui/menu"
 import { Tooltip } from "@opencode/ui/tooltip"
 import { useI18n } from "@opencode/ui/context/i18n"
-import { useTheme } from "@opencode/ui/theme/context"
 import { lastAssistantWithUsage } from "@opencode/client/solid"
 import { usePlugin, type MountedSession } from "@opencode/plugin/gui"
 import { catalogModel, syncCatalog } from "./catalog"
-import { CoinGauge, JarMini, jarRemaining } from "./token-jar"
 
 export function SessionContextUsage(props: {
   session: MountedSession
@@ -22,10 +20,6 @@ export function SessionContextUsage(props: {
   const ctx = usePlugin()
   const layout = ctx.layout
   const i18n = useI18n()
-  const theme = useTheme()
-
-  // The token jar face only paints under Pork Default; every other theme keeps the stock ring.
-  const skeuo = createMemo(() => theme.themeId() === "pork-default")
 
   const catalog = syncCatalog(
     () => props.session,
@@ -106,32 +100,23 @@ export function SessionContextUsage(props: {
 
   const circle = () => (
     <div class="flex items-center justify-center">
-      <Show
-        when={skeuo()}
-        fallback={
-          <ProgressCircle
-            appearance="indicator"
-            size={16}
-            strokeWidth={2}
-            percentage={context()?.usage ?? 0}
-            style={{
-              "--progress-circle-background": "var(--v2-background-bg-layer-04)",
-              "--progress-circle-background-overlay": "var(--v2-overlay-simple-overlay-pressed, transparent)",
-              "--progress-circle-progress": "var(--v2-icon-icon-base, var(--icon-base))",
-            }}
-          />
-        }
-      >
-        <CoinGauge percentage={context()?.usage ?? 0} />
-      </Show>
+      <ProgressCircle
+        appearance="indicator"
+        size={16}
+        strokeWidth={2}
+        percentage={context()?.usage ?? 0}
+        style={{
+          "--progress-circle-background": "var(--v2-background-bg-layer-04)",
+          "--progress-circle-background-overlay": "var(--v2-overlay-simple-overlay-pressed, transparent)",
+          "--progress-circle-progress": "var(--v2-icon-icon-base, var(--icon-base))",
+        }}
+      />
     </div>
   )
 
   const compactCircle = () => (
     <div class="flex items-center justify-center">
-      <Show when={skeuo()} fallback={<ProgressCircle appearance="compact" size={16} percentage={context()?.usage ?? 0} />}>
-        <CoinGauge percentage={context()?.usage ?? 0} />
-      </Show>
+      <ProgressCircle appearance="compact" size={16} percentage={context()?.usage ?? 0} />
     </div>
   )
 
@@ -165,10 +150,6 @@ export function SessionContextUsage(props: {
       </Tooltip>
       <Menu.Portal>
         <Menu.Content class="w-[200px] max-w-[calc(100vw-16px)]" aria-label={ctx.t("usage.view")}>
-          <Show when={skeuo()}>
-            <JarMini remaining={jarRemaining(context()?.usage)} />
-            <Menu.Separator />
-          </Show>
           {menuRow(ctx.t("usage.tokens"), context()?.total.toLocaleString(i18n.locale()) ?? "0")}
           <Show when={showCost()}>{menuRow(ctx.t("usage.cost"), cost())}</Show>
           {menuRow(ctx.t("usage.usage"), `${context()?.usage ?? 0}%`)}

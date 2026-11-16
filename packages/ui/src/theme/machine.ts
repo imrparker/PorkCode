@@ -4,7 +4,7 @@ export type ColorScheme = "light" | "dark" | "system"
 
 export type ResolvedMode = "light" | "dark"
 
-export const DEFAULT_THEME_ID = "pork-default"
+export const DEFAULT_THEME_ID = "oc-2"
 
 /** A bundled theme import that has not settled by then shows the default theme until it arrives. */
 export const THEME_LOAD_TIMEOUT_MS = 5_000

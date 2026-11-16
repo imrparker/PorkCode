@@ -1189,7 +1189,7 @@ test("the model picker shows one heading per connected provider with its catalog
   await expect(headings.filter({ hasText: /^Anthropic$/ })).toHaveCount(1)
 })
 
-test("keeps the variant picker visible while idle and preserves keyboard access", async ({ page }) => {
+test("shows thinking on hover or a non-default selection while preserving keyboard access", async ({ page }) => {
   const { editor: input } = await openSession(page, {
     name: "ComposerThinking",
     provider: provider({ id: "thinking-model", name: "Thinking Model", variants: { high: {} } }),
@@ -1199,30 +1199,33 @@ test("keeps the variant picker visible while idle and preserves keyboard access"
   const control = composer.getByRole("button", { name: "Choose model variant" })
   const option = (name: string) => page.getByRole("menuitemradio", { name, exact: true })
 
-  // Pork Default overrides upstream's hover fade in frosted-surfaces.css: the trigger stays
-  // visible and clickable even while its value is still "default" and nothing is hovered.
   await page.mouse.move(0, 0)
   await expect(control).toHaveText("default")
-  await expect(control).toHaveCSS("opacity", "1")
-  await expect(control).toHaveCSS("pointer-events", "auto")
+  await expect(control).toHaveCSS("opacity", "0")
+  await expect(control).toHaveCSS("pointer-events", "none")
 
-  // The menu keeps the control expanded after the pointer leaves.
+  await input.hover()
+  await expect(control).toHaveCSS("opacity", "1")
+
+  // The menu keeps the control visible after the pointer leaves.
   await control.click()
   await expect(option("high")).toBeVisible()
   await page.mouse.move(0, 0)
   await expect(control).toHaveAttribute("aria-expanded", "true")
+  await expect(control).toHaveCSS("opacity", "1")
   await option("high").click()
 
   await input.click()
   await page.mouse.move(0, 0)
   await expect(control).toHaveText("high")
+  await expect(control).toHaveCSS("opacity", "1")
 
   await control.click()
   await option("default").click()
   await input.click()
   await page.mouse.move(0, 0)
   await expect(control).toHaveText("default")
-  await expect(control).toHaveCSS("opacity", "1")
+  await expect(control).toHaveCSS("opacity", "0")
 
   // The single-agent fixture has only Add and Model before the thinking trigger.
   await page.keyboard.press("Tab")
