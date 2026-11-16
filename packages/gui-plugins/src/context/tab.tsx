@@ -115,7 +115,8 @@ export default function SessionContextTab(props: { session: MountedSession }) {
       }),
   )
 
-  // Same step as the TUI and the header button: after the last completed compaction and before an undo boundary.
+  // Same step and same token sum as the TUI footer and the header badge: after the last completed compaction
+  // and before an undo boundary, so every client reports one context percentage.
   const context = createMemo(() => {
     const message = lastAssistantWithUsage(messages(), info()?.revert?.messageID)
 
@@ -131,13 +132,23 @@ export default function SessionContextTab(props: { session: MountedSession }) {
 
     return {
       message,
-      tokens: message.tokens,
       providerLabel: entry?.provider.name ?? message.model.providerID,
       modelLabel: entry?.model?.name ?? message.model.id,
       limit: entry?.model?.limit.context,
-      input: message.tokens.input,
       total,
       usage: entry?.model?.limit.context ? Math.round((total / entry.model.limit.context) * 100) : null,
+    }
+  })
+
+  // Cumulative across every step of the session, from the session row's token columns.
+  const totals = createMemo(() => {
+    const tokens = info()?.tokens
+
+    if (!tokens) return
+
+    return {
+      ...tokens,
+      total: tokens.input + tokens.output + tokens.reasoning + tokens.cache.read + tokens.cache.write,
     }
   })
 
@@ -185,27 +196,32 @@ export default function SessionContextTab(props: { session: MountedSession }) {
     return c.modelLabel
   })
 
-  const stats = [
+  const generalStats = [
     { label: "stats.session", value: () => info()?.title ?? (props.session.id || "—") },
     { label: "stats.messages", value: () => counts().all.toLocaleString(i18n.locale()) },
     { label: "stats.provider", value: providerLabel },
     { label: "stats.model", value: modelLabel },
-    { label: "stats.limit", value: () => formatter().number(context()?.limit) },
-    { label: "stats.totalTokens", value: () => formatter().number(context()?.total) },
-    { label: "stats.usage", value: () => formatter().percent(context()?.usage) },
-    { label: "stats.inputTokens", value: () => formatter().number(context()?.input) },
-    { label: "stats.outputTokens", value: () => formatter().number(context()?.tokens.output) },
-    { label: "stats.reasoningTokens", value: () => formatter().number(context()?.tokens.reasoning) },
-    {
-      label: "stats.cacheTokens",
-      value: () =>
-        `${formatter().number(context()?.tokens.cache.read)} / ${formatter().number(context()?.tokens.cache.write)}`,
-    },
     { label: "stats.userMessages", value: () => counts().user.toLocaleString(i18n.locale()) },
     { label: "stats.assistantMessages", value: () => counts().assistant.toLocaleString(i18n.locale()) },
     { label: "stats.totalCost", value: cost },
     { label: "stats.sessionCreated", value: () => formatter().time(info()?.time.created) },
     { label: "stats.lastActivity", value: () => formatter().time(context()?.message.time.created) },
+  ] satisfies { label: string; value: () => JSX.Element }[]
+
+  const contextStats = [
+    { label: "stats.limit", value: () => formatter().number(context()?.limit) },
+    { label: "stats.usage", value: () => formatter().percent(context()?.usage) },
+  ] satisfies { label: string; value: () => JSX.Element }[]
+
+  const sessionStats = [
+    { label: "stats.inputTokens", value: () => formatter().number(totals()?.input) },
+    { label: "stats.outputTokens", value: () => formatter().number(totals()?.output) },
+    { label: "stats.reasoningTokens", value: () => formatter().number(totals()?.reasoning) },
+    {
+      label: "stats.cacheTokens",
+      value: () => `${formatter().number(totals()?.cache.read)} / ${formatter().number(totals()?.cache.write)}`,
+    },
+    { label: "stats.totalTokens", value: () => formatter().number(totals()?.total) },
   ] satisfies { label: string; value: () => JSX.Element }[]
 
   const [exportState, setExportState] = createSignal(createSessionExportState())
@@ -396,7 +412,23 @@ export default function SessionContextTab(props: { session: MountedSession }) {
     >
       <div data-slot="session-usage-content" class="px-4 pt-4 pb-6 flex flex-col gap-6 md:px-6 md:pb-10 md:gap-10">
         <div class="grid grid-cols-1 @[32rem]:grid-cols-2 gap-4">
-          <For each={stats}>{(stat) => <Stat label={ctx.t(stat.label)} value={stat.value()} />}</For>
+          <For each={generalStats}>{(stat) => <Stat label={ctx.t(stat.label)} value={stat.value()} />}</For>
+        </div>
+
+        <Show when={context()}>
+          <div class="flex flex-col gap-3">
+            <div class="text-12-medium text-text-base">{ctx.t("stats.contextSection")}</div>
+            <div class="grid grid-cols-1 @[32rem]:grid-cols-2 gap-4">
+              <For each={contextStats}>{(stat) => <Stat label={ctx.t(stat.label)} value={stat.value()} />}</For>
+            </div>
+          </div>
+        </Show>
+
+        <div class="flex flex-col gap-3">
+          <div class="text-12-medium text-text-base">{ctx.t("stats.sessionSection")}</div>
+          <div class="grid grid-cols-1 @[32rem]:grid-cols-2 gap-4">
+            <For each={sessionStats}>{(stat) => <Stat label={ctx.t(stat.label)} value={stat.value()} />}</For>
+          </div>
         </div>
 
         <Show when={systemPrompt()}>
