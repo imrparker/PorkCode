@@ -6,6 +6,7 @@ import { HttpClient, HttpClientRequest, HttpClientResponse } from "effect/http"
 import photonWasm from "#photon-wasm"
 import { Config } from "../../config.js"
 import { Credential } from "../../credential.js"
+import { ErrorSummary } from "../../util/error-summary.js"
 import { Environment } from "../../environment/index.js"
 import { EnvironmentUnavailable } from "../../environment/unavailable.js"
 import { Location } from "../../location.js"
@@ -72,6 +73,9 @@ export function createLocalProviderPlugin<Discovered>(input: {
           ),
         }
         const loaded = { models: [] as readonly Discovered[], hash: "[]" }
+        // Repeated identical failures log once until a success resets them, so a backend that is simply
+        // stopped does not fill the log every interval while still surfacing tunnel and key problems.
+        const failureLog = { signature: undefined as string | undefined }
 
         // Keep the integration registered even while the backend is stopped: it is what lists the
         // backend in the provider picker and accepts a stored API key or a configured base URL before
@@ -141,8 +145,21 @@ export function createLocalProviderPlugin<Discovered>(input: {
         })
 
         const refresh = Effect.fn("LocalProviderPlugin.refresh")(function* () {
-          const result = yield* discover()
+          const result = yield* discover().pipe(
+            Effect.tapError((error) => {
+              const summary = ErrorSummary.from(error)
+              const signature = `${source.current.baseURL} ${JSON.stringify(summary)}`
+              if (failureLog.signature === signature) return Effect.void
+              failureLog.signature = signature
+              return Effect.logWarning("local provider discovery failed", {
+                providerID: input.providerID,
+                url: source.current.baseURL,
+                errors: summary,
+              })
+            }),
+          )
           if (!result?.models || result.source !== source.current) return
+          failureLog.signature = undefined
           const hash = JSON.stringify(result.models)
           if (hash === loaded.hash) return
           loaded.models = result.models
@@ -190,6 +207,15 @@ function createClient(
   apiKey: string | undefined,
   endpoint: (path: string) => string,
 ) {
+  // The old flat 1-second budget assumed a loopback round trip; a backend behind an ngrok-class tunnel or LAN hop
+  // measures ~600 ms healthy and exceeds it cold, which silently emptied remote provider lists. Only an explicitly
+  // configured remote baseURL gets the longer budget.
+  const timeout = isLoopback(root) ? Duration.seconds(1) : Duration.seconds(5)
+  const timedOut = (path: string) =>
+    Effect.timeoutOrElse({
+      duration: timeout,
+      orElse: () => Effect.fail(new Error(`${endpoint(path)} timed out after ${Duration.toSeconds(timeout)}s`)),
+    })
   const auth = (request: HttpClientRequest.HttpClientRequest) =>
     apiKey
       ? request.pipe(HttpClientRequest.acceptJson, HttpClientRequest.bearerToken(apiKey))
@@ -197,11 +223,11 @@ function createClient(
   return {
     root,
     apiKey,
-    get: (path: string) => http.execute(auth(HttpClientRequest.get(endpoint(path)))).pipe(Effect.timeout("1 second")),
+    get: (path: string) => http.execute(auth(HttpClientRequest.get(endpoint(path)))).pipe(timedOut(path)),
     getJson: <A, I>(path: string, schema: Schema.Codec<A, I>) =>
       http
         .execute(auth(HttpClientRequest.get(endpoint(path))))
-        .pipe(Effect.flatMap(HttpClientResponse.schemaBodyJson(schema)), Effect.timeout("1 second")),
+        .pipe(Effect.flatMap(HttpClientResponse.schemaBodyJson(schema)), timedOut(path)),
     postJson: <B, BI, A, AI>(
       path: string,
       bodySchema: Schema.Codec<B, BI>,
@@ -212,9 +238,14 @@ function createClient(
         HttpClientRequest.schemaBodyJson(bodySchema)(body),
         Effect.flatMap(http.execute),
         Effect.flatMap(HttpClientResponse.schemaBodyJson(responseSchema)),
-        Effect.timeout("1 second"),
+        timedOut(path),
       ),
   }
+}
+
+function isLoopback(root: string) {
+  const host = new URL(root).hostname
+  return host === "localhost" || host.startsWith("127.") || host === "[::1]" || host === "::1"
 }
 
 function configured(

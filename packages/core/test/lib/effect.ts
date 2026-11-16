@@ -7,7 +7,9 @@ type Body<A, E, R> = Effect.Effect<A, E, R> | (() => Effect.Effect<A, E, R>)
 
 const body = <A, E, R>(value: Body<A, E, R>) => Effect.suspend(() => (typeof value === "function" ? value() : value))
 
-const loopback = new Set(["127.0.0.1", "localhost", "[::1]"])
+// 0.0.0.0 never reaches another machine: connect() to it is defined as a loopback connection, so tests use it
+// as an address that reads as non-loopback while still staying offline.
+const loopback = new Set(["127.0.0.1", "localhost", "[::1]", "0.0.0.0"])
 
 // Core is env-free, so nothing tells the default node graph to stay offline;
 // a test that boots it would phone home through FetchHttpClient. The default

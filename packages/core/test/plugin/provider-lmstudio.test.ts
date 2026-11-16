@@ -120,6 +120,39 @@ describe("LMStudioPlugin", () => {
     ),
   )
 
+  it.live(
+    "discovers a slow backend addressed through a non-loopback host within the extended timeout",
+    () =>
+      Effect.acquireUseRelease(
+        Effect.sync(() => {
+          // 0.0.0.0 is served by this same process but reads as a remote host to the plugin, standing in for
+          // an ngrok-tunneled backend whose healthy round trip already nears the old flat 1-second budget.
+          const server = Bun.serve({
+            hostname: "0.0.0.0",
+            port: 0,
+            fetch: async () => {
+              await new Promise((resolve) => setTimeout(resolve, 1500))
+              return Response.json({ models: [model("slow-tunneled-model")] })
+            },
+          })
+          return { server, origin: `http://0.0.0.0:${server.port}` }
+        }),
+        ({ origin }) =>
+          Effect.gen(function* () {
+            const modelState = yield* Model.Service
+            yield* addPlugin(origin)
+            expect(
+              yield* eventually(
+                modelState.get(Provider.ID.make("lmstudio"), Model.ID.make("slow-tunneled-model")),
+                (model) => model !== undefined,
+              ),
+            ).toMatchObject({ name: "slow-tunneled-model" })
+          }),
+        ({ server }) => Effect.promise(() => server.stop(true)),
+      ),
+    10_000,
+  )
+
   it.live("reflects models as LM Studio loads and unloads them", () =>
     Effect.acquireUseRelease(
       Effect.sync(() => {
