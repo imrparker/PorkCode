@@ -63,6 +63,9 @@ describe("Model.Compatibility", () => {
         supportsThinkingBlockBinding: true,
       })
     }
+    for (const supportsSystemUpdates of [false, true]) {
+      expect(decode({ supportsSystemUpdates })).toEqual({ supportsSystemUpdates })
+    }
   })
 
   test("omits undefined protocol capability overrides when encoded", () => {
@@ -70,6 +73,7 @@ describe("Model.Compatibility", () => {
       Schema.encodeSync(Model.Compatibility)({
         supportsEffortUpdates: undefined,
         supportsThinkingBlockBinding: undefined,
+        supportsSystemUpdates: undefined,
       }),
     ).toEqual({})
   })

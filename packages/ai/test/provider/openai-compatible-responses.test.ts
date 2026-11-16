@@ -1,6 +1,6 @@
 import { describe, expect } from "bun:test"
 import { Effect } from "effect"
-import { ai, LLMEvent, Media, Message, ToolDefinition } from "../../src/effect.js"
+import { ai, LanguageModel, LLMEvent, Media, Message, ToolDefinition } from "../../src/effect.js"
 import { configure } from "../../src/providers/openai-compatible-responses.js"
 import { OpenResponses } from "../../src/protocols/open-responses.js"
 import { OpenAICompatibleResponses } from "../../src/protocols/openai-compatible-responses.js"
@@ -91,6 +91,85 @@ describe("Open Responses-compatible route", () => {
         { type: "message", role: "user", content: [{ type: "input_text", text: "Before." }] },
         { type: "message", role: "developer", content: "Operator update." },
         { type: "message", role: "assistant", status: "completed", content: [{ type: "output_text", text: "After." }] },
+      ])
+    }),
+  )
+
+  it.effect("folds system updates into user text for models with strict chat templates", () =>
+    Effect.gen(function* () {
+      // Qwen3.5+ templates raise on a non-leading system message, and LM Studio maps developer to
+      // system before applying them, so the update must arrive as ordinary in-order user text.
+      const model = configure({
+        apiKey: "test-key",
+        baseURL: "https://responses.example.test/v1",
+        provider: "example",
+      }).model("qwen/qwen3.5-27b")
+      const prepared = yield* compileRequest(
+        ai.request({
+          model,
+          system: "Initial instructions.",
+          messages: [
+            Message.user("Before."),
+            Message.system("Operator update."),
+            Message.assistant("After."),
+            Message.system("Second update."),
+          ],
+        }),
+      )
+
+      expect(prepared.body.instructions).toBe("Initial instructions.")
+      expect(prepared.body.input).toEqual([
+        {
+          type: "message",
+          role: "user",
+          content: [
+            { type: "input_text", text: "Before." },
+            { type: "input_text", text: "<system-update>\nOperator update.\n</system-update>" },
+          ],
+        },
+        { type: "message", role: "assistant", status: "completed", content: [{ type: "output_text", text: "After." }] },
+        {
+          type: "message",
+          role: "user",
+          content: [{ type: "input_text", text: "<system-update>\nSecond update.\n</system-update>" }],
+        },
+      ])
+    }),
+  )
+
+  it.effect("honors the systemUpdates capability in both directions", () =>
+    Effect.gen(function* () {
+      const base = configure({
+        apiKey: "test-key",
+        baseURL: "https://responses.example.test/v1",
+        provider: "example",
+      })
+      const privileged = yield* compileRequest(
+        ai.request({
+          model: LanguageModel.update(base.model("qwen3.5-27b"), { capabilities: { systemUpdates: true } }),
+          messages: [Message.user("Before."), Message.system("Operator update.")],
+        }),
+      )
+      expect(privileged.body.input).toEqual([
+        { type: "message", role: "user", content: [{ type: "input_text", text: "Before." }] },
+        { type: "message", role: "developer", content: "Operator update." },
+      ])
+
+      const folded = yield* compileRequest(
+        ai.request({
+          model: LanguageModel.update(base.model("example-model"), { capabilities: { systemUpdates: false } }),
+          messages: [Message.user("Before."), Message.system("Operator update.")],
+        }),
+      )
+      expect(folded.body.input).toEqual([
+        {
+          type: "message",
+          role: "user",
+          content: [
+            { type: "input_text", text: "Before." },
+            { type: "input_text", text: "<system-update>\nOperator update.\n</system-update>" },
+          ],
+        },
       ])
     }),
   )

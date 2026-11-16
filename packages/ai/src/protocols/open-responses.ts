@@ -189,18 +189,20 @@ export const HostedToolReplay = Schema.StructWithRest(
 )
 export type HostedToolReplayItem = Schema.Schema.Type<typeof HostedToolReplay>
 
+export const UserMessageItem = Schema.Struct({
+  type: Schema.tag("message"),
+  role: Schema.tag("user"),
+  content: Schema.Array(OpenResponsesInputContent),
+  id: Schema.optional(Schema.String),
+  status: Schema.optional(Schema.String),
+})
+
 export const InputItem = Schema.Union([
   CompactionItem,
   ConfigurationUpdate,
   Schema.Struct({ type: Schema.tag("message"), role: Schema.tag("system"), content: Schema.String }),
   Schema.Struct({ type: Schema.tag("message"), role: Schema.tag("developer"), content: Schema.String }),
-  Schema.Struct({
-    type: Schema.tag("message"),
-    role: Schema.tag("user"),
-    content: Schema.Array(OpenResponsesInputContent),
-    id: Schema.optional(Schema.String),
-    status: Schema.optional(Schema.String),
-  }),
+  UserMessageItem,
   Schema.Struct({
     type: Schema.tag("message"),
     id: Schema.optionalKey(Schema.String),
@@ -663,6 +665,10 @@ const lowerMessages = Effect.fnUntraced(function* (request: LLMRequest, adapter:
         input.push({ type: "configuration_update", reasoning: { effort: update.effort ?? DEFAULT_EFFORT } })
         continue
       }
+      if (!supportsMidConversationSystem(request)) {
+        appendToUserTurn(input, (yield* ProviderShared.wrappedSystemUpdate(adapter.name, message)).text)
+        continue
+      }
       input.push({
         type: "message",
         role: "developer",
@@ -804,6 +810,25 @@ const lowerMessages = Effect.fnUntraced(function* (request: LLMRequest, adapter:
 
   return input
 })
+
+// Qwen3.5+ chat templates raise on any system message that is not first, and hosts like LM Studio map
+// developer items to `system` before applying the model template, so those models must receive
+// chronological updates as ordinary user text instead of privileged in-place messages.
+const supportsMidConversationSystem = (request: LLMRequest) => {
+  const override = request.model.capabilities?.systemUpdates
+  if (override !== undefined) return override
+  return !request.model.id.toLowerCase().includes("qwen")
+}
+
+// Mirrors the Anthropic Messages fallback: fold a wrapped update into the latest user turn, or open one.
+const appendToUserTurn = (input: OpenResponsesInputItem[], text: string) => {
+  const last = input.at(-1)
+  if (last !== undefined && Schema.is(UserMessageItem)(last)) {
+    input[input.length - 1] = { ...last, content: [...last.content, { type: "input_text", text }] }
+    return
+  }
+  input.push({ type: "message", role: "user", content: [{ type: "input_text", text }] })
+}
 
 export const lowerConversation = Effect.fnUntraced(function* (request: LLMRequest, adapter: ProviderAdapter) {
   const instructions = ProviderShared.joinText(request.system)

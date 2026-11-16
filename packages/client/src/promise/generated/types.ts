@@ -694,6 +694,7 @@ export type ModelCompatibility = {
   cacheFormat?: ModelCacheFormat
   supportsThinkingBlockBinding?: boolean
   supportsEffortUpdates?: boolean
+  supportsSystemUpdates?: boolean
   mediaInput?: ModelMediaInput
 }
 
@@ -706,6 +707,7 @@ export type ProviderCompatibility = {
   supportsPromptCacheKey?: boolean
   streamUsage?: boolean
   cacheFormat?: ModelCacheFormat
+  supportsSystemUpdates?: boolean
   mediaInput?: ModelMediaInput
 }
 

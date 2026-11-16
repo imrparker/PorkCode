@@ -16977,9 +16977,32 @@
                 "type": "null"
               }
             ]
+          },
+          "providers": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Config.PatchProvider"
+            }
           }
         },
-        "required": ["shell"],
+        "additionalProperties": false
+      },
+      "Config.PatchProvider": {
+        "type": "object",
+        "properties": {
+          "baseURL": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Server address written to providers.<id>.settings.baseURL; null removes the override"
+          }
+        },
+        "required": ["baseURL"],
         "additionalProperties": false
       },
       "Config.Plugin.EntryEncoded": {
@@ -20455,6 +20478,9 @@
           "supportsEffortUpdates": {
             "type": "boolean"
           },
+          "supportsSystemUpdates": {
+            "type": "boolean"
+          },
           "mediaInput": {
             "$ref": "#/components/schemas/Model.MediaInput"
           }
@@ -21767,6 +21793,9 @@
           },
           "cacheFormat": {
             "$ref": "#/components/schemas/Model.CacheFormat"
+          },
+          "supportsSystemUpdates": {
+            "type": "boolean"
           },
           "mediaInput": {
             "$ref": "#/components/schemas/Model.MediaInput"
