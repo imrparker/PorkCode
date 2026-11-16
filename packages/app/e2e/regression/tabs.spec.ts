@@ -1639,12 +1639,29 @@ test("⌘W in the side panel closes its last New tab with the panel, and only th
 test("the Windows titlebar menu pastes through the desktop edit action", async ({ page }) => {
   await mockWorkspace(page, { name: "WindowsMenu", sessions: [] })
   await page.goto(`/e2e/utils/windows-menu.html?${new URLSearchParams({ server: SERVER })}`)
-  await page.getByRole("button", { name: "OpenCode menu", exact: true }).click()
+  await page.getByRole("button", { name: "PorkCode menu", exact: true }).click()
   await page.getByRole("menuitem", { name: "Edit", exact: true }).click()
   const paste = page.getByRole("menuitem", { name: /^Paste/ })
   await expect(paste).toHaveText("PasteCtrl+V")
   await paste.click()
   await expect(page.getByRole("status", { name: "Desktop menu actions" })).toHaveText("edit.paste")
+})
+
+// Kobalte opens submenus but never closes siblings, so panels stacked over each other. Only one submenu may stay
+// open at a time while the pointer travels down the titlebar menu's rows.
+test("the Windows titlebar menu keeps only one submenu open", async ({ page }) => {
+  await mockWorkspace(page, { name: "WindowsMenuSubs", sessions: [] })
+  await page.goto(`/e2e/utils/windows-menu.html?${new URLSearchParams({ server: SERVER })}`)
+  await page.getByRole("button", { name: "PorkCode menu", exact: true }).click()
+
+  const submenus = page.locator(".desktop-app-menu-sub")
+  await page.getByRole("menuitem", { name: "File", exact: true }).click()
+  await expect(submenus.filter({ hasText: "New Window" })).toBeVisible()
+
+  await page.getByRole("menuitem", { name: "Edit", exact: true }).click()
+  const edit = submenus.filter({ hasText: "Undo" })
+  await expect(edit).toBeVisible()
+  await expect(submenus).toHaveCount(1)
 })
 
 test("the Windows menu shares the vertical sidebar's icon lane", async ({ page }) => {
@@ -1655,7 +1672,7 @@ test("the Windows menu shares the vertical sidebar's icon lane", async ({ page }
   })
   await page.goto(`/e2e/utils/windows-menu.html?${new URLSearchParams({ server: SERVER })}`)
 
-  const menu = page.getByRole("button", { name: "OpenCode menu", exact: true }).locator("svg")
+  const menu = page.getByRole("button", { name: "PorkCode menu", exact: true }).locator("svg")
 
   const home = page.locator('[data-action="vertical-tabs-home"] svg')
   await expect(home).toBeVisible()

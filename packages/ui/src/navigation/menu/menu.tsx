@@ -1,10 +1,14 @@
 import { DropdownMenu, type DropdownMenuTriggerProps } from "@kobalte/core/dropdown-menu"
 import { ContextMenu } from "@kobalte/core/context-menu"
+import { useOptionalMenuContext } from "@kobalte/core/menu"
 import type { PolymorphicProps } from "@kobalte/core/polymorphic"
 import {
   createComputed,
   createContext,
+  createEffect,
   createSignal,
+  createUniqueId,
+  on,
   onCleanup,
   Show,
   splitProps,
@@ -76,6 +80,39 @@ const UNTRACKED_MENU: MenuContextValue = {
 }
 
 const MenuAppearanceContext = createContext<MenuContextValue>(UNTRACKED_MENU)
+
+// Kobalte opens submenus on hover but never closes siblings, so panels stack over each other. Each menu level
+// coordinates its direct subs through one signal: a Sub's open state is controlled against it, so opening any sibling
+// closes the others at that level. Nested levels are independent, and callers that pass their own `open` keep control.
+type MenuSubLevel = {
+  openKey: Accessor<string | undefined>
+  requestOpen: (key: string) => void
+  releaseOpen: (key: string) => void
+}
+
+const MenuSubLevelContext = createContext<MenuSubLevel | undefined>(undefined)
+
+function useMenuSubLevel() {
+  const [openKey, setOpenKey] = createSignal<string>()
+  const menu = useOptionalMenuContext()
+
+  // The level's signal outlives the close: Kobalte unmounts the content subtree but not this component, so a closed
+  // level must forget its submenu or reopening the menu would pop it straight back open.
+  createEffect(
+    on(
+      () => menu?.isOpen(),
+      (open) => {
+        if (!open) setOpenKey(undefined)
+      },
+    ),
+  )
+
+  return {
+    openKey,
+    requestOpen: (key: string) => setOpenKey(key),
+    releaseOpen: (key: string) => setOpenKey((prev) => (prev === key ? undefined : prev)),
+  }
+}
 
 // One set of window listeners serves every mounted menu. Capture runs before the trigger's own handlers, so while an
 // input event dispatches, `gesture` names the input that may open a menu. It clears once that event's task ends, so a
@@ -255,7 +292,26 @@ export interface MenuSubProps extends ComponentProps<typeof DropdownMenu.Sub> {
 }
 
 function MenuSub(props: MenuSubProps) {
-  return <DropdownMenu.Sub {...props} />
+  const level = useContext(MenuSubLevelContext)
+
+  // Callers that control `open` own their state, and a Sub outside a coordinated content renders as before.
+  if (!level || props.open !== undefined) return <DropdownMenu.Sub {...props} />
+
+  const key = createUniqueId()
+
+  return (
+    <DropdownMenu.Sub
+      {...props}
+      open={level.openKey() === key}
+      onOpenChange={(open) => {
+        // Only this Sub's own close may clear the level; a swap never fires one, but a late Escape or focus-outside
+        // must not drop over the sibling that replaced it.
+        if (open) level.requestOpen(key)
+        else level.releaseOpen(key)
+        props.onOpenChange?.(open)
+      }}
+    />
+  )
 }
 
 function MenuSubTrigger(props: ParentProps<MenuSubTriggerProps>) {
@@ -279,15 +335,18 @@ function MenuSubTrigger(props: ParentProps<MenuSubTriggerProps>) {
 function MenuSubContent(props: ComponentProps<typeof DropdownMenu.SubContent>) {
   const ctx = useMenuContext()
   const [s, r] = splitProps(props, ["class", "classList"])
+  const level = useMenuSubLevel()
 
   return (
-    <DropdownMenu.SubContent
-      {...r}
-      data-kb-top-layer=""
-      data-component="menu-v2-content"
-      data-appearance={ctx.appearance()}
-      classList={{ ...s.classList, [s.class ?? ""]: !!s.class }}
-    />
+    <MenuSubLevelContext.Provider value={level}>
+      <DropdownMenu.SubContent
+        {...r}
+        data-kb-top-layer=""
+        data-component="menu-v2-content"
+        data-appearance={ctx.appearance()}
+        classList={{ ...s.classList, [s.class ?? ""]: !!s.class }}
+      />
+    </MenuSubLevelContext.Provider>
   )
 }
 
@@ -330,6 +389,7 @@ function MenuTrigger<T extends ValidComponent = "button">(props: PolymorphicProp
 function MenuContent(props: ComponentProps<typeof DropdownMenu.Content>) {
   const ctx = useMenuContext()
   const [s, r] = splitProps(props, ["class", "classList", "onCloseAutoFocus", "onInteractOutside"])
+  const level = useMenuSubLevel()
 
   // Kobalte's own rule for when an outside press keeps focus where it landed.
   const onInteractOutside: NonNullable<typeof s.onInteractOutside> = (event) => {
@@ -357,16 +417,18 @@ function MenuContent(props: ComponentProps<typeof DropdownMenu.Content>) {
   }
 
   return (
-    <DropdownMenu.Content
-      {...r}
-      onCloseAutoFocus={onCloseAutoFocus}
-      onInteractOutside={onInteractOutside}
-      // A modal dialog hides what's outside it from assistive tech, and a non-modal menu is portaled outside it.
-      data-kb-top-layer=""
-      data-component="menu-v2-content"
-      data-appearance={ctx.appearance()}
-      classList={{ ...s.classList, [s.class ?? ""]: !!s.class }}
-    />
+    <MenuSubLevelContext.Provider value={level}>
+      <DropdownMenu.Content
+        {...r}
+        onCloseAutoFocus={onCloseAutoFocus}
+        onInteractOutside={onInteractOutside}
+        // A modal dialog hides what's outside it from assistive tech, and a non-modal menu is portaled outside it.
+        data-kb-top-layer=""
+        data-component="menu-v2-content"
+        data-appearance={ctx.appearance()}
+        classList={{ ...s.classList, [s.class ?? ""]: !!s.class }}
+      />
+    </MenuSubLevelContext.Provider>
   )
 }
 
@@ -434,14 +496,17 @@ function MenuContextRoot(props: MenuContextProps) {
 function MenuContextContent(props: ComponentProps<typeof ContextMenu.Content>) {
   const ctx = useMenuContext()
   const [s, r] = splitProps(props, ["class", "classList"])
+  const level = useMenuSubLevel()
 
   return (
-    <ContextMenu.Content
-      {...r}
-      data-component="menu-v2-content"
-      data-appearance={ctx.appearance()}
-      classList={{ ...s.classList, [s.class ?? ""]: !!s.class }}
-    />
+    <MenuSubLevelContext.Provider value={level}>
+      <ContextMenu.Content
+        {...r}
+        data-component="menu-v2-content"
+        data-appearance={ctx.appearance()}
+        classList={{ ...s.classList, [s.class ?? ""]: !!s.class }}
+      />
+    </MenuSubLevelContext.Provider>
   )
 }
 
