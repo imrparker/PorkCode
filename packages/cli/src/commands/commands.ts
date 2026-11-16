@@ -97,6 +97,24 @@ const Root = Spec.make(typeof PORKCODE_CLI_NAME === "string" ? PORKCODE_CLI_NAME
         ),
       },
     }),
+    Spec.make("reset", {
+      description: "Delete all PorkCode sessions, projects, settings, credentials, and caches for a fresh install",
+      params: {
+        dryRun: Flag.Boolean("dry-run").pipe(
+          Flag.withDescription("Show what would be removed without removing"),
+          Flag.withDefault(false),
+        ),
+        force: Flag.Boolean("force").pipe(
+          Flag.withAlias("f"),
+          Flag.withDescription("Skip confirmation prompts"),
+          Flag.withDefault(false),
+        ),
+        includeCliBinary: Flag.Boolean("include-cli-binary").pipe(
+          Flag.withDescription("Also remove the installed CLI binary and its PATH entries"),
+          Flag.withDefault(false),
+        ),
+      },
+    }),
     Spec.make("acp", {
       description: "Start an Agent Client Protocol server",
       params: {

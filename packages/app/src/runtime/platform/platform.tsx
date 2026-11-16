@@ -57,6 +57,10 @@ type PlatformBase = {
   /** Restart the app  */
   restart(): Promise<void>
 
+  /** Delete every PorkCode file so the next launch is a fresh install, then relaunch (desktop only). The app quits
+   * as soon as the wipe finishes, so the reply may never arrive. */
+  factoryReset?(scope: { includeCliBinary: boolean }): Promise<void>
+
   /** Send a system notification */
   notify(title: string, description?: string, onClick?: () => void): Promise<void>
 

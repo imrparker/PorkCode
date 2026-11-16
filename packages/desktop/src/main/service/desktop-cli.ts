@@ -206,6 +206,28 @@ export const describePaths = Effect.fn("DesktopCli.describePaths")(function* (co
   )
 })
 
+// A factory reset stops every background service through its registration file and then deletes all global data;
+// the SIGTERM-to-SIGKILL wait plus wiping a large profile needs far more headroom than a version probe. The child
+// inherits this process's environment, so it looks up registrations under the same XDG state root the app uses.
+const RESET_TIMEOUT_MS = 5 * 60_000
+
+export const runReset = Effect.fn("DesktopCli.runReset")(function* (
+  command: readonly string[],
+  includeCliBinary: boolean,
+) {
+  const [binary, ...args] = command
+
+  if (binary === undefined) return yield* Effect.fail(new Error("The bundled CLI executable is unavailable"))
+
+  yield* Effect.logInfo("v2 factory reset started", { includeCliBinary })
+  yield* Effect.tryPromise(() =>
+    execFileAsync(binary, [...args, "reset", "--force", ...(includeCliBinary ? ["--include-cli-binary"] : [])], {
+      windowsHide: true,
+      timeout: RESET_TIMEOUT_MS,
+    }),
+  ).pipe(Effect.map(() => undefined))
+})
+
 // The installer runs `porkcode --version`, which can take several seconds on first run while Gatekeeper scans it.
 const INSTALL_TIMEOUT_MS = 60_000
 

@@ -10,7 +10,9 @@ import { setNativeTranslations } from "../native/translations"
 import { IpcPortHandoff } from "../ipc-transport"
 import { ApplicationLifecycle } from "../lifecycle"
 import { finishFirstLaunchOnboarding, isFirstLaunchOnboardingPending } from "../lifecycle/onboarding"
+import { writeResetMarker } from "../factory-reset"
 import { BackgroundService } from "../service/background-service"
+import { DesktopCli } from "../service/desktop-cli"
 import { SidecarCredentials } from "../service/sidecar-credentials"
 import { getWindowID, setBackgroundColor } from "../windows"
 import { sender } from "./context"
@@ -21,6 +23,22 @@ export const appHandlers = AppRpcs.toLayer(
     const lifecycle = yield* ApplicationLifecycle.Service
     const background = yield* BackgroundService.Service
     const logging = yield* DesktopLogging.Service
+    const desktopCli = yield* DesktopCli.Service
+
+    // Phase A of a factory reset: the bundled CLI stops every background service through its registration file and
+    // deletes all global data; the marker then makes the relaunched process sweep Electron's own profile before
+    // Chromium opens it. The reply usually races the quit, so the renderer treats a dropped connection as success.
+    // One attempt per app run: a failed wipe is retried after relaunch or from `porkcode reset`.
+    let resetStarted = false
+    const factoryReset = (includeCliBinary: boolean) =>
+      Effect.gen(function* () {
+        if (resetStarted) return
+        resetStarted = true
+        const resolved = yield* desktopCli.resolve
+        yield* DesktopCli.runReset(resolved.command, includeCliBinary)
+        writeResetMarker({ includeCliBinary })
+        lifecycle.relaunch()
+      })
 
     return AppRpcs.of({
       AppAwaitInitialization: () => background.connection.pipe(Effect.map(SidecarCredentials.ready)),
@@ -65,6 +83,7 @@ export const appHandlers = AppRpcs.toLayer(
           setNativeTranslations(bundle)
         }),
       AppRelaunch: () => Effect.sync(lifecycle.relaunch),
+      AppFactoryReset: ({ includeCliBinary }) => factoryReset(includeCliBinary).pipe(Effect.orDie),
     })
   }),
 )

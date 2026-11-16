@@ -69,6 +69,10 @@ export const AppSetNativeTranslations = Rpc.make("AppSetNativeTranslations", {
 
 export const AppRelaunch = Rpc.make("AppRelaunch")
 
+// Stops every background service, deletes all PorkCode data through the bundled CLI's `reset`, and relaunches into a
+// first-install launch. The reply may never arrive: the app quits as soon as the wipe finishes.
+export const AppFactoryReset = Rpc.make("AppFactoryReset", { payload: { includeCliBinary: Schema.Boolean } })
+
 export const AppRpcs = RpcGroup.make(
   AppAwaitInitialization,
   AppReconnectService,
@@ -86,4 +90,5 @@ export const AppRpcs = RpcGroup.make(
   AppRecordFatalRendererError,
   AppSetNativeTranslations,
   AppRelaunch,
+  AppFactoryReset,
 )

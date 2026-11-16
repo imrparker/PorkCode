@@ -62,6 +62,8 @@ export type ElectronAPI = {
   setWindowFocus(): Promise<void>
   showWindow(): Promise<void>
   relaunch(): void
+  /** Phase A of a factory reset; the app quits as soon as the wipe finishes, so this reply may never arrive. */
+  factoryReset(includeCliBinary: boolean): Promise<void>
   getZoomFactor(): Promise<number>
   setZoomFactor(factor: number): Promise<void>
   getPinchZoomEnabled(): Promise<boolean>

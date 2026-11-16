@@ -1019,6 +1019,24 @@ export const dict = {
     "Choose whether to queue follow-ups or steer the current turn. Use {{keybind}} to switch.",
   "settings.general.row.followUpBehavior.queue": "Queue",
   "settings.general.row.followUpBehavior.steer": "Steer",
+  "settings.general.dangerZone.title": "Danger zone",
+  "settings.general.reset.title": "Reset PorkCode",
+  "settings.general.reset.description":
+    "Delete every chat, project record, provider login, setting and cache so the next launch is a fresh install.",
+  "settings.general.reset.button": "Reset to fresh install…",
+  "settings.general.reset.dialog.title": "Reset everything?",
+  "settings.general.reset.dialog.warning":
+    "This permanently deletes all chats, projects, credentials, settings and caches. It cannot be undone.",
+  "settings.general.reset.dialog.keeps":
+    "Your repositories and any config folders inside them are not touched. Provider logins must be set up again, and the first launch re-downloads tools like ripgrep.",
+  "settings.general.reset.dialog.cli.title": "Also remove the installed CLI binary",
+  "settings.general.reset.dialog.cli.description":
+    "Delete ~/.porkcode/bin and its PATH entries from shell configs. The desktop app keeps working; reinstall the command-line tool to use `porkcode` again.",
+  "settings.general.reset.dialog.confirm.label": "Type RESET to confirm",
+  "settings.general.reset.dialog.confirm.placeholder": "Type {{word}} to confirm",
+  "settings.general.reset.action": "Reset everything",
+  "settings.general.reset.wiping": "Resetting PorkCode…",
+  "settings.general.reset.stall": "PorkCode did not restart. Try again, or run `porkcode reset` in a terminal.",
   "settings.general.row.pinchZoom.title": "Pinch to zoom",
   "settings.general.row.pinchZoom.description": "Allow trackpad pinch and Ctrl-scroll gestures to zoom",
   "settings.general.row.spellcheck.title": "Spellcheck",

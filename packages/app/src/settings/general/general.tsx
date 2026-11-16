@@ -18,6 +18,7 @@ import { SettingsList } from "@/settings/list"
 import { SettingsRow } from "@/settings/row"
 import { createShellOptions } from "./behavior"
 import { createOptimisticSetting, type ShellSettingsController } from "./controllers"
+import { DangerZoneSection } from "./danger-zone"
 import { InterfaceModeSetting } from "./interface-mode"
 import "@/settings/settings.css"
 
@@ -354,6 +355,8 @@ export const SettingsGeneral: Component = () => {
         </section>
 
         <PluginSettingsSections page="general" />
+
+        <DangerZoneSection />
       </div>
     </>
   )
