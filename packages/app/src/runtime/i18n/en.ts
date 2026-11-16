@@ -1127,6 +1127,7 @@ export const dict = {
   "settings.providers.section.local": "Local backends",
   "settings.providers.local.detected": "Detected",
   "settings.providers.local.waiting": "Waiting for server",
+  "settings.providers.local.keyRequired": "API key required — ask your PorkAgent host for one",
   "settings.providers.local.dialog.title": "Configure {{provider}}",
   "settings.providers.local.dialog.description": "Point PorkCode at any machine running this server.",
   "settings.providers.local.baseUrl": "Server address",

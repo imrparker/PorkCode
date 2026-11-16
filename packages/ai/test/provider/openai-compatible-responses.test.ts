@@ -502,6 +502,42 @@ describe("Open Responses-compatible route", () => {
     }),
   )
 
+  it.effect("splits the inclusive prompt total by cached reads and reasoning subsets", () =>
+    Effect.gen(function* () {
+      // LM Studio's shape: input_tokens is the whole prompt with cached_tokens as a subset, not Anthropic-style
+      // non-cached-only; getting this backwards double-counts every cache hit.
+      const model = configure({ apiKey: "test-key", baseURL: "https://api.lmstudio.test/v1" }).model("qwen")
+      const response = yield* LLMClient.generate(ai.request({ model, prompt: "Say hello." })).pipe(
+        Effect.provide(
+          fixedResponse(
+            sseEvents({
+              type: "response.completed",
+              response: {
+                id: "resp_1",
+                usage: {
+                  input_tokens: 4058,
+                  output_tokens: 8,
+                  total_tokens: 4066,
+                  input_tokens_details: { cached_tokens: 4054 },
+                  output_tokens_details: { reasoning_tokens: 8 },
+                },
+              },
+            }),
+          ),
+        ),
+      )
+
+      expect(response.usage).toMatchObject({
+        inputTokens: 4058,
+        nonCachedInputTokens: 4,
+        cacheReadInputTokens: 4054,
+        outputTokens: 8,
+        reasoningTokens: 8,
+        totalTokens: 4066,
+      })
+    }),
+  )
+
   it.effect("ignores bare null frames between events", () =>
     Effect.gen(function* () {
       const model = configure({

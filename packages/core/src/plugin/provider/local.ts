@@ -32,6 +32,10 @@ export function createLocalProviderPlugin<Discovered>(input: {
   readonly name: string
   readonly origin: string
   readonly stripPathSuffix?: RegExp
+  // Provider package the discovered models run through; defaults to the OpenAI Chat compatible loader.
+  readonly package?: string
+  // Backends that reject every request without a key (e.g. PorkAgent) skip the doomed probe until one is stored.
+  readonly requiresKey?: boolean
   readonly discover: (client: LocalDiscoveryClient) => Effect.Effect<readonly Discovered[], unknown>
   readonly model: (item: NoInfer<Discovered>) => LocalModel
 }) {
@@ -96,7 +100,7 @@ export function createLocalProviderPlugin<Discovered>(input: {
           providers.update(input.providerID, (provider) => {
             provider.name = input.name
             provider.activation = "enabled"
-            provider.package = "@opencode/ai/providers/openai-compatible"
+            provider.package = input.package ?? "@opencode/ai/providers/openai-compatible"
             provider.settings = {
               baseURL: source.current.baseURL,
               provider: input.providerID,
@@ -122,7 +126,8 @@ export function createLocalProviderPlugin<Discovered>(input: {
 
         const discover = Effect.fn("LocalProviderPlugin.discover")(function* () {
           const current = source.current
-          if (!current.endpoint) return undefined
+          // A key-gated backend answers 401 to every probe; without a stored key there is nothing to ask.
+          if (!current.endpoint || (input.requiresKey && !current.apiKey)) return undefined
           return yield* discoveryLock.withPermit(
             Effect.gen(function* () {
               const cached = discovery.get(current.root)

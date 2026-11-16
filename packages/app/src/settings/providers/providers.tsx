@@ -49,12 +49,13 @@ type ProviderItem = ReturnType<ReturnType<typeof useProviders>["connected"]>[num
 // PorkCode's core use case. These backends self-register their models while they run (core plugin
 // provider/local.ts), so the rows stay listed with a live detection state instead of vanishing until
 // a server answers; other ports are set through opencode.json providers.<id>.settings.baseURL.
-const LOCAL_BACKENDS = [
+const LOCAL_BACKENDS: ReadonlyArray<{ id: string; name: string; url: string; requiresKey?: boolean }> = [
+  { id: "porkagent", name: "PorkAgent", url: "https://porkagent.ngrok.dev", requiresKey: true },
   { id: "lmstudio", name: "LM Studio", url: "http://127.0.0.1:1234" },
   { id: "ollama", name: "Ollama", url: "http://127.0.0.1:11434" },
   { id: "vllm", name: "vLLM", url: "http://127.0.0.1:8000" },
   { id: "llamacpp", name: "llama.cpp", url: "http://127.0.0.1:8080" },
-] as const
+]
 
 export const SettingsProviders: Component<{
   directory: string | undefined
@@ -522,6 +523,10 @@ export const SettingsProviders: Component<{
                         <p class="settings-provider-description font-mono">
                           {configuredBaseUrl(backend.id) ?? backend.url}
                         </p>
+                        {/* Key-gated backends list no models until the host-supplied key is stored, so say where to get it. */}
+                        <Show when={backend.requiresKey && !storedKeyID(backend.id)}>
+                          <p class="settings-provider-description">{language.t("settings.providers.local.keyRequired")}</p>
+                        </Show>
                       </div>
                     </div>
                     <Button
