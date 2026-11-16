@@ -1,5 +1,5 @@
 import { Plugin } from "@opencode/plugin/tui"
-import { createMemo, Show } from "solid-js"
+import { createMemo, createResource, Show } from "solid-js"
 import { contextUsage } from "../../util/session"
 
 const money = new Intl.NumberFormat("en-US", {
@@ -7,11 +7,31 @@ const money = new Intl.NumberFormat("en-US", {
   currency: "USD",
 })
 
+/** The sidebar shows this reference by default; the app's Context tab lets you pin another. */
+const DEFAULT_REFERENCE = "claude-sonnet-5.5"
+
 export function SidebarContext(props: { context: Plugin.Context; sessionID: string }) {
   const theme = props.context.theme
   const msg = createMemo(() => props.context.data.session.message.list(props.sessionID))
   const session = createMemo(() => props.context.data.session.get(props.sessionID))
   const cost = createMemo(() => props.context.data.session.cost(props.sessionID))
+
+  // Estimated API cost on paid reference models; the string key refetches only when the session or step count moves.
+  const [whatIf] = createResource(
+    () => `${props.sessionID}:${msg().length}`,
+    () => props.context.client.experimental.pricing.whatIf({ session: props.sessionID }),
+  )
+  const wouldHave = createMemo(() => {
+    const data = whatIf.latest
+
+    if (!data || data.steps === 0) return
+
+    const comparison =
+      data.comparisons.find((entry) => entry.reference.id === DEFAULT_REFERENCE) ?? data.comparisons[0]
+
+    if (!comparison || comparison.cost <= 0) return
+    return { cost: money.format(comparison.cost), name: comparison.reference.name }
+  })
 
   const state = createMemo(() =>
     contextUsage(msg(), props.context.data.location.model.list(session()?.location), session()?.revert?.messageID),
@@ -35,6 +55,11 @@ export function SidebarContext(props: { context: Plugin.Context; sessionID: stri
         </Show>
         <Show when={cost() > 0}>
           <text fg={theme.text.muted}>{money.format(cost())} spent</text>
+        </Show>
+        <Show when={wouldHave()}>
+          {(value) => (
+            <text fg={theme.text.muted}>would-have ≈ {value().cost} on {value().name}</text>
+          )}
         </Show>
       </box>
     </Show>

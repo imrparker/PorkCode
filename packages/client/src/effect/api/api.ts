@@ -1888,6 +1888,41 @@ export interface ProjectApi<E = never> {
   readonly update: ProjectUpdateOperation<E>
 }
 
+export type ExperimentalPricingWhatIfInput = {
+  readonly session?: Session.ID | undefined
+  readonly project?: Project.ID | undefined
+  readonly from?: number | undefined
+  readonly to?: number | undefined
+}
+export type ExperimentalPricingWhatIfOutput = {
+  readonly asOf: number
+  readonly steps: number
+  readonly tokens: {
+    readonly input: number
+    readonly output: number
+    readonly reasoning: number
+    readonly cache: { readonly read: number; readonly write: number }
+  }
+  readonly comparisons: ReadonlyArray<{
+    readonly reference: {
+      readonly id: string
+      readonly provider: string
+      readonly name: string
+      readonly apiID: string
+      readonly rates: ReadonlyArray<{ readonly from?: number | undefined; readonly cost: ReadonlyArray<Model.Cost> }>
+      readonly note?: string | undefined
+    }
+    readonly cost: Money.USD
+  }>
+}
+export type ExperimentalPricingWhatIfOperation<E = never> = (
+  input?: ExperimentalPricingWhatIfInput,
+) => Effect.Effect<ExperimentalPricingWhatIfOutput, E>
+
+export interface ExperimentalPricingApi<E = never> {
+  readonly whatIf: ExperimentalPricingWhatIfOperation<E>
+}
+
 export type FormListInput = { readonly location?: { readonly directory?: string | undefined } | undefined }
 export type FormListOutput = { readonly location: Location.PublicRef; readonly data: ReadonlyArray<Form.Info> }
 export type FormListOperation<E = never> = (input?: FormListInput) => Effect.Effect<FormListOutput, E>
@@ -2968,6 +3003,15 @@ export type McpClientTokenOutput = ExperimentalMcpClientTokenOutput
 /** @deprecated Use `ExperimentalMcpClientTokenOperation`. Removed in the next minor. */
 export type McpClientTokenOperation<E = never> = ExperimentalMcpClientTokenOperation<E>
 
+/** @deprecated Use `ExperimentalPricingWhatIfInput`. Removed in the next minor. */
+export type PricingWhatIfInput = ExperimentalPricingWhatIfInput
+
+/** @deprecated Use `ExperimentalPricingWhatIfOutput`. Removed in the next minor. */
+export type PricingWhatIfOutput = ExperimentalPricingWhatIfOutput
+
+/** @deprecated Use `ExperimentalPricingWhatIfOperation`. Removed in the next minor. */
+export type PricingWhatIfOperation<E = never> = ExperimentalPricingWhatIfOperation<E>
+
 /** @deprecated Use `ExperimentalFileWatchInput`. Removed in the next minor. */
 export type FileWatchInput = ExperimentalFileWatchInput
 
@@ -3007,6 +3051,9 @@ export type GenerateApi<E = never> = ExperimentalGenerateApi<E>
 /** @deprecated Use `ExperimentalVoiceApi`. Removed in the next minor. */
 export type VoiceApi<E = never> = ExperimentalVoiceApi<E>
 
+/** @deprecated Use `ExperimentalPricingApi`. Removed in the next minor. */
+export type PricingApi<E = never> = ExperimentalPricingApi<E>
+
 /** @deprecated Use `ExperimentalMigrationApi`. Removed in the next minor. */
 export type MigrationApi<E = never> = ExperimentalMigrationApi<E>
 
@@ -3022,6 +3069,7 @@ export interface AppApi<E = never> {
     readonly voice: ExperimentalVoiceApi<E>
     readonly integration: ExperimentalIntegrationApi<E>
     readonly mcp: ExperimentalMcpApi<E>
+    readonly pricing: ExperimentalPricingApi<E>
     readonly file: ExperimentalFileApi<E>
     readonly migration: ExperimentalMigrationApi<E>
     readonly config: ExperimentalConfigApi<E>
@@ -3068,6 +3116,12 @@ export interface AppApi<E = never> {
 
     /** @deprecated Use `client.experimental.voice.session`. Removed in the next minor. */
     readonly session: ExperimentalVoiceSessionOperation<E>
+  }
+
+  /** @deprecated Use `client.experimental.pricing`. Removed in the next minor. */
+  readonly pricing: {
+    /** @deprecated Use `client.experimental.pricing.whatIf`. Removed in the next minor. */
+    readonly whatIf: ExperimentalPricingWhatIfOperation<E>
   }
 
   /** @deprecated Use `client.experimental.migration`. Removed in the next minor. */

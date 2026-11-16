@@ -179,6 +179,8 @@ import type {
   ProjectListOutput,
   ProjectUpdateInput,
   ProjectUpdateOutput,
+  ExperimentalPricingWhatIfInput,
+  ExperimentalPricingWhatIfOutput,
   FormListInput,
   FormListOutput,
   PermissionRequestListInput,
@@ -1261,6 +1263,21 @@ const adaptGroupProject = (raw: RawClient["server.project"]) => ({
   update: EndpointProjectUpdate(raw),
 })
 
+const EndpointExperimentalPricingWhatIf =
+  (raw: RawClient["server.pricing"]) => (input?: ExperimentalPricingWhatIfInput) =>
+    preserveEffect<ExperimentalPricingWhatIfOutput>()(
+      raw["pricing.whatIf"]({
+        query: { session: input?.["session"], project: input?.["project"], from: input?.["from"], to: input?.["to"] },
+      }).pipe(
+        Effect.mapError(mapClientError),
+        Effect.map((value) => value.data),
+      ),
+    )
+
+const adaptGroupExperimentalPricing = (raw: RawClient["server.pricing"]) => ({
+  whatIf: EndpointExperimentalPricingWhatIf(raw),
+})
+
 const EndpointFormList = (raw: RawClient["server.form"]) => (input?: FormListInput) =>
   preserveEffect<FormListOutput>()(
     raw["form.list"]({ query: { location: input?.["location"] } }).pipe(Effect.mapError(mapClientError)),
@@ -1966,6 +1983,7 @@ const adaptClient = (raw: RawClient) => {
       voice: adaptGroupExperimentalVoice(raw["server.voice"]),
       integration: adaptGroupExperimentalIntegration(raw["server.integration"]),
       mcp: adaptGroupExperimentalMcp(raw["server.mcp"]),
+      pricing: adaptGroupExperimentalPricing(raw["server.pricing"]),
       file: adaptGroupExperimentalFile(raw["server.fs"]),
       migration: adaptGroupExperimentalMigration(raw["server.migration"]),
       config: adaptGroupExperimentalConfig(raw["server.config"]),
@@ -2061,6 +2079,11 @@ const adaptClient = (raw: RawClient) => {
         /** @deprecated Use `client.experimental.mcp.client.token`. Removed in the next minor. */
         token: client.experimental.mcp.client.token,
       },
+    },
+    /** @deprecated Use `client.experimental.pricing`. Removed in the next minor. */
+    pricing: {
+      /** @deprecated Use `client.experimental.pricing.whatIf`. Removed in the next minor. */
+      whatIf: client.experimental.pricing.whatIf,
     },
     file: {
       ...client.file,

@@ -2135,6 +2135,8 @@ export type SessionMessageToolStateError1 = {
   metadata?: { [x: string]: JsonValue }
 }
 
+export type PricingRateSet = { from?: number; cost: Array<ModelCost> }
+
 export type GenerateDecisionAnswer =
   | GeneratePredicateAnswer
   | GenerateChoiceAnswer
@@ -2602,6 +2604,15 @@ export type SessionMessageAssistantTool1 = {
   time: { created: number; ran?: number; completed?: number }
 }
 
+export type PricingReference = {
+  id: string
+  provider: string
+  name: string
+  apiID: string
+  rates: Array<PricingRateSet>
+  note?: string
+}
+
 export type GenerateDecisionResult = {
   answers: Array<GenerateDecisionAnswer>
   cost?: MoneyUSD
@@ -2710,6 +2721,8 @@ export type SessionMessageAssistantContentEncoded =
   | SessionMessageAssistantReasoning1
   | SessionMessageAssistantTool1
 
+export type PricingComparison = { reference: PricingReference; cost: MoneyUSD }
+
 export type GenerateDecisionsResponse = { data: GenerateDecisionResult }
 
 export type FormInfo1 = { id: FormID; sessionID: string; title: string; metadata?: FormMetadata1; fields: FormFields1 }
@@ -2742,6 +2755,13 @@ export type SessionMessageContentUpdated = {
   durable: { aggregateID: string; seq: EventSeq; version: 1 }
   location?: LocationRef
   data: { sessionID: SessionID; messageID: SessionMessageID; content: Array<SessionMessageAssistantContentEncoded> }
+}
+
+export type PricingWhatIf = {
+  asOf: number
+  steps: number
+  tokens: TokenUsageInfo
+  comparisons: Array<PricingComparison>
 }
 
 export type FormCreated = {
@@ -4196,6 +4216,15 @@ export type ProjectUpdateInput = {
 
 export type ProjectUpdateOutput = Project
 
+export type ExperimentalPricingWhatIfInput = {
+  readonly session?: string | undefined
+  readonly project?: string | undefined
+  readonly from?: number | undefined
+  readonly to?: number | undefined
+}
+
+export type ExperimentalPricingWhatIfOutput = { data: PricingWhatIf }["data"]
+
 export type FormListInput = { readonly location?: { readonly directory?: string | undefined } | undefined }
 
 export type FormListOutput = { location: LocationPublicRef; data: Array<FormInfo> }
@@ -4950,6 +4979,12 @@ export type McpClientTokenInput = ExperimentalMcpClientTokenInput
 
 /** @deprecated Use `ExperimentalMcpClientTokenOutput`. Removed in the next minor. */
 export type McpClientTokenOutput = ExperimentalMcpClientTokenOutput
+
+/** @deprecated Use `ExperimentalPricingWhatIfInput`. Removed in the next minor. */
+export type PricingWhatIfInput = ExperimentalPricingWhatIfInput
+
+/** @deprecated Use `ExperimentalPricingWhatIfOutput`. Removed in the next minor. */
+export type PricingWhatIfOutput = ExperimentalPricingWhatIfOutput
 
 /** @deprecated Use `ExperimentalFileWriteInput`. Removed in the next minor. */
 export type FileWriteInput = ExperimentalFileWriteInput

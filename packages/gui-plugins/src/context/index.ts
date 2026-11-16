@@ -1,8 +1,13 @@
 import { builtinCatalog } from "@opencode/plugin/gui/builtin"
-import { Plugin } from "@opencode/plugin/gui"
+import { Plugin, Store } from "@opencode/plugin/gui"
+import { Schema } from "effect"
 import en from "./i18n/en"
 
 export default Plugin.define({
+  stores: {
+    // The reference model the Context tab prices the session against; any id of the bundled rate card.
+    pricing: Store.global(Schema.Struct({ reference: Schema.String }), { reference: "claude-sonnet-5.5" }),
+  },
   i18n: builtinCatalog({
     en,
     am: () => import("./i18n/am"),

@@ -1,4 +1,4 @@
-import type { SessionStatsInfo } from "@opencode/client"
+import type { PricingWhatIf, SessionStatsInfo } from "@opencode/client"
 import { Plugin } from "@opencode/plugin/tui"
 import { activityCalendar } from "@opencode/util/activity-calendar"
 import { TextAttributes } from "@opentui/core"
@@ -8,6 +8,8 @@ import { Logo } from "../../component/logo"
 import { useTheme } from "../../context/theme"
 import { tint } from "../../theme/color"
 import { statsMetrics, statsNumber } from "./stats-data"
+
+const money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" })
 
 const digits: Record<string, string[]> = {
   "0": ["111", "101", "101", "101", "111"],
@@ -27,12 +29,23 @@ const digits: Record<string, string[]> = {
   T: ["111", "010", "010", "010", "010"],
 }
 
-export function StatsPoster(props: { stats: SessionStatsInfo }) {
+export function StatsPoster(props: { stats: SessionStatsInfo; whatIf?: PricingWhatIf }) {
   const dimensions = useTerminalDimensions()
   const theme = useTheme()
   const width = () => Math.max(12, Math.min(110, dimensions().width - 8))
   const compact = () => dimensions().height < 38
   const metrics = createMemo(() => statsMetrics(props.stats))
+  // Cheapest-first reference costs for the same window; hidden when there is nothing priced yet.
+  const comparisons = createMemo(() => {
+    const data = props.whatIf
+
+    if (!data || data.steps === 0) return []
+
+    return [...data.comparisons]
+      .toSorted((a, b) => a.cost - b.cost)
+      .slice(0, compact() ? 3 : 5)
+      .map((entry) => ({ id: entry.reference.id, name: entry.reference.name, cost: money.format(entry.cost) }))
+  })
   const number = () => statsNumber(metrics()[0].value)
   const dates = createMemo(() =>
     new Intl.DateTimeFormat("en-US", { month: "short", year: "numeric" }).formatRange(
@@ -130,6 +143,20 @@ export function StatsPoster(props: { stats: SessionStatsInfo }) {
           )}
         </For>
       </box>
+      <Show when={comparisons().length > 0}>
+        <box width="100%" flexDirection="column" alignItems="center" gap={0}>
+          <text fg={theme.text.muted} attributes={TextAttributes.BOLD}>
+            would have cost on paid models (estimate)
+          </text>
+          <For each={comparisons()}>
+            {(entry) => (
+              <text fg={theme.text.base}>
+                {entry.cost.padStart(9, " ")} · {entry.name}
+              </text>
+            )}
+          </For>
+        </box>
+      </Show>
       <box width="100%" flexDirection="row" justifyContent="flex-end">
         <text fg={theme.text.base}>github.com/imrparker/PorkCode</text>
       </box>
@@ -145,6 +172,11 @@ function StatsPage(props: { context: Plugin.Context; onClose: () => void }) {
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC",
       tools: "none",
     })
+  })
+  // Same window as the poster's stats; a failure here just hides the comparison block.
+  const [whatIf] = createResource(() => {
+    const now = new Date()
+    return props.context.client.experimental.pricing.whatIf({ from: new Date(now.getFullYear(), 0, 1).getTime() })
   })
   const theme = useTheme()
 
@@ -171,7 +203,7 @@ function StatsPage(props: { context: Plugin.Context; onClose: () => void }) {
           }
         >
           <Show when={result()} fallback={<text fg={theme.text.muted}>Gathering your stats…</text>}>
-            {(value) => <StatsPoster stats={value()} />}
+            {(value) => <StatsPoster stats={value()} whatIf={whatIf.latest} />}
           </Show>
         </Show>
       </scrollbox>

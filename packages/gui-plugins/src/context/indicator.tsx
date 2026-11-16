@@ -1,12 +1,15 @@
-import { Show, createMemo, type ComponentProps, type JSX } from "solid-js"
+import { For, Show, createMemo, type ComponentProps, type JSX } from "solid-js"
 import { ProgressCircle } from "@opencode/ui/progress-circle"
 import { Button } from "@opencode/ui/button"
 import { Menu } from "@opencode/ui/menu"
+import { MenuScroll } from "@opencode/ui/menu-scroll"
 import { Tooltip } from "@opencode/ui/tooltip"
 import { useI18n } from "@opencode/ui/context/i18n"
 import { lastAssistantWithUsage } from "@opencode/client/solid"
 import { usePlugin, type MountedSession } from "@opencode/plugin/gui"
 import { catalogModel, syncCatalog } from "./catalog"
+import type definition from "./index"
+import { useWhatIf } from "./what-if"
 
 export function SessionContextUsage(props: {
   session: MountedSession
@@ -17,7 +20,7 @@ export function SessionContextUsage(props: {
   /** The button shows only its ring and opens the usage in a menu, so a narrow header keeps room for the title. */
   compact?: boolean
 }) {
-  const ctx = usePlugin()
+  const ctx = usePlugin<typeof definition>()
   const layout = ctx.layout
   const i18n = useI18n()
 
@@ -92,6 +95,23 @@ export function SessionContextUsage(props: {
     layout.toggle(`${ctx.id}:main`, props.session)
   }
 
+  // Estimated cost on paid reference models; asked only when the menu opens, so the header loads nothing extra.
+  const whatIf = useWhatIf(() => props.session)
+
+  const sortedComparisons = createMemo(() => {
+    const data = whatIf.data()
+
+    if (!data || data.steps === 0) return []
+
+    return [...data.comparisons].toSorted((a, b) => a.cost - b.cost)
+  })
+
+  const pinReference = (reference: string) => {
+    ctx.stores.pricing.update((draft) => {
+      draft.reference = reference
+    })
+  }
+
   const viewContext = () => {
     if (!props.session.id) return
     catalog.retry()
@@ -133,7 +153,10 @@ export function SessionContextUsage(props: {
       gutter={4}
       modal={false}
       onOpenChange={(open) => {
-        if (open) catalog.retry()
+        if (open) {
+          catalog.retry()
+          whatIf.refresh()
+        }
       }}
     >
       <Tooltip value={ctx.t("usage.view")} placement={props.placement ?? "top"}>
@@ -155,6 +178,44 @@ export function SessionContextUsage(props: {
           {menuRow(ctx.t("usage.usage"), `${context()?.usage ?? 0}%`)}
           <Menu.Separator />
           <Menu.Item onSelect={viewContext}>{ctx.t("usage.view")}</Menu.Item>
+          <Show when={sortedComparisons().length > 0}>
+            <Menu.Separator />
+            <Menu.Sub gutter={4} overflowPadding={24}>
+              <Menu.SubTrigger class="[&_[data-slot=menu-v2-item-chevron]]:text-v2-icon-icon-muted">
+                {ctx.t("pricing.compare")}
+              </Menu.SubTrigger>
+              <Menu.Portal>
+                <Menu.SubContent class="max-h-[66.667dvh] w-[240px] !p-0 [@media(max-height:600px)]:max-h-[calc(100dvh-48px)]">
+                  <MenuScroll viewportClass="p-0.5">
+                    <For each={sortedComparisons()}>
+                      {(comparison) => (
+                        <Menu.Item onSelect={() => pinReference(comparison.reference.id)}>
+                          <span class="min-w-0 flex-1 truncate">{comparison.reference.name}</span>
+                          <span class="shrink-0 tabular-nums text-v2-text-text-muted">
+                            {usd().format(comparison.cost)}
+                          </span>
+                        </Menu.Item>
+                      )}
+                    </For>
+                  </MenuScroll>
+                </Menu.SubContent>
+              </Menu.Portal>
+            </Menu.Sub>
+            <Menu.Item
+              onSelect={async () => {
+                const data = whatIf.data()
+
+                if (!data) return
+
+                const { openWhatIfDialog } = await import("./what-if-dialog")
+
+                if (ctx.signal.aborted) return
+                openWhatIfDialog(ctx.dialogs, data)
+              }}
+            >
+              {ctx.t("pricing.seeAll")}
+            </Menu.Item>
+          </Show>
         </Menu.Content>
       </Menu.Portal>
     </Menu>
