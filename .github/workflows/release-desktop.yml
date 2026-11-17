@@ -167,9 +167,6 @@ jobs:
           if ! gh release view desktop-latest >/dev/null 2>&1; then
             gh release create desktop-latest --target "$GITHUB_SHA" --title "PorkCode Desktop" --notes-file notes.md
           fi
-          # Keep the fixed tag pointing at what was just built, and mark it the repository's latest release.
-          ID=$(gh release view desktop-latest --json id -q .id)
-          gh api -X PATCH "repos/$GITHUB_REPOSITORY/releases/$ID" -f target_commitish="$GITHUB_SHA" >/dev/null
           # Binaries first, feeds last: a check that lands mid-publish never reads a new latest.yml whose installers
           # are not uploaded yet.
           gh release upload desktop-latest artifacts/porkcode-desktop-* --clobber
