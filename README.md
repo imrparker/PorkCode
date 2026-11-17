@@ -53,7 +53,7 @@ LM Studio, Ollama, and vLLM need no config when they run on their default port. 
 | Flag | Effect |
 | --- | --- |
 | `PORKCODE_ENABLE_MODELS_FETCH=1` | Fetch the community [models.dev](https://models.dev) catalog for model metadata. The upstream vendor's own hosted providers are filtered out. |
-| `PORKCODE_ENABLE_AUTOUPDATE=1` | Let the desktop app check its own PorkCode release feed in the background. The CLI never fetches updates; rebuild from source to upgrade. |
+| `PORKCODE_ENABLE_AUTOUPDATE` | Packaged prod desktop builds check their own PorkCode release feed automatically at startup and every ten minutes; set `=0` to opt out, or `=1` to force it on for dev/beta builds. The CLI never fetches updates; rebuild from source to upgrade. |
 
 ## Development
 
@@ -115,6 +115,14 @@ bun run script/pack.ts
 The result is `dist/desktop/porkcode-desktop-win-<arch>.exe` at the repository root. It is unsigned, so SmartScreen shows a warning on first run. Click "More info", then "Run anyway". Don't commit installers to git. Attach them to a GitHub Release if you want to distribute them.
 
 An installed app stages its bundled CLI under `%APPDATA%\<app id>\cli\<version>-<arch>` and reuses that copy, so after changing the CLI channel without bumping `PORKCODE_VERSION`, delete that directory before reinstalling.
+
+## Releasing desktop updates
+
+Production updates ship through GitHub Actions. Merging `develop` into `prod` runs the **Release desktop** workflow: it builds the Windows x64, Windows arm64 and macOS arm64 installers and attaches them to a GitHub Release tagged `desktop-latest`, which is the feed packaged prod builds check at startup and every ten minutes (see `PORKCODE_ENABLE_AUTOUPDATE`). A release that needs no new merge can be started by hand from the Actions tab with **Run workflow**.
+
+- The repository must be **public**: the updater downloads its assets anonymously, so no token ships inside the app.
+- Each run's version is date-based (`year.month+day.run-number`, e.g. `2026.1116.57`), always newer than the previous one under electron-updater's semver comparison.
+- Installers are unsigned, like local builds: SmartScreen warns once on Windows, and macOS updates open the download in the browser instead of installing in place until a Developer ID is configured.
 
 ## Attribution and license
 

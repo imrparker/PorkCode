@@ -1,0 +1,173 @@
+name: Release desktop
+
+# Merging develop into prod publishes a production desktop release: installers for Windows x64, Windows arm64 and
+# macOS arm64 are attached to the GitHub Release tagged desktop-latest, which is exactly the feed packaged prod builds
+# check at startup and every ten minutes. The repository must be public: the updater downloads assets anonymously.
+
+on:
+  push:
+    branches: [prod]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-desktop
+  cancel-in-progress: false
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - name: Pick the release version
+        id: version
+        run: |
+          # Valid semver that sorts by date, then by run number for same-day releases. 10# forces base 10 so a
+          # zero-padded day like 08 is not read as octal.
+          printf 'version=%d.%d.%s\n' "$(date +%Y)" "$((10#$(date +%-m) * 100 + 10#$(date +%-d)))" "$GITHUB_RUN_NUMBER" >>"$GITHUB_OUTPUT"
+
+  windows:
+    needs: plan
+    name: Windows ${{ matrix.arch }}
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # The desktop bundles the baseline CLI variant on x64 (README: Building the Windows installer); ARM64 has none.
+          - arch: x64
+            cli_target: windows-x64-baseline
+            desktop_target: ""
+          - arch: arm64
+            cli_target: windows-arm64
+            # Cross-packaged from an x64 runner, so the desktop build must be told the target explicitly.
+            desktop_target: windows-arm64
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: package.json
+
+      - run: bun install --frozen-lockfile
+
+      - name: Build the fork CLI
+        working-directory: packages/cli
+        shell: bash
+        # PORKCODE_CHANNEL=porkcode gives the bundled CLI its own service registration, port and database; with any
+        # other channel the packaged app waits for a registration file its CLI never writes.
+        env:
+          PORKCODE_CHANNEL: porkcode
+          PORKCODE_VERSION: ${{ needs.plan.outputs.version }}
+          PORKCODE_TARGET: ${{ matrix.cli_target }}
+        run: bun script/build.ts
+
+      - name: Build and package the desktop app
+        working-directory: packages/desktop
+        shell: bash
+        env:
+          PORKCODE_CHANNEL: prod
+          PORKCODE_VERSION: ${{ needs.plan.outputs.version }}
+          DESKTOP_TARGET: ${{ matrix.desktop_target }}
+        run: |
+          # An empty PORKCODE_TARGET would fail the target lookup, so only export it when set (x64 runs on a native host).
+          if [ -n "$DESKTOP_TARGET" ]; then export PORKCODE_TARGET="$DESKTOP_TARGET"; fi
+          bun run build
+          # The NSIS target comes from electron-builder.config.ts; --publish never keeps the upload to the publish job.
+          bunx electron-builder --win "--${{ matrix.arch }}" --publish never --config electron-builder.config.ts
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: desktop-windows-${{ matrix.arch }}
+          path: |
+            packages/desktop/dist/porkcode-desktop-win-${{ matrix.arch }}.exe
+            packages/desktop/dist/porkcode-desktop-win-${{ matrix.arch }}.exe.blockmap
+          if-no-files-found: error
+
+  macos:
+    needs: plan
+    name: macOS arm64
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: package.json
+
+      - run: bun install --frozen-lockfile
+
+      - name: Build the fork CLI
+        working-directory: packages/cli
+        env:
+          PORKCODE_CHANNEL: porkcode
+          PORKCODE_VERSION: ${{ needs.plan.outputs.version }}
+          PORKCODE_TARGET: darwin-arm64
+        run: bun script/build.ts
+
+      - name: Build and package the desktop app
+        working-directory: packages/desktop
+        env:
+          PORKCODE_CHANNEL: prod
+          PORKCODE_VERSION: ${{ needs.plan.outputs.version }}
+        # Unsigned until a Developer ID is configured; macOS builds then offer their download in the browser instead of
+        # installing it in-app (Squirrel.Mac rejects updates whose signature cannot be verified).
+        run: |
+          bun run build
+          bunx electron-builder --mac dmg zip --arm64 --publish never -c.mac.identity=null
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: desktop-macos-arm64
+          path: |
+            packages/desktop/dist/porkcode-desktop-mac-arm64.zip
+            packages/desktop/dist/porkcode-desktop-mac-arm64.zip.blockmap
+            packages/desktop/dist/porkcode-desktop-mac-arm64.dmg
+          if-no-files-found: error
+
+  publish:
+    needs: [plan, windows, macos]
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: package.json
+
+      - name: Collect the installers
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+
+      - name: Write the update feeds
+        working-directory: packages/desktop
+        run: |
+          bun script/make-update-feed.ts "${{ needs.plan.outputs.version }}" "$GITHUB_WORKSPACE/dist/latest.yml" \
+            "$GITHUB_WORKSPACE/artifacts/porkcode-desktop-win-x64.exe" \
+            "$GITHUB_WORKSPACE/artifacts/porkcode-desktop-win-arm64.exe"
+          bun script/make-update-feed.ts "${{ needs.plan.outputs.version }}" "$GITHUB_WORKSPACE/dist/latest-mac.yml" \
+            "$GITHUB_WORKSPACE/artifacts/porkcode-desktop-mac-arm64.zip"
+
+      - name: Publish the desktop-latest release
+        run: |
+          set -euo pipefail
+          VERSION="${{ needs.plan.outputs.version }}"
+          printf '## PorkCode Desktop %s\n\nBuilt from prod at `%s`. Installed apps check this release automatically and update in place; the installers below also work for a fresh install. Windows builds are unsigned, so SmartScreen asks once.\n' "$VERSION" "$GITHUB_SHA" >notes.md
+          if ! gh release view desktop-latest >/dev/null 2>&1; then
+            gh release create desktop-latest --target "$GITHUB_SHA" --title "PorkCode Desktop" --notes-file notes.md
+          fi
+          # Keep the fixed tag pointing at what was just built, and mark it the repository's latest release.
+          ID=$(gh release view desktop-latest --json id -q .id)
+          gh api -X PATCH "repos/$GITHUB_REPOSITORY/releases/$ID" -f target_commitish="$GITHUB_SHA" >/dev/null
+          # Binaries first, feeds last: a check that lands mid-publish never reads a new latest.yml whose installers
+          # are not uploaded yet.
+          gh release upload desktop-latest artifacts/porkcode-desktop-* --clobber
+          gh release upload desktop-latest dist/latest.yml dist/latest-mac.yml --clobber
+          gh release edit desktop-latest --latest --title "PorkCode Desktop ${VERSION}" --notes-file notes.md

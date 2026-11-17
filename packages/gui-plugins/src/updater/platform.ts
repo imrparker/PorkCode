@@ -1,6 +1,6 @@
 import { execFile } from "node:child_process"
 import { promisify } from "node:util"
-import { app, autoUpdater } from "electron"
+import { app, autoUpdater, shell } from "electron"
 import pkg from "electron-updater"
 import { Effect } from "effect"
 import type { Platform } from "./machine"
@@ -42,9 +42,21 @@ export const make = Effect.fn("Updater.platform")(function* (channel: string) {
 
         if (!result?.isUpdateAvailable) return undefined
         const files = result.updateInfo.files
+
+        // Fork builds carry no Developer ID, and Squirrel.Mac refuses to install an update whose signature it cannot
+        // verify against the running app, so macOS offers the release download in the browser instead of restarting
+        // into it. Return restart mode when code signing lands.
+        if (process.platform === "darwin") {
+          const download = files.find((file) => file.url.endsWith(".zip")) ?? files[0]
+
+          if (!download) throw new Error(`Update ${result.updateInfo.version} offers no downloadable file`)
+
+          return { mode: "external", version: result.updateInfo.version, url: download.url } as const
+        }
+
         // electron-updater picks the installer whose name contains process.arch, which emulation on Windows ARM64
         // reports as x64. downloadUpdate() reads this same list, so keeping only the ARM64 installer moves the install
-        // to the native build. macOS needs nothing here: electron-updater already prefers arm64 under Rosetta.
+        // to the native build.
         const native = files.filter((file) => file.url.includes("arm64"))
 
         if (process.platform === "win32" && app.runningUnderARM64Translation && native.length > 0) {
@@ -60,6 +72,8 @@ export const make = Effect.fn("Updater.platform")(function* (channel: string) {
     }),
     stageUpdate,
     installAndRestart,
+    // The browser opens the macOS release download; other platforms' checks return restart mode and never reach this.
+    externalInstall: (url) => Effect.tryPromise({ try: () => shell.openExternal(url), catch: (error) => error }),
   } satisfies Platform
 })
 

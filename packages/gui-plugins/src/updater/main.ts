@@ -11,8 +11,14 @@ const setup: Plugin.MainSetup = async (ctx) => {
   const build = ctx.app
   const lifecycle = builtin.lifecycle
   const enabled = build.packaged
-  // PorkCode offline default: background checks against the desktop release feed only run when opted in.
-  const autoCheck = ["1", "true"].includes((process.env.PORKCODE_ENABLE_AUTOUPDATE ?? "").toLowerCase())
+  // Packaged prod builds check the fork's own release feed automatically, like other desktop apps; dev and beta
+  // publish no feed and stay on-demand. PORKCODE_ENABLE_AUTOUPDATE overrides both ways: 1/true forces a channel on,
+  // 0/false turns it off.
+  const autoupdate = (process.env.PORKCODE_ENABLE_AUTOUPDATE ?? "").toLowerCase()
+
+  const autoCheck =
+    ["0", "false"].includes(autoupdate) ? false : ["1", "true"].includes(autoupdate) || build.channel === "prod"
+
   // Holds no resources, so it needs no cleanup.
   const context = logContext(ctx.log.write)
   const runPromise = Effect.runPromiseWith(context)
@@ -89,6 +95,13 @@ const setup: Plugin.MainSetup = async (ctx) => {
 
       return
     }
+
+    // An unsigned macOS build offers the release download instead of a staged install. Opening it in the browser is
+    // itself the feedback, and the Updates section keeps offering the download until it is installed.
+    if (state.status === "download-required")
+      return yield* updater.install.pipe(
+        Effect.catch((error) => Effect.logWarning("update download did not open", { message: error.message })),
+      )
 
     if (state.status !== "ready") return
 
