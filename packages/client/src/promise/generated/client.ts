@@ -173,6 +173,8 @@ import type {
   ProjectListOutput,
   ProjectUpdateInput,
   ProjectUpdateOutput,
+  ExperimentalPricingWhatIfInput,
+  ExperimentalPricingWhatIfOutput,
   FormListInput,
   FormListOutput,
   PermissionRequestListInput,
@@ -1323,6 +1325,25 @@ export function make(options: ClientOptions) {
               requestOptions,
             ),
         },
+      },
+      pricing: {
+        whatIf: (input?: ExperimentalPricingWhatIfInput, requestOptions?: RequestOptions) =>
+          request<{ readonly data: ExperimentalPricingWhatIfOutput }>(
+            {
+              method: "GET",
+              path: `/api/experimental/pricing/what-if`,
+              query: {
+                session: input?.["session"],
+                project: input?.["project"],
+                from: input?.["from"],
+                to: input?.["to"],
+              },
+              successStatus: 200,
+              declaredStatuses: [400, 401],
+              empty: false,
+            },
+            requestOptions,
+          ).then((value) => value.data),
       },
       file: {
         write: (input: ExperimentalFileWriteInput, requestOptions?: RequestOptions) =>
@@ -2741,6 +2762,11 @@ export function make(options: ClientOptions) {
         /** @deprecated Use `client.experimental.mcp.client.token`. Removed in the next minor. */
         token: client.experimental.mcp.client.token,
       },
+    },
+    /** @deprecated Use `client.experimental.pricing`. Removed in the next minor. */
+    pricing: {
+      /** @deprecated Use `client.experimental.pricing.whatIf`. Removed in the next minor. */
+      whatIf: client.experimental.pricing.whatIf,
     },
     file: {
       ...client.file,

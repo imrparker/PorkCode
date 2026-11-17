@@ -17,6 +17,8 @@ import { createKeyed, usePlugin, type MountedSession } from "@opencode/plugin/gu
 import { catalogModel, syncCatalog } from "./catalog"
 import { fetchSessionExport, sessionExportFilename } from "./export"
 import { createSessionContextFormatter } from "./format"
+import { useWhatIf } from "./what-if"
+import { WhatIfSummary } from "./what-if-dialog"
 import {
   createContextScrollState,
   createSessionExportState,
@@ -153,6 +155,15 @@ export default function SessionContextTab(props: { session: MountedSession }) {
   })
 
   const formatter = createMemo(() => createSessionContextFormatter(i18n.locale()))
+
+  // Estimated cost on paid reference models; the tab loads it with everything else it shows.
+  const whatIf = useWhatIf(() => props.session, { immediate: true })
+
+  const whatIfCost = createMemo(() => {
+    const data = whatIf.data()
+
+    return data && data.steps > 0 ? data : undefined
+  })
 
   // A root session's cost includes its subagent sessions, as in the TUI.
   const cost = createMemo(() => usd().format(props.session.id ? data().session.cost(props.session.id) : 0))
@@ -430,6 +441,10 @@ export default function SessionContextTab(props: { session: MountedSession }) {
             <For each={sessionStats}>{(stat) => <Stat label={ctx.t(stat.label)} value={stat.value()} />}</For>
           </div>
         </div>
+
+        <Show when={whatIfCost()}>
+          {(data) => <WhatIfSummary whatIf={data()} />}
+        </Show>
 
         <Show when={systemPrompt()}>
           {(prompt) => (

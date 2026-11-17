@@ -8368,6 +8368,88 @@
         }
       }
     },
+    "/api/experimental/pricing/what-if": {
+      "get": {
+        "tags": ["pricing"],
+        "operationId": "experimental.pricing.whatIf",
+        "parameters": [
+          {
+            "name": "session",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/Session.ID"
+            },
+            "required": false
+          },
+          {
+            "name": "project",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/Project.ID"
+            },
+            "required": false
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "required": false
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "required": false
+          }
+        ],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Pricing.WhatIf"
+                    }
+                  },
+                  "required": ["data"],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "InvalidRequestError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidRequestErrorEncoded"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "UnauthorizedError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedErrorEncoded"
+                }
+              }
+            }
+          }
+        },
+        "description": "Experimental: may change without compatibility guarantees. Prices recorded token usage against the bundled reference rate card of published big-box API prices. Estimates only: token counts come from the models that actually ran, whose tokenizers differ, and only token rates are counted.",
+        "summary": "Estimate what usage would have cost on paid models"
+      }
+    },
     "/api/form": {
       "get": {
         "tags": ["form"],
@@ -21447,6 +21529,88 @@
         "required": ["_tag", "pluginID", "message"],
         "additionalProperties": false
       },
+      "Pricing.Comparison": {
+        "type": "object",
+        "properties": {
+          "reference": {
+            "$ref": "#/components/schemas/Pricing.Reference"
+          },
+          "cost": {
+            "$ref": "#/components/schemas/Money.USD"
+          }
+        },
+        "required": ["reference", "cost"],
+        "additionalProperties": false
+      },
+      "Pricing.RateSet": {
+        "type": "object",
+        "properties": {
+          "from": {
+            "type": "number"
+          },
+          "cost": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Model.Cost"
+            }
+          }
+        },
+        "required": ["cost"],
+        "additionalProperties": false
+      },
+      "Pricing.Reference": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "provider": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "apiID": {
+            "type": "string"
+          },
+          "rates": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Pricing.RateSet"
+            }
+          },
+          "note": {
+            "type": "string"
+          }
+        },
+        "required": ["id", "provider", "name", "apiID", "rates"],
+        "additionalProperties": false
+      },
+      "Pricing.WhatIf": {
+        "type": "object",
+        "properties": {
+          "asOf": {
+            "type": "number"
+          },
+          "steps": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "tokens": {
+            "$ref": "#/components/schemas/TokenUsage.Info"
+          },
+          "comparisons": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Pricing.Comparison"
+            }
+          }
+        },
+        "required": ["asOf", "steps", "tokens", "comparisons"],
+        "additionalProperties": false
+      },
       "Project": {
         "type": "object",
         "properties": {
@@ -30541,6 +30705,10 @@
     {
       "name": "project",
       "description": "Project routes."
+    },
+    {
+      "name": "pricing",
+      "description": "Estimated API cost of local usage on paid reference models."
     },
     {
       "name": "form",

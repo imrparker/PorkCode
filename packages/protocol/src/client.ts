@@ -62,6 +62,7 @@ export const groupNames = {
   "server.mcp": "mcp",
   "server.reference": "reference",
   "server.project": "project",
+  "server.pricing": "pricing",
   "server.worktree": "worktree",
   "server.vcs": "vcs",
   "server.config": "config",
