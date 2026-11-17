@@ -1,5 +1,6 @@
 import { createMemo, For, Show } from "solid-js"
 import { Dialog, DialogBody, DialogHeader, DialogTitleGroup } from "@opencode/ui/dialog"
+import { MenuScroll } from "@opencode/ui/menu-scroll"
 import { Icon } from "@opencode/ui/icon"
 import { useI18n } from "@opencode/ui/context/i18n"
 import type { ExperimentalPricingWhatIfOutput } from "@opencode/client/promise"
@@ -33,46 +34,49 @@ function DialogWhatIf(props: { whatIf: ExperimentalPricingWhatIfOutput; dialog: 
         />
       </DialogHeader>
       <DialogBody class="flex flex-col">
-        <div class="grid grid-cols-[minmax(0,1fr)_auto] gap-x-4 px-4 pb-1 text-12-regular text-text-weak">
+        <div class="grid shrink-0 grid-cols-[minmax(0,1fr)_auto] gap-x-4 px-4 pb-1 text-12-regular text-text-weak">
           <span>{ctx.t("pricing.dialog.model")}</span>
           <span>{ctx.t("pricing.dialog.cost")}</span>
         </div>
-        <For each={sorted()}>
-          {(comparison) => {
-            const pinned = () => ctx.stores.pricing.value.reference === comparison.reference.id
+        {/* The dialog body clips its overflow, so the rows need their own scroll container. */}
+        <MenuScroll class="min-h-0 flex-1">
+          <For each={sorted()}>
+            {(comparison) => {
+              const pinned = () => ctx.stores.pricing.value.reference === comparison.reference.id
 
-            return (
-              <button
-                type="button"
-                class="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 rounded-md px-4 py-2 text-left hover:bg-surface-base"
-                onClick={() => {
-                  ctx.stores.pricing.update((draft) => {
-                    draft.reference = comparison.reference.id
-                  })
-                  props.dialog.close()
-                }}
-              >
-                <span class="flex min-w-0 flex-col gap-0.5">
-                  <span class="flex items-center gap-2 text-14-medium text-text-strong">
-                    <span class="min-w-0 truncate">{comparison.reference.name}</span>
-                    <Show when={pinned()}>
-                      <Icon name="check" size="small" class="shrink-0 text-text-strong" />
-                    </Show>
+              return (
+                <button
+                  type="button"
+                  class="grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 rounded-md px-4 py-2 text-left hover:bg-surface-base"
+                  onClick={() => {
+                    ctx.stores.pricing.update((draft) => {
+                      draft.reference = comparison.reference.id
+                    })
+                    props.dialog.close()
+                  }}
+                >
+                  <span class="flex min-w-0 flex-col gap-0.5">
+                    <span class="flex items-center gap-2 text-14-medium text-text-strong">
+                      <span class="min-w-0 truncate">{comparison.reference.name}</span>
+                      <Show when={pinned()}>
+                        <Icon name="check" size="small" class="shrink-0 text-text-strong" />
+                      </Show>
+                    </span>
+                    <span class="truncate text-12-regular text-text-weak">
+                      {comparison.reference.provider}
+                      <Show when={comparison.reference.note}>
+                        {" · "}
+                        {comparison.reference.note}
+                      </Show>
+                    </span>
                   </span>
-                  <span class="truncate text-12-regular text-text-weak">
-                    {comparison.reference.provider}
-                    <Show when={comparison.reference.note}>
-                      {" · "}
-                      {comparison.reference.note}
-                    </Show>
-                  </span>
-                </span>
-                <span class="text-14-medium tabular-nums text-text-strong">{usd().format(comparison.cost)}</span>
-              </button>
-            )
-          }}
-        </For>
-        <p class="px-4 pt-3 pb-1 text-12-regular text-text-weak">{ctx.t("pricing.dialog.note")}</p>
+                  <span class="text-14-medium tabular-nums text-text-strong">{usd().format(comparison.cost)}</span>
+                </button>
+              )
+            }}
+          </For>
+        </MenuScroll>
+        <p class="shrink-0 px-4 pt-3 pb-1 text-12-regular text-text-weak">{ctx.t("pricing.dialog.note")}</p>
       </DialogBody>
     </Dialog>
   )
