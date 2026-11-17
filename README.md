@@ -122,7 +122,7 @@ Production updates ship through GitHub Actions. Merging `develop` into `prod` ru
 
 - The repository must be **public**: the updater downloads its assets anonymously, so no token ships inside the app.
 - Each run's version is date-based (`year.month+day.run-number`, e.g. `2026.1116.57`), always newer than the previous one under electron-updater's semver comparison.
-- Installers are unsigned, like local builds: SmartScreen warns once on Windows, and macOS updates open the download in the browser instead of installing in place until a Developer ID is configured.
+- Windows installers are unsigned, so SmartScreen warns once. macOS builds are ad-hoc signed (an arm64 app needs a valid seal to launch) but not notarized, so Gatekeeper may block the first launch of a fresh download; until a Developer ID is configured, macOS updates open the download in the browser instead of installing in place.
 
 ## Attribution and license
 

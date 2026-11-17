@@ -113,11 +113,15 @@ jobs:
         env:
           PORKCODE_CHANNEL: prod
           PORKCODE_VERSION: ${{ needs.plan.outputs.version }}
-        # Unsigned until a Developer ID is configured; macOS builds then offer their download in the browser instead of
-        # installing it in-app (Squirrel.Mac rejects updates whose signature cannot be verified).
+        # identity "-" ad-hoc re-signs the bundle after packaging; without a valid seal an arm64 app is killed at
+        # launch. Full Developer ID signing + notarization replaces this when a certificate is configured — until
+        # then macOS updates offer their download in the browser instead of installing in-app, because Squirrel.Mac
+        # rejects updates whose signature cannot be verified against the running app's team identity.
+        # The config is not optional here: without it electron-builder falls back to package.json, whose name would
+        # produce an "@opencodedesktop.app" that 7za rejects (@ reads as a list file) with no bundled CLI inside.
         run: |
           bun run build
-          bunx electron-builder --mac dmg zip --arm64 --publish never -c.mac.identity=null
+          bunx electron-builder --mac dmg zip --arm64 --publish never -c.mac.identity=- --config electron-builder.config.ts
 
       - uses: actions/upload-artifact@v4
         with:
