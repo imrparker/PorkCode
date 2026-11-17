@@ -10,7 +10,10 @@ const safe = (value: number | undefined) => Math.max(0, finite(value ?? 0))
 
 export const tokens = (usage: Usage | undefined): TokenUsage.Info => ({
   input: safe(usage?.nonCachedInputTokens),
-  output: safe(usage?.visibleOutputTokens),
+  // Endpoints flagged `usageExcludesToolCallTokens` leave tool-call arguments out of reported output; the ai layer
+  // estimates them from streamed arguments. Additive — when a host starts counting correctly, drop its compat key so
+  // the estimate stops rather than double-counting. Raw provider numbers stay in step provider metadata.
+  output: safe(usage?.visibleOutputTokens) + safe(usage?.estimatedToolCallTokens),
   reasoning: safe(usage?.reasoningTokens),
   cache: {
     read: safe(usage?.cacheReadInputTokens),

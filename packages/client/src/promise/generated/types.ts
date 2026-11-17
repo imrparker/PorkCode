@@ -695,6 +695,7 @@ export type ModelCompatibility = {
   supportsThinkingBlockBinding?: boolean
   supportsEffortUpdates?: boolean
   supportsSystemUpdates?: boolean
+  usageExcludesToolCallTokens?: boolean
   mediaInput?: ModelMediaInput
 }
 
@@ -708,6 +709,7 @@ export type ProviderCompatibility = {
   streamUsage?: boolean
   cacheFormat?: ModelCacheFormat
   supportsSystemUpdates?: boolean
+  usageExcludesToolCallTokens?: boolean
   mediaInput?: ModelMediaInput
 }
 

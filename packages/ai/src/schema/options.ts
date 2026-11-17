@@ -281,6 +281,9 @@ export interface Capabilities {
   // this is true; other protocols omit it only when this is false.
   // Session-affinity headers still flow regardless.
   readonly promptCacheKey?: boolean
+  // The endpoint's reported output tokens exclude tool-call argument tokens, so the parser estimates them from the
+  // streamed arguments into `Usage.estimatedToolCallTokens`. OpenAI Responses hosts only.
+  readonly usageExcludesToolCallTokens?: boolean
   readonly serviceTier?: ReadonlyArray<OpenString<"flex" | "priority" | "fast" | "ultrafast" | "standby">>
 }
 

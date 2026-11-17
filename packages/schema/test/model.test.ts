@@ -66,6 +66,9 @@ describe("Model.Compatibility", () => {
     for (const supportsSystemUpdates of [false, true]) {
       expect(decode({ supportsSystemUpdates })).toEqual({ supportsSystemUpdates })
     }
+    for (const usageExcludesToolCallTokens of [false, true]) {
+      expect(decode({ usageExcludesToolCallTokens })).toEqual({ usageExcludesToolCallTokens })
+    }
   })
 
   test("omits undefined protocol capability overrides when encoded", () => {
@@ -74,6 +77,7 @@ describe("Model.Compatibility", () => {
         supportsEffortUpdates: undefined,
         supportsThinkingBlockBinding: undefined,
         supportsSystemUpdates: undefined,
+        usageExcludesToolCallTokens: undefined,
       }),
     ).toEqual({})
   })

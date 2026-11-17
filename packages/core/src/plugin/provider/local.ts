@@ -1,6 +1,7 @@
 import { define } from "@opencode/plugin/effect/plugin"
 import type { Entry } from "@opencode/schema/config"
 import { Integration } from "@opencode/schema/integration"
+import type { Compatibility } from "@opencode/schema/model-compatibility"
 import { Duration, Effect, Option, Schedule, type Schema, Semaphore, Stream } from "effect"
 import { HttpClient, HttpClientRequest, HttpClientResponse } from "effect/http"
 import photonWasm from "#photon-wasm"
@@ -22,6 +23,8 @@ export type LocalModel = {
   readonly tools?: boolean
   readonly vision?: boolean
   readonly context?: number | null
+  // Endpoint compatibility overrides for every discovered model, e.g. LM Studio's tool-call usage exclusion.
+  readonly compatibility?: Compatibility
 }
 
 export type LocalDiscoveryClient = ReturnType<typeof createClient>
@@ -120,6 +123,7 @@ export function createLocalProviderPlugin<Discovered>(input: {
                 output: ["text"],
               }
               if (typeof spec.context === "number" && spec.context > 0) model.limit.context = spec.context
+              model.compatibility = spec.compatibility
             })
           }
         })

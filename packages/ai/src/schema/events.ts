@@ -70,6 +70,12 @@ export class Usage extends Schema.Class<Usage>("AI.Usage")({
   cacheReadInputTokens: Schema.optional(Schema.Number),
   cacheWriteInputTokens: Schema.optional(Schema.Number),
   reasoningTokens: Schema.optional(Schema.Number),
+  /**
+   * Estimated output tokens for tool-call arguments the endpoint left out of `outputTokens`, set only when the model's
+   * `usageExcludesToolCallTokens` capability is on. Providers that bill tool calls correctly never report it, and raw
+   * provider usage stays untouched in `providerMetadata`.
+   */
+  estimatedToolCallTokens: Schema.optional(Schema.Number),
   totalTokens: Schema.optional(Schema.Number),
   /**
    * USD the endpoint says it charged for this request, as OpenRouter, LiteLLM and OpenCode Zen report it in

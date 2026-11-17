@@ -617,6 +617,93 @@ describe("Open Responses-compatible route", () => {
     }),
   )
 
+  it.effect("estimates tool-call output tokens when the endpoint excludes them", () =>
+    Effect.gen(function* () {
+      // LM Studio 0.4.28 reports output_tokens equal to reasoning_tokens whenever a function_call is produced; the
+      // capability adds an estimate of the streamed argument text so session totals reflect the generated work.
+      const base = configure({ apiKey: "test-key", baseURL: "https://api.lmstudio.test/v1" })
+      const args = '{"query":"01234567890123456789012345678901"}'
+      const usage = { input_tokens: 341, output_tokens: 25, total_tokens: 366, output_tokens_details: { reasoning_tokens: 25 } }
+      const run = (excludes?: boolean) =>
+        LLMClient.generate(
+          ai.request({
+            model:
+              excludes === undefined
+                ? base.model("qwen")
+                : LanguageModel.update(base.model("qwen"), { capabilities: { usageExcludesToolCallTokens: excludes } }),
+            prompt: "Look it up.",
+          }),
+        ).pipe(
+          Effect.provide(
+            fixedResponse(
+              sseEvents(
+                {
+                  type: "response.output_item.added",
+                  output_index: 0,
+                  item: { type: "function_call", id: "fc_1", call_id: "call_1", name: "lookup" },
+                },
+                { type: "response.function_call_arguments.delta", item_id: "fc_1", delta: args.slice(0, 20) },
+                { type: "response.function_call_arguments.delta", item_id: "fc_1", delta: args.slice(20) },
+                {
+                  type: "response.output_item.done",
+                  output_index: 0,
+                  item: { type: "function_call", id: "fc_1", call_id: "call_1", name: "lookup", arguments: args },
+                },
+                { type: "response.completed", response: { id: "resp_1", usage } },
+              ),
+            ),
+          ),
+        )
+
+      const estimated = yield* run(true)
+      expect(estimated.usage).toMatchObject({
+        outputTokens: 25,
+        reasoningTokens: 25,
+        estimatedToolCallTokens: Math.round(args.length / 4),
+      })
+
+      expect((yield* run()).usage.estimatedToolCallTokens).toBeUndefined()
+      expect((yield* run(false)).usage.estimatedToolCallTokens).toBeUndefined()
+    }),
+  )
+
+  it.effect("estimates drained tool-call arguments when no item finalizer arrives", () =>
+    Effect.gen(function* () {
+      // Some Responses hosts stream argument deltas and complete without ever sending output_item.done; the terminal
+      // drain must still count their accumulated raw JSON exactly once.
+      const base = configure({ apiKey: "test-key", baseURL: "https://api.lmstudio.test/v1" })
+      const args = '{"query":"01234567890123456789012345678901"}'
+      const response = yield* LLMClient.generate(
+        ai.request({
+          model: LanguageModel.update(base.model("qwen"), { capabilities: { usageExcludesToolCallTokens: true } }),
+          prompt: "Look it up.",
+        }),
+      ).pipe(
+        Effect.provide(
+          fixedResponse(
+            sseEvents(
+              {
+                type: "response.output_item.added",
+                output_index: 0,
+                item: { type: "function_call", id: "fc_1", call_id: "call_1", name: "lookup" },
+              },
+              { type: "response.function_call_arguments.delta", item_id: "fc_1", delta: args },
+              {
+                type: "response.completed",
+                response: {
+                  id: "resp_1",
+                  usage: { input_tokens: 341, output_tokens: 25, total_tokens: 366, output_tokens_details: { reasoning_tokens: 25 } },
+                },
+              },
+            ),
+          ),
+        ),
+      )
+
+      expect(response.usage).toMatchObject({ estimatedToolCallTokens: Math.round(args.length / 4) })
+    }),
+  )
+
   it.effect("ignores bare null frames between events", () =>
     Effect.gen(function* () {
       const model = configure({

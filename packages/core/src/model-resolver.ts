@@ -273,6 +273,7 @@ const CAPABILITY_KEYS = [
   "streamUsage",
   "supportsEffortUpdates",
   "supportsSystemUpdates",
+  "usageExcludesToolCallTokens",
 ] as const
 
 const capabilities = (base: LanguageModel["capabilities"], compatibility: Compatibility) => ({
@@ -283,6 +284,9 @@ const capabilities = (base: LanguageModel["capabilities"], compatibility: Compat
     ? { reasoning: { ...base?.reasoning, updates: compatibility.supportsEffortUpdates } }
     : {}),
   ...("supportsSystemUpdates" in compatibility ? { systemUpdates: compatibility.supportsSystemUpdates } : {}),
+  ...("usageExcludesToolCallTokens" in compatibility
+    ? { usageExcludesToolCallTokens: compatibility.usageExcludesToolCallTokens }
+    : {}),
 })
 
 /** Settings and package loading shared by every model type: credentials, variables, canonical provider, overlays. */

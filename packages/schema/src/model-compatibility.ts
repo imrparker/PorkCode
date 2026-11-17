@@ -46,6 +46,8 @@ export const Compatibility = Schema.Struct({
   supportsEffortUpdates: Schema.Boolean.pipe(optional),
   /** Anthropic Messages and OpenAI Responses: accepts mid-conversation system messages. Overrides model-ID detection; unsupported models receive the update as ordinary user text. */
   supportsSystemUpdates: Schema.Boolean.pipe(optional),
+  /** OpenAI Responses: `output_tokens` omits function_call argument tokens (LM Studio 0.4.28). The parser estimates them from streamed arguments into `Usage.estimatedToolCallTokens`. */
+  usageExcludesToolCallTokens: Schema.Boolean.pipe(optional),
   /** System One: where the decision host reads media. Unset keeps the route default. */
   mediaInput: MediaInput.pipe(optional),
 }).annotate({ identifier: "Model.Compatibility" })

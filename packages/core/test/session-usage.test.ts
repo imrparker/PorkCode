@@ -28,3 +28,22 @@ test("keeps a reported zero cost, as for a request a subscription covered", () =
     cost: Money.USD.zero,
   })
 })
+
+test("adds estimated tool-call tokens to output when the endpoint excluded them", () => {
+  // LM Studio shape: output_tokens equals reasoning on a tool-only step, so visible output is zero and the ai
+  // layer's estimate of the streamed arguments carries all of the generated tool work into the totals.
+  expect(
+    SessionUsage.tokens(
+      new Usage({ nonCachedInputTokens: 10, outputTokens: 463, reasoningTokens: 425, estimatedToolCallTokens: 378 }),
+    ),
+  ).toEqual({ input: 10, output: 416, reasoning: 425, cache: { read: 0, write: 0 } })
+})
+
+test("prices estimated tool-call tokens with the catalog output rate", () => {
+  const recorded = SessionUsage.record(
+    new Usage({ outputTokens: 1_000_000, reasoningTokens: 0, estimatedToolCallTokens: 1_000_000 }),
+    costs,
+  )
+  expect(recorded.tokens.output).toBe(2_000_000)
+  expect(recorded.cost).toBe(Money.USD.make(4))
+})

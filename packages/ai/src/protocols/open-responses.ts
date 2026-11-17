@@ -449,6 +449,10 @@ export interface ParserState {
   readonly tools: ToolStream.State<string>
   readonly custom: ReadonlyMap<string, OpenAIFreeform.Custom>
   readonly hasFunctionCall: boolean
+  // Endpoints like LM Studio exclude function_call argument tokens from `output_tokens`; when set, the accumulated
+  // raw argument characters are estimated into `Usage.estimatedToolCallTokens` at step finish.
+  readonly usageExcludesToolCallTokens: boolean
+  readonly toolCallArgumentChars: number
   readonly lifecycle: Lifecycle.State
   readonly outputItems: Readonly<Record<number, string>>
   readonly message: { readonly id: string; readonly phase: MessagePhase | null | undefined } | undefined
@@ -938,6 +942,18 @@ export const mapUsage = (
   })
 }
 
+// LM Studio-style endpoints leave function_call argument tokens out of `output_tokens` entirely — verified live on
+// 0.4.28, where a 3,105-character argument left `output_tokens` equal to `reasoning_tokens`. The engine did generate
+// those tokens, so estimate them from the accumulated raw arguments at the same character ratio as core's compaction
+// estimator (packages/core/src/util/token.ts; kept local because ai cannot import core). Digit-heavy payloads
+// tokenize denser than this and are undercounted: a stat correction, not billing truth.
+const CHARS_PER_TOKEN = 4
+
+const estimateToolCallTokens = (state: ParserState, usage: Usage | undefined): Usage | undefined => {
+  if (!usage || !state.usageExcludesToolCallTokens || state.toolCallArgumentChars === 0) return usage
+  return new Usage({ ...usage, estimatedToolCallTokens: Math.round(state.toolCallArgumentChars / CHARS_PER_TOKEN) })
+}
+
 // GitHub Copilot lists the filters that ran; the blocking one names its rule in `content_filter_raw`.
 const decodeContentFilters = Schema.decodeUnknownOption(
   Schema.Array(
@@ -1368,6 +1384,11 @@ const onOutputItemDone = Effect.fnUntraced(function* (state: ParserState, item: 
           ]
     const lifecycle = resultEvents.length ? Lifecycle.stepStart(state.lifecycle, events) : state.lifecycle
     events.push(...resultEvents)
+    // The raw argument text this call finalizes with: the item's own value when present, else what streamed into the
+    // registered tool. Counted once here because finalizing removes the entry before any later drain can see it.
+    const argumentChars = custom
+      ? final.raw.length || state.tools[item.id]?.input.length || 0
+      : (item.arguments ?? state.tools[item.id]?.input ?? "").length
     return [
       {
         ...state,
@@ -1375,6 +1396,7 @@ const onOutputItemDone = Effect.fnUntraced(function* (state: ParserState, item: 
         hasFunctionCall:
           resultEvents.some((event) => LLMEvent.is.toolCall(event) || LLMEvent.is.toolInputError(event)) ||
           state.hasFunctionCall,
+        toolCallArgumentChars: state.toolCallArgumentChars + argumentChars,
         tools: result.tools,
       },
       events,
@@ -1446,6 +1468,11 @@ const onResponseFinish = Effect.fnUntraced(function* (state: ParserState, event:
     current = {
       ...current,
       tools: pending.tools,
+      // Deltas-only calls that never received an item finalizer drain here; their accumulated raw JSON is the
+      // generated argument text. Calls finalized by `output_item.done` were already removed and counted there.
+      toolCallArgumentChars:
+        current.toolCallArgumentChars +
+        Object.values(current.tools).reduce((sum, tool) => sum + (tool?.input.length ?? 0), 0),
       hasFunctionCall:
         current.hasFunctionCall ||
         pending.events.some((event) => LLMEvent.is.toolCall(event) || LLMEvent.is.toolInputError(event)),
@@ -1453,6 +1480,9 @@ const onResponseFinish = Effect.fnUntraced(function* (state: ParserState, event:
     events.push(...pending.events)
   }
   const normalized = mapFinishReason(event, current.hasFunctionCall)
+  // Attach before Lifecycle.finish so both the per-step `stepFinish` and the aggregate `finish` carry it.
+  const reported = mapUsage(event.response?.usage, current.providerMetadataKey, event, event.response)
+  const usage = estimateToolCallTokens(current, reported)
   const lifecycle = Lifecycle.finish(current.lifecycle, events, {
     reason: {
       normalized,
@@ -1460,7 +1490,7 @@ const onResponseFinish = Effect.fnUntraced(function* (state: ParserState, event:
       ...(normalized === "content-filter" ? { category: contentFilterCategory(event.response?.content_filters) } : {}),
     },
     // Copilot reports its billing on the terminal event, beside `response`.
-    usage: mapUsage(event.response?.usage, current.providerMetadataKey, event, event.response),
+    usage,
     providerMetadata:
       event.response?.id || event.response?.service_tier
         ? providerMetadata(current, {
@@ -1595,6 +1625,8 @@ export const initial = (request: LLMRequest, adapter: ProviderAdapter = BASE_ADA
   name: adapter.name,
   providerMetadataKey: metadataKey(request.model),
   hasFunctionCall: false,
+  usageExcludesToolCallTokens: request.model.capabilities?.usageExcludesToolCallTokens === true,
+  toolCallArgumentChars: 0,
   tools: ToolStream.empty<string>(),
   custom: OpenAIFreeform.tools(request),
   lifecycle: Lifecycle.initial(),
