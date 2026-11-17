@@ -3,9 +3,9 @@
 - This repository does not use Changesets. Do not add `.changeset` files; follow the existing release workflow instead.
 - The default branch is `dev`. Base branches and worktrees on `origin/dev`, target PRs at `dev`, and diff against `origin/dev` unless told otherwise.
 
-## Decoupling Roadmap
+## Upstream Relationship
 
-- PorkCode is separating from upstream OpenCode (local-first, no cloud vendors). Read `docs/decoupling-plan.md` before touching identity, storage, provider or update code, and keep its checkboxes and Progress log current as you work.
+- PorkCode is a local-first fork of upstream OpenCode with no cloud vendors: identity, storage, providers and updates stay on the user's machine or this repository's own GitHub Releases. Do not reintroduce upstream-hosted endpoints (opencode.ai feeds, console OAuth, npm-published CLI fetches).
 
 ## Live TUI Testing
 
