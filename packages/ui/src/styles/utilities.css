@@ -105,11 +105,13 @@
   --pc-press: scale(0.975);
 }
 
-/* Frosted-glass redesign. The atmosphere paints the ambient gradient behind the whole window so the
-   translucent chrome has something to refract; the glass roles frost only floating chrome (titlebar,
-   tabs, sidebar peek, composer). They set ONLY background + backdrop-filter so a call site's existing
-   elevation shadow still applies. Popovers/dialogs/menus get the same treatment in their own CSS rules.
-   The message timeline stays opaque for scroll perf. */
+/* Frosted-glass redesign. The glass roles frost only floating chrome (titlebar, tabs, sidebar peek,
+   composer). They set ONLY background + backdrop-filter so a call site's existing elevation shadow
+   still applies. Popovers/dialogs/menus get the same treatment in their own CSS rules. The message
+   timeline stays opaque for scroll perf. The app shell itself paints flat bg-deep rather than the
+   atmosphere: the accent glow bled through the panel gutters and the Windows caption-button gap as
+   uneven blue tinting (the titlebar glass ends 138px short of the window edge there). Atmosphere is
+   reserved for full-surface brand moments like the first-launch splash. */
 .pc-atmosphere {
   background: var(--pc-atmosphere);
 }

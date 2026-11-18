@@ -207,7 +207,7 @@ export default function Layout(props: ParentProps) {
 
   return (
     <div
-      class="relative pc-atmosphere flex-1 min-h-0 min-w-0 flex flex-col select-none [&_input]:select-text [&_textarea]:select-text [&_[contenteditable]]:select-text"
+      class="relative bg-v2-background-bg-deep flex-1 min-h-0 min-w-0 flex flex-col select-none [&_input]:select-text [&_textarea]:select-text [&_[contenteditable]]:select-text"
       style={{
         // Mobile panels only need clearance for their outer border.
         "--shell-inline-inset": mobile() ? "1px" : "8px",
