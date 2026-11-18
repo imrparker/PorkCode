@@ -4,7 +4,7 @@ import { Schema } from "effect"
 import { HttpApiEndpoint, HttpApiSchema, OpenApi } from "effect/http-api"
 import { ForbiddenError, InvalidRequestError, ScheduleNotFoundError, SessionNotFoundError } from "../errors.js"
 
-const EXPERIMENTAL = "Experimental: needs experimental.schedules in the Session's config and may change without notice."
+const EXPERIMENTAL = "Experimental: may change without notice."
 const errors = [ScheduleNotFoundError, ForbiddenError] as const
 const params = { scheduleID: Schedule.ID }
 const annotations = (identifier: string, summary: string, description: string) =>

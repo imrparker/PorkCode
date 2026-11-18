@@ -43,14 +43,11 @@ import { Snapshot } from "@opencode/core/snapshot"
 import { Skill } from "@opencode/core/skill"
 import { Config } from "@opencode/core/config"
 import { Document, Info } from "@opencode/schema/config"
-import { ConfigExperimental } from "@opencode/schema/config/experimental"
 import { location } from "./fixture/location"
 import { testEffect } from "./lib/effect"
 import { imagePassthrough } from "./lib/image"
 
 const enabledDirectory = "/enabled"
-const disabledDirectory = "/disabled"
-const toggleDirectory = "/toggle"
 const missingDirectory = "/missing"
 
 const wakes: Session.ID[] = []
@@ -73,38 +70,7 @@ const execution = Layer.succeed(
     awaitIdle: () => Effect.void,
   }),
 )
-const enabledEntries = [
-  new Document({
-    type: "document",
-    info: new Info({
-      timezone: "America/New_York",
-      experimental: new ConfigExperimental.Info({ schedules: true }),
-    }),
-  }),
-]
-const disabledEntries = [
-  new Document({
-    type: "document",
-    info: new Info({
-      experimental: new ConfigExperimental.Info({ schedules: false }),
-    }),
-  }),
-]
-const enabled = Config.testLayer(enabledEntries)
-const disabled = Config.testLayer(disabledEntries)
-/** A location whose flag the test turns on, counting every config read. */
-const toggle = { on: false, reads: 0 }
-const toggled = Layer.succeed(
-  Config.Service,
-  Config.Service.of({
-    entries: () =>
-      Effect.sync(() => {
-        toggle.reads++
-        return toggle.on ? enabledEntries : disabledEntries
-      }),
-    changes: () => Stream.empty,
-  }),
-)
+const configLayer = Config.testLayer([new Document({ type: "document", info: new Info({ timezone: "America/New_York" }) })])
 /** Fake shell state and permission rules reset by `setup`. */
 const shellState = {
   exitCode: 0,
@@ -124,7 +90,6 @@ const testEnvironment = Layer.effect(
     const memory = Environment.makeMemoryDriver()
     const files = Environment.makeFiles(memory)
     yield* files.mkdir(enabledDirectory).pipe(Effect.orDie)
-    yield* files.mkdir(toggleDirectory).pipe(Effect.orDie)
     const spawner = ChildProcessSpawner.make((command) =>
       Effect.gen(function* () {
         const script = command._tag === "StandardCommand" ? String(command.args.at(-1) ?? command.command) : "pipeline"
@@ -252,13 +217,7 @@ const locations = makeGlobalNode({
                     replacements: [
                       App.node.replace(Layer.succeed(App.Service, app)),
                       Bus.node.replace(Layer.succeed(Bus.Service, bus)),
-                      Config.node.replace(
-                        ref.directory === enabledDirectory || ref.directory === missingDirectory
-                          ? enabled
-                          : ref.directory === toggleDirectory
-                            ? toggled
-                            : disabled,
-                      ),
+                      Config.node.replace(configLayer),
                       SessionStore.node.replace(Layer.succeed(SessionStore.Service, store)),
                       PermissionSaved.node.replace(Layer.succeed(PermissionSaved.Service, saved)),
                       Location.node.replace(Layer.succeed(Location.Service, location(ref))),
@@ -327,8 +286,6 @@ const setup = (directory = enabledDirectory) =>
       .pipe(Effect.orDie)
     wakes.length = 0
     duringWake = Effect.void
-    toggle.on = false
-    toggle.reads = 0
     shellState.exitCode = 0
     shellState.stdout = ""
     shellState.stderr = ""
@@ -588,91 +545,6 @@ describe("Schedule", () => {
       const { db } = yield* Database.Service
       yield* db.delete(SessionTable).where(eq(SessionTable.id, sessionID)).run().pipe(Effect.orDie)
       expect(yield* schedules.list()).toEqual([])
-    }),
-  )
-
-  it.effect("does nothing when experimental.schedules is off", () =>
-    Effect.gen(function* () {
-      const schedules = yield* setup(disabledDirectory)
-      expect(
-        yield* Effect.flip(
-          schedules.create({
-            sessionID,
-            when: { type: "in", in: "1 minute" },
-            action: { type: "prompt", prompt: "poll" },
-          }),
-        ),
-      ).toMatchObject({ _tag: "Schedule.DisabledError" })
-
-      const { db } = yield* Database.Service
-      yield* db
-        .insert(ScheduleTable)
-        .values({
-          id: Schedule.ID.create(),
-          session_id: sessionID,
-          action: { type: "prompt", prompt: "poll" },
-          when: { type: "in", in: "1 minute" },
-          tz: "UTC",
-          next_due_at: 0,
-          time_created: 0,
-          time_updated: 0,
-        })
-        .run()
-        .pipe(Effect.orDie)
-      yield* TestClock.adjust("1 minute")
-      yield* schedules.tick
-      expect(yield* pending).toEqual([])
-      expect((yield* schedules.list())[0]).toMatchObject({ runCount: 0 })
-    }),
-  )
-
-  it.effect("rechecks a schedule hourly while its location has the flag off, then catches up once it is on", () =>
-    Effect.gen(function* () {
-      const schedules = yield* setup(toggleDirectory)
-      const { db } = yield* Database.Service
-      const id = Schedule.ID.create()
-      yield* db
-        .insert(ScheduleTable)
-        .values({
-          id,
-          session_id: sessionID,
-          action: { type: "prompt", prompt: "poll" },
-          when: { type: "every", every: "1 minute" },
-          tz: "UTC",
-          next_due_at: 60_000,
-          time_created: 0,
-          time_updated: 0,
-        })
-        .run()
-        .pipe(Effect.orDie)
-      yield* TestClock.adjust("1 minute")
-      yield* schedules.tick
-      expect(yield* schedules.get(id)).toMatchObject({
-        status: "active",
-        runCount: 0,
-        lastOutcome: "disabled",
-        nextDueAt: DateTime.makeUnsafe(60_000),
-      })
-      const reads = toggle.reads
-      expect(reads).toBeGreaterThan(0)
-
-      // Within the hour the location is not booted to read the flag again.
-      yield* TestClock.adjust("59 minutes")
-      yield* schedules.tick
-      expect(toggle.reads).toBe(reads)
-      expect(yield* pending).toEqual([])
-
-      // Once the flag is on and the hour has passed, the missed slot fires once, late, and keeps the phase.
-      toggle.on = true
-      yield* TestClock.adjust("2 minutes")
-      yield* schedules.tick
-      expect(yield* pending).toEqual([SessionMessage.ID.make(`msg_${id}_1`)])
-      expect(yield* schedules.get(id)).toMatchObject({
-        status: "active",
-        runCount: 1,
-        lastOutcome: "late",
-        nextDueAt: DateTime.makeUnsafe(63 * 60_000),
-      })
     }),
   )
 

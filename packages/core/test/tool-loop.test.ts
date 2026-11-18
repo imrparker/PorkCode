@@ -2,15 +2,12 @@ import { describe, expect } from "bun:test"
 import { Bus } from "@opencode/core/bus"
 import { Database } from "@opencode/core/database/database"
 import { AppNodeBuilder } from "@opencode/core/effect/app-node-builder"
-import { Flag } from "@opencode/core/flag"
 import { Schedule } from "@opencode/core/schedule"
 import { Session } from "@opencode/core/session"
 import { Tool } from "@opencode/core/tool"
 import { LoopTools } from "@opencode/core/tool/plugin/loop"
 import { LayerNode } from "@opencode/util/effect/layer-node"
 import type { CommandDefinition } from "@opencode/plugin/effect/command"
-import { Document, Info, type Entry } from "@opencode/schema/config"
-import { ConfigExperimental } from "@opencode/schema/config/experimental"
 import { TuiEvent } from "@opencode/schema/tui-event"
 import { DateTime, Effect, Fiber, Layer, Stream } from "effect"
 import { testEffect } from "./lib/effect"
@@ -70,14 +67,13 @@ const memory = () => {
     pause: () => Effect.die("unused Schedule.pause"),
     resume: () => Effect.die("unused Schedule.resume"),
     remove: (id) => find(id).pipe(Effect.map(() => void rows.delete(id))),
-    enabled: () => Effect.succeed(true),
     tick: Effect.void,
     run: Effect.never,
   })
   return { rows, created, service }
 }
 
-const setup = (experimental: ConfigExperimental.Info | undefined) =>
+const setup = () =>
   Effect.gen(function* () {
     const schedules = memory()
     const commands: CommandDefinition[] = []
@@ -93,7 +89,6 @@ const setup = (experimental: ConfigExperimental.Info | undefined) =>
           }),
       },
     }).pipe(
-      Effect.provide(Flag.testLayer([document(experimental)])),
       Effect.provide(Layer.succeed(Schedule.Service, schedules.service)),
       Effect.provide(permissionLayer({ assert: () => Effect.void })),
     )
@@ -118,21 +113,17 @@ const runLoop = Effect.fn("test.runLoop")(function* (text: string, commands: Com
   return { error: undefined as Error | undefined, toasts: [...events].map((event) => event.data) as Toast[] }
 })
 
-const bothFlags = new ConfigExperimental.Info({ schedules: true, loop: true })
-
 describe("/loop command", () => {
-  it.effect("registers only when the loop and schedule flags are both on", () =>
+  it.effect("registers the loop command unconditionally", () =>
     Effect.gen(function* () {
-      expect((yield* setup(new ConfigExperimental.Info({ schedules: true, loop: false }))).commands).toEqual([])
-      expect((yield* setup(new ConfigExperimental.Info({ schedules: false, loop: true }))).commands).toEqual([])
-      const { commands } = yield* setup(bothFlags)
+      const { commands } = yield* setup()
       expect(commands.map((command) => command.name)).toEqual(["loop"])
     }),
   )
 
   it.effect("starts a queued loop with the parsed cadence and a seven-day expiry", () =>
     Effect.gen(function* () {
-      const { created, commands } = yield* setup(bothFlags)
+      const { created, commands } = yield* setup()
       const { error, toasts } = yield* runLoop("45m review my changes", commands)
 
       expect(error).toBeUndefined()
@@ -153,7 +144,7 @@ describe("/loop command", () => {
 
   it.effect("passes a when-changes gate clause to the schedule as a shell condition", () =>
     Effect.gen(function* () {
-      const { created, commands } = yield* setup(bothFlags)
+      const { created, commands } = yield* setup()
       const { error } = yield* runLoop('45m when "git rev-parse HEAD" changes review my commits', commands)
 
       expect(error).toBeUndefined()
@@ -167,7 +158,7 @@ describe("/loop command", () => {
 
   it.effect("lists this session's live loops", () =>
     Effect.gen(function* () {
-      const { commands } = yield* setup(bothFlags)
+      const { commands } = yield* setup()
       yield* runLoop("5m check the deploy", commands)
       const { toasts } = yield* runLoop("list", commands)
 
@@ -178,7 +169,7 @@ describe("/loop command", () => {
 
   it.effect("stops a loop by number and reports what stopped", () =>
     Effect.gen(function* () {
-      const { rows, commands } = yield* setup(bothFlags)
+      const { rows, commands } = yield* setup()
       yield* runLoop("5m check the deploy", commands)
       const first = [...rows.keys()][0]!
       const { error, toasts } = yield* runLoop("stop 1", commands)
@@ -191,7 +182,7 @@ describe("/loop command", () => {
 
   it.effect("stops every loop with `all` and reports the count", () =>
     Effect.gen(function* () {
-      const { rows, commands } = yield* setup(bothFlags)
+      const { rows, commands } = yield* setup()
       yield* runLoop("5m check the deploy", commands)
       yield* runLoop("30m run the tests", commands)
       expect(rows.size).toBe(2)
@@ -206,7 +197,7 @@ describe("/loop command", () => {
 
   it.effect("stops a loop by its id", () =>
     Effect.gen(function* () {
-      const { rows, commands } = yield* setup(bothFlags)
+      const { rows, commands } = yield* setup()
       yield* runLoop("5m check the deploy", commands)
       const only = [...rows.keys()][0]!
 
@@ -220,7 +211,7 @@ describe("/loop command", () => {
   // The numeric branch is decimal-only, so a non-decimal or out-of-range target must not index into the list.
   it.effect("refuses stop targets that are not a listed number", () =>
     Effect.gen(function* () {
-      const { rows, commands } = yield* setup(bothFlags)
+      const { rows, commands } = yield* setup()
       yield* runLoop("5m check the deploy", commands)
       yield* runLoop("30m run the tests", commands)
 
@@ -234,7 +225,7 @@ describe("/loop command", () => {
 
   it.effect("fails with usage text when an interval has no prompt", () =>
     Effect.gen(function* () {
-      const { created, commands } = yield* setup(bothFlags)
+      const { created, commands } = yield* setup()
       const { error } = yield* runLoop("5m", commands)
 
       expect(created).toHaveLength(0)
@@ -244,7 +235,7 @@ describe("/loop command", () => {
 
   it.effect("fails when stopping with no loop running", () =>
     Effect.gen(function* () {
-      const { commands } = yield* setup(bothFlags)
+      const { commands } = yield* setup()
       const { error } = yield* runLoop("stop", commands)
 
       expect(error?.message).toContain("No loop is running")
@@ -252,6 +243,3 @@ describe("/loop command", () => {
   )
 })
 
-function document(experimental: ConfigExperimental.Info | undefined): Entry {
-  return new Document({ type: "document", info: new Info(experimental ? { experimental } : {}) })
-}

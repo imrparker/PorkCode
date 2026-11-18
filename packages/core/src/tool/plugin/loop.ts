@@ -5,9 +5,6 @@ import type { Session } from "@opencode/schema/session"
 import { TuiEvent } from "@opencode/schema/tui-event"
 import { Effect } from "effect"
 import { Bus } from "../../bus.js"
-import { Config } from "../../config.js"
-import { ConfigEntryObserver } from "../../config/plugin/entry-observer.js"
-import { Flag } from "../../flag.js"
 import { Schedule } from "../../schedule.js"
 import { ScheduleLoop } from "../../schedule/loop.js"
 import { summary, toView } from "./schedule.js"
@@ -15,17 +12,8 @@ import { summary, toView } from "./schedule.js"
 export const Plugin = {
   id: "opencode.tool.loop",
   effect: Effect.fn("LoopTools.Plugin")(function* (ctx: Context) {
-    const config = yield* Config.Service
     const schedules = yield* Schedule.Service
     const bus = yield* Bus.Service
-    // Internal plugins are not re-run on config changes, so reload the command when the flags move.
-    const loaded = yield* ConfigEntryObserver.observe(config, ctx.event, ctx.command.reload())
-    const flags = yield* Flag.Service
-    // /loop rides on the schedule engine, so it needs its own flag and the engine's.
-    const enabled = () => {
-      const resolved = flags.resolve(loaded.entries)
-      return resolved.schedules.enabled && resolved.loop.enabled
-    }
 
     // Command execution runs with the Session's Location ambient, so a toast reaches the client showing that one.
     const notice = (message: string, variant: "success" | "info") =>
@@ -94,7 +82,6 @@ export const Plugin = {
     })
 
     yield* ctx.command.transform((editor) => {
-      if (!enabled()) return
       editor.add({
         name: "loop",
         description: "repeat a prompt on an interval in this session [list | stop <number|id|all>]",
