@@ -207,7 +207,7 @@ export default function Layout(props: ParentProps) {
 
   return (
     <div
-      class="relative pc-atmosphere flex-1 min-h-0 min-w-0 flex flex-col select-none [&_input]:select-text [&_textarea]:select-text [&_[contenteditable]]:select-text"
+      class="relative bg-v2-background-bg-deep flex-1 min-h-0 min-w-0 flex flex-col select-none [&_input]:select-text [&_textarea]:select-text [&_[contenteditable]]:select-text"
       style={{
         // Mobile panels only need clearance for their outer border.
         "--shell-inline-inset": mobile() ? "1px" : "8px",
@@ -216,13 +216,9 @@ export default function Layout(props: ParentProps) {
         "--sidebar-inset-end": "3px",
         "--sidebar-divider-bleed":
           preferences.appearance.tabLayout() === "inbox" || organizedSidebar() ? "var(--shell-inline-inset)" : "0px",
-        // A bottom mobile titlebar leaves main's top edge to the safe area. Native Windows chrome supplies the gap;
-        // retain outer-outline clearance.
-        "--shell-top-inset": bottomTitlebar()
-          ? "0px"
-          : platform.platform === "desktop" && platform.os === "windows"
-            ? "1px"
-            : "8px",
+        // A bottom mobile titlebar leaves main's top edge to the safe area. Every other surface keeps the
+        // same 8px gutter on all sides so panels float uniformly under the titlebar.
+        "--shell-top-inset": bottomTitlebar() ? "0px" : "8px",
         "--shell-bottom-inset": bottomTitlebar()
           ? "8px"
           : "max(0px, calc(8px - var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px))))",

@@ -401,6 +401,33 @@ describe("Schedule", () => {
     }),
   )
 
+  it.effect("fires with the delivery its row carries and lists by origin", () =>
+    Effect.gen(function* () {
+      const schedules = yield* setup()
+      const loop = yield* schedules.create({
+        sessionID,
+        when: { type: "every", every: "5 minutes" },
+        action: { type: "prompt", prompt: "check the deploy" },
+        delivery: "queue",
+        origin: "loop",
+      })
+      const plain = yield* schedules.create({
+        sessionID,
+        when: { type: "every", every: "5 minutes" },
+        action: { type: "prompt", prompt: "check the build" },
+      })
+
+      yield* TestClock.adjust("5 minutes")
+      yield* schedules.tick
+
+      const { db } = yield* Database.Service
+      expect(yield* SessionInbox.find(db, messageID(loop, 1))).toMatchObject({ delivery: "queue" })
+      expect(yield* SessionInbox.find(db, messageID(plain, 1))).toMatchObject({ delivery: "steer" })
+      expect((yield* schedules.list({ sessionID, origin: "loop" })).map((row) => row.id)).toEqual([loop.id])
+      expect(yield* schedules.list({ sessionID })).toHaveLength(2)
+    }),
+  )
+
   it.effect("fires an at schedule at the wall-clock time in its zone", () =>
     Effect.gen(function* () {
       yield* setTime("2026-11-01T12:00:00Z")

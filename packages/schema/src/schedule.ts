@@ -4,6 +4,7 @@ import { Duration, Option, Schema } from "effect"
 import { ascending } from "./identifier.js"
 import { DateTimeUtcFromMillis, NonNegativeInt, PositiveInt, optional, statics } from "./schema.js"
 import { SessionID } from "./session-id.js"
+import { SessionInbox } from "./session-inbox.js"
 
 export const ID = Schema.String.check(Schema.isStartingWith("sch_")).pipe(
   Schema.brand("Schedule.ID"),
@@ -148,6 +149,10 @@ export const Info = Schema.Struct({
 }).annotate({ identifier: "Schedule.Info" })
 export type Info = typeof Info.Type
 
+/** What created a schedule beyond the default. Absent means a plain `schedule_create`; SQL NULL is that row's only form, so there is no `"schedule"` value to confuse it with. */
+export const Origin = Schema.Literals(["loop"]).annotate({ identifier: "Schedule.Origin" })
+export type Origin = typeof Origin.Type
+
 export const CreateInput = Schema.Struct({
   sessionID: SessionID,
   name: Schema.String.pipe(optional),
@@ -156,6 +161,13 @@ export const CreateInput = Schema.Struct({
   until: Condition.pipe(optional),
   ends: Ends.pipe(optional),
   action: Action,
+  /**
+   * How a firing prompt is handed to the Session. `steer` cuts in at the next safe boundary and resets the step
+   * allowance; `queue` waits for the Session to go idle. Defaults to `steer`. Not part of the public create payload:
+   * only in-process callers such as `/loop` choose it, so a model cannot grant itself extra rope on a timer.
+   */
+  delivery: SessionInbox.Delivery.pipe(optional),
+  origin: Origin.pipe(optional),
 }).annotate({ identifier: "Schedule.CreateInput" })
 export type CreateInput = typeof CreateInput.Type
 

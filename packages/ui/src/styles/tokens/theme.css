@@ -137,9 +137,10 @@
 
     /* ── Glass chrome (redesign) ── */
     /* Translucent surfaces blend the theme's own colors, so every bundled theme keeps working while the
-       chrome reads as frosted glass over --pc-atmosphere. Opacity floors keep text legible on the gradient.
-       The ambient tint is derived from the theme accent (single hue family) so no theme gets an off-palette
-       glow; light mode has no top-inner specular edge (borders/shadows define edges there). */
+       chrome reads as frosted glass. Opacity floors keep text legible behind them. The app shell paints a
+       flat bg-deep (see the note in utilities.css); --pc-atmosphere below is reserved for full-surface
+       brand moments like the first-launch splash, with the tint derived from the theme accent so no theme
+       gets an off-palette glow; light mode has no top-inner specular edge (borders/shadows define edges there). */
     --pc-glass-bar-bg: color-mix(in oklab, var(--v2-background-bg-deep) 80%, transparent);
     --pc-glass-bar-blur: blur(16px) saturate(1.35);
     --pc-glass-float-bg: color-mix(in oklab, var(--v2-background-bg-layer-01) 88%, transparent);

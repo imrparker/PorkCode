@@ -6,6 +6,7 @@ import { Timestamps } from "../database/schema.sql.js"
 import type { SessionMessage } from "../session/message.js"
 import type { SessionSchema } from "../session/schema.js"
 import { SessionTable } from "../session/sql.js"
+import type { SessionInbox } from "@opencode/schema/session-inbox"
 
 export const ScheduleTable = sqliteTable(
   "schedule",
@@ -17,6 +18,10 @@ export const ScheduleTable = sqliteTable(
       .references(() => SessionTable.id, { onDelete: "cascade" }),
     name: text(),
     action: text({ mode: "json" }).$type<Schedule.Action>().notNull(),
+    /** How a firing prompt is delivered. Null means `steer`, the behavior before delivery was selectable. */
+    delivery: text().$type<SessionInbox.Delivery>(),
+    /** Null means a plain `schedule_create`; `loop` marks one made by the `/loop` command. */
+    origin: text().$type<Schedule.Origin>(),
     check: text({ mode: "json" }).$type<Schedule.StoredCheck>(),
     when: text({ mode: "json" }).$type<Schedule.When>().notNull(),
     tz: text().notNull(),
