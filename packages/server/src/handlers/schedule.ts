@@ -7,24 +7,15 @@ import { Effect } from "effect"
 import { HttpApiSchema } from "effect/http-api"
 import { missingSession } from "./session-error"
 
-/** `schedule.*` in the `server.experimental` group. Every route needs experimental.schedules where the Session lives. */
+/** `schedule.*` in the `server.experimental` group. */
 export const makeSchedule = Effect.gen(function* () {
   const schedules = yield* Schedule.Service
 
-  const allowed = (sessionID: Session.ID) =>
-    schedules.enabled(sessionID).pipe(
-      Effect.mapError(missingSession),
-      Effect.flatMap((enabled) => (enabled ? Effect.void : Effect.fail(disabled()))),
-    )
-
-  // A schedule whose Session is gone, or whose location has the flag off, reads as missing or forbidden like the rest.
+  // A schedule whose Session is gone reads as missing like an unknown id.
   const find = (id: Schedule.ID) =>
     Effect.gen(function* () {
       const info = yield* schedules.get(id).pipe(Effect.mapError(missingSchedule))
       if (info.sessionID === undefined) return yield* missingSchedule({ scheduleID: id })
-      yield* allowed(info.sessionID).pipe(
-        Effect.catchTag("SessionNotFoundError", () => Effect.fail(missingSchedule({ scheduleID: id }))),
-      )
       return info
     })
 
@@ -37,17 +28,13 @@ export const makeSchedule = Effect.gen(function* () {
         Effect.catchTags({
           "Schedule.InvalidError": (error) =>
             Effect.fail(new InvalidRequestError({ message: error.message, kind: "schedule" })),
-          "Schedule.DisabledError": () => Effect.fail(disabled()),
           "Permission.BlockedError": (error) => Effect.fail(new ForbiddenError({ message: error.message })),
           "Permission.CorrectedError": (error) => Effect.fail(new ForbiddenError({ message: error.feedback })),
           "Session.NotFoundError": (error) => Effect.fail(missingSession(error)),
         }),
       ),
     list: (sessionID: Session.ID) =>
-      allowed(sessionID).pipe(
-        Effect.andThen(schedules.list({ sessionID })),
-        Effect.map((data) => ({ data })),
-      ),
+      schedules.list({ sessionID }).pipe(Effect.map((data) => ({ data }))),
     get: (id: Schedule.ID) => find(id).pipe(Effect.map((data) => ({ data }))),
     pause: (id: Schedule.ID) =>
       find(id).pipe(
@@ -69,8 +56,4 @@ export const makeSchedule = Effect.gen(function* () {
 
 function missingSchedule(error: { readonly scheduleID: Schedule.ID }) {
   return new ScheduleNotFoundError({ scheduleID: error.scheduleID, message: `Schedule not found: ${error.scheduleID}` })
-}
-
-function disabled() {
-  return new ForbiddenError({ message: new Schedule.DisabledError().message })
 }

@@ -5,9 +5,6 @@ import type { Context } from "@opencode/plugin/effect/plugin"
 import { optional } from "@opencode/schema/schema"
 import type { Session } from "@opencode/schema/session"
 import { DateTime, Effect, Option, Schema } from "effect"
-import { Config } from "../../config.js"
-import { ConfigEntryObserver } from "../../config/plugin/entry-observer.js"
-import { Flag } from "../../flag.js"
 import PROMPT_SCHEDULE from "../../plugin/command/schedule.txt"
 import { Schedule } from "../../schedule.js"
 
@@ -45,26 +42,10 @@ const RemoveOutput = Schema.Struct({ id: Schedule.ID, removed: Schema.Boolean })
 export const Plugin = {
   id: "opencode.tool.schedule",
   effect: Effect.fn("ScheduleTools.Plugin")(function* (ctx: Context) {
-    const config = yield* Config.Service
     const schedules = yield* Schedule.Service
-    // Internal plugins are not re-run on config changes, so reload the tools and the command instead.
-    const loaded = yield* ConfigEntryObserver.observe(
-      config,
-      ctx.event,
-      Effect.andThen(ctx.tool.reload(), ctx.command.reload()),
-    )
-    const flags = yield* Flag.Service
-    const enabled = () => flags.resolve(loaded.entries).schedules.enabled
-
-    // A request keeps the tools it started with after config reloads, so each call rechecks the flag.
-    const allowed = (sessionID: Session.ID) =>
-      schedules
-        .enabled(sessionID)
-        .pipe(Effect.flatMap((on) => (on ? Effect.void : Effect.fail(new Schedule.DisabledError()))))
     // Tools act only on the calling Session's schedules.
     const owned = (id: Schedule.ID, sessionID: Session.ID) =>
-      allowed(sessionID).pipe(
-        Effect.andThen(schedules.get(id)),
+      schedules.get(id).pipe(
         Effect.filterOrFail(
           (info) => info.sessionID === sessionID,
           () => new Schedule.NotFoundError({ scheduleID: id }),
@@ -74,7 +55,6 @@ export const Plugin = {
 
     yield* ctx.tool
       .transform((editor) => {
-        if (!enabled()) return
         editor.add({
           name: "schedule_create",
           description:
@@ -101,7 +81,6 @@ export const Plugin = {
           options: { namespace: "opencode", codemode: true },
           execute: (_, context) =>
             Effect.gen(function* () {
-              yield* allowed(context.sessionID)
               const now = DateTime.formatIso(yield* DateTime.now)
               const list = (yield* schedules.list({ sessionID: context.sessionID })).map(toView)
               return {
@@ -154,7 +133,6 @@ export const Plugin = {
       .pipe(Effect.orDie)
 
     yield* ctx.command.transform((editor) => {
-      if (!enabled()) return
       editor.add({
         name: "schedule",
         description: "schedule a prompt for later, or list, pause and delete this session's schedules",

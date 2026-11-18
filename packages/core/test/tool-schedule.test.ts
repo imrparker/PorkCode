@@ -1,13 +1,10 @@
 import { describe, expect } from "bun:test"
 import { DateTime, Effect, Layer, Stream } from "effect"
 import { AppNodeBuilder } from "@opencode/core/effect/app-node-builder"
-import { Flag } from "@opencode/core/flag"
 import { Schedule } from "@opencode/core/schedule"
 import { Session } from "@opencode/core/session"
 import { Tool } from "@opencode/core/tool"
 import { ScheduleTools } from "@opencode/core/tool/plugin/schedule"
-import { Document, Info, type Entry } from "@opencode/schema/config"
-import { ConfigExperimental } from "@opencode/schema/config/experimental"
 import type { CommandDefinition } from "@opencode/plugin/effect/command"
 import { testEffect } from "./lib/effect"
 import { permissionLayer } from "./lib/permission"
@@ -25,7 +22,6 @@ const it = testEffect(AppNodeBuilder.build(Tool.node, toolNodeReplacements()))
 /** An in-memory Schedule service. The real one is covered in schedule.test.ts; this exercises the tool layer. */
 const memory = () => {
   const rows = new Map<Schedule.ID, Schedule.Info>()
-  const flag = { enabled: true }
   const find = (id: Schedule.ID): Effect.Effect<Schedule.Info, Schedule.NotFoundError> => {
     const info = rows.get(id)
     return info ? Effect.succeed(info) : Effect.fail(new Schedule.NotFoundError({ scheduleID: id }))
@@ -63,14 +59,13 @@ const memory = () => {
     pause: (id) => update(id, "paused"),
     resume: (id) => update(id, "active"),
     remove: (id) => find(id).pipe(Effect.map(() => void rows.delete(id))),
-    enabled: () => Effect.sync(() => flag.enabled),
     tick: Effect.void,
     run: Effect.never,
   })
-  return { rows, flag, service }
+  return { rows, service }
 }
 
-const setup = (experimental: ConfigExperimental.Info | undefined) =>
+const setup = () =>
   Effect.gen(function* () {
     const schedules = memory()
     const commands: CommandDefinition[] = []
@@ -88,11 +83,10 @@ const setup = (experimental: ConfigExperimental.Info | undefined) =>
       },
       session: { prompt: (input) => Effect.sync(() => prompts.push(input)).pipe(Effect.as(undefined as never)) },
     }).pipe(
-      Effect.provide(Flag.testLayer([document(experimental)])),
       Effect.provide(Layer.succeed(Schedule.Service, schedules.service)),
       Effect.provide(permissionLayer({ assert: () => Effect.void })),
     )
-    return { registry: yield* Tool.Service, rows: schedules.rows, flag: schedules.flag, commands, prompts }
+    return { registry: yield* Tool.Service, rows: schedules.rows, commands, prompts }
   })
 
 /** Runs one Code Mode call, the way the model reaches these tools. */
@@ -136,21 +130,17 @@ const paths = (registry: Tool.Interface) =>
     )
 
 describe("ScheduleTools", () => {
-  it.effect("are absent unless experimental.schedules is enabled", () =>
+  it.effect("register the schedule tools and command unconditionally", () =>
     Effect.gen(function* () {
-      expect(yield* paths((yield* setup(undefined)).registry)).not.toContain(names[0])
-      const off = yield* setup(new ConfigExperimental.Info({ schedules: false }))
-      expect(yield* paths(off.registry)).not.toContain(names[0])
-      expect(off.commands).toEqual([])
-      const on = yield* setup(new ConfigExperimental.Info({ schedules: true }))
-      expect(yield* paths(on.registry)).toEqual(expect.arrayContaining(names))
-      expect(on.commands.map((command) => command.name)).toEqual(["schedule"])
+      const { registry, commands } = yield* setup()
+      expect(yield* paths(registry)).toEqual(expect.arrayContaining(names))
+      expect(commands.map((command) => command.name)).toEqual(["schedule"])
     }),
   )
 
   it.effect("creates, lists, pauses, resumes and deletes this session's schedules", () =>
     Effect.gen(function* () {
-      const { registry, rows } = yield* setup(new ConfigExperimental.Info({ schedules: true }))
+      const { registry, rows } = yield* setup()
 
       expect(
         yield* run(registry, "schedule_create", {
@@ -180,7 +170,7 @@ describe("ScheduleTools", () => {
 
   it.effect("/schedule hands the request to the model with the schedule instructions", () =>
     Effect.gen(function* () {
-      const { commands, prompts } = yield* setup(new ConfigExperimental.Info({ schedules: true }))
+      const { commands, prompts } = yield* setup()
       yield* commands[0]!
         .execute({
           sessionID,
@@ -196,30 +186,9 @@ describe("ScheduleTools", () => {
     }),
   )
 
-  it.effect("rechecks the flag on each call, since a request keeps its tools after config reloads", () =>
-    Effect.gen(function* () {
-      const { registry, rows, flag } = yield* setup(new ConfigExperimental.Info({ schedules: true }))
-      yield* run(registry, "schedule_create", { when: { every: "1 hour" }, prompt: "ping" })
-      flag.enabled = false
-
-      for (const [name, input] of [
-        ["schedule_list", {}],
-        ["schedule_pause", { id: "sch_1" }],
-        ["schedule_resume", { id: "sch_1" }],
-        ["schedule_delete", { id: "sch_1" }],
-      ] as const) {
-        expect(yield* call(registry, name, input)).toMatchObject({
-          content: [{ type: "text", text: expect.stringContaining("Scheduled tasks are disabled") }],
-          metadata: { error: true },
-        })
-      }
-      expect(rows.get(Schedule.ID.make("sch_1"))).toMatchObject({ status: "active" })
-    }),
-  )
-
   it.effect("rejects a when with more than one trigger instead of keeping the first", () =>
     Effect.gen(function* () {
-      const { registry, rows } = yield* setup(new ConfigExperimental.Info({ schedules: true }))
+      const { registry, rows } = yield* setup()
       expect(
         yield* call(registry, "schedule_create", { when: { in: "5 minutes", every: "1 hour" }, prompt: "ping" }),
       ).toMatchObject({ metadata: { error: true } })
@@ -229,7 +198,7 @@ describe("ScheduleTools", () => {
 
   it.effect("puts each schedule's id, trigger, status, next run and prompt in the text without Code Mode", () =>
     Effect.gen(function* () {
-      const { registry } = yield* setup(new ConfigExperimental.Info({ schedules: true }))
+      const { registry } = yield* setup()
       expect(
         yield* direct(registry, "schedule_create", { name: "ci", when: { every: "1 hour" }, prompt: "check CI" }),
       ).toBe(
@@ -248,7 +217,7 @@ describe("ScheduleTools", () => {
 
   it.effect("treats another session's schedule as missing", () =>
     Effect.gen(function* () {
-      const { registry, rows } = yield* setup(new ConfigExperimental.Info({ schedules: true }))
+      const { registry, rows } = yield* setup()
       yield* run(registry, "schedule_create", { when: { every: "1 hour" }, prompt: "ping" }, otherSessionID)
 
       expect(yield* run(registry, "schedule_list", {})).toMatchObject({ schedules: [] })
@@ -264,7 +233,7 @@ describe("ScheduleTools", () => {
 
   it.effect("creates until schedules with optional when and formats check conditions", () =>
     Effect.gen(function* () {
-      const { registry, rows } = yield* setup(new ConfigExperimental.Info({ schedules: true }))
+      const { registry, rows } = yield* setup()
       const created = yield* run(registry, "schedule_create", {
         until: { run: "gh pr checks 59962" },
         prompt: "CI passed",
@@ -301,6 +270,3 @@ describe("ScheduleTools", () => {
   )
 })
 
-function document(experimental: ConfigExperimental.Info | undefined): Entry {
-  return new Document({ type: "document", info: new Info(experimental ? { experimental } : {}) })
-}

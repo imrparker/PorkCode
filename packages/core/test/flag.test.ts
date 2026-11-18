@@ -51,10 +51,13 @@ describe("Flag.resolve", () => {
   })
 
   test("config overrides the default and PORKCODE_FLAGS overrides config", () => {
-    const entries = [document({ todo: true, schedules: false })]
+    const entries = [document({ todo: true, background_compaction: false })]
     const flags = Flag.resolve({ entries, channel: "dev", overrides: " media_blob , -todo,unknown_flag" })
     expect(
-      [flags.todo, flags.schedules, flags.media_blob, flags.artifacts].map((flag) => [flag.enabled, flag.source]),
+      [flags.todo, flags.background_compaction, flags.media_blob, flags.artifacts].map((flag) => [
+        flag.enabled,
+        flag.source,
+      ]),
     ).toEqual([
       [false, "env"],
       [false, "config"],
@@ -117,7 +120,7 @@ describe("Flag.resolve", () => {
 const it = testEffect(
   Flag.testLayer([document({ artifacts: true })], {
     app: { channel: "latest" },
-    overrides: "schedules",
+    overrides: "media_blob",
   }),
 )
 
@@ -126,9 +129,9 @@ describe("Flag.enabled", () => {
     Effect.gen(function* () {
       const config = yield* Config.Test
       expect(yield* Flag.enabled("artifacts")).toBe(true)
-      expect(yield* Flag.enabled("schedules")).toBe(true)
+      expect(yield* Flag.enabled("media_blob")).toBe(true)
       expect(yield* Flag.enabled("todo")).toBe(false)
-      expect((yield* Flag.all).schedules).toEqual({ enabled: true, source: "env" })
+      expect((yield* Flag.all).media_blob).toEqual({ enabled: true, source: "env" })
 
       yield* config.setEntries([document({ artifacts: false, todo: true })])
       expect(yield* Flag.enabled("artifacts")).toBe(false)

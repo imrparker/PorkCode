@@ -24,7 +24,6 @@ import {
 import { Config } from "./config.js"
 import { Database } from "./database/database.js"
 import { FileSystem } from "./filesystem.js"
-import { Flag } from "./flag.js"
 import { Instance } from "./instance/service.js"
 import { KVTable } from "./kv/sql.js"
 import type { Permission } from "./permission.js"
@@ -54,16 +53,8 @@ export class InvalidError extends Schema.TaggedError<InvalidError>()("Schedule.I
   }
 }
 
-export class DisabledError extends Schema.TaggedError<DisabledError>()("Schedule.DisabledError", {}) {
-  override get message() {
-    return "Scheduled tasks are disabled; set experimental.schedules in config"
-  }
-}
-
 export interface Interface {
-  readonly create: (
-    input: CreateInput,
-  ) => Effect.Effect<Info, InvalidError | DisabledError | Session.NotFoundError | Permission.Error>
+  readonly create: (input: CreateInput) => Effect.Effect<Info, InvalidError | Session.NotFoundError | Permission.Error>
   readonly list: (input?: {
     readonly sessionID?: SessionSchema.ID
     /** Restrict to schedules made by one kind of caller, e.g. only `/loop` loops. */
@@ -73,8 +64,6 @@ export interface Interface {
   readonly pause: (id: ID) => Effect.Effect<Info, NotFoundError>
   readonly resume: (id: ID) => Effect.Effect<Info, NotFoundError>
   readonly remove: (id: ID) => Effect.Effect<void, NotFoundError>
-  /** Whether experimental.schedules is on in the config where the Session lives. */
-  readonly enabled: (sessionID: SessionSchema.ID) => Effect.Effect<boolean, Session.NotFoundError>
   /** Fires every schedule that is due now, at most once each. */
   readonly tick: Effect.Effect<void>
   /**
@@ -101,8 +90,6 @@ const LATE_AFTER = 60_000
 const MAX_SLEEP = 30_000
 const LEADER_KEY = "schedule:leader"
 const LEADER_TTL = 2 * MAX_SLEEP
-/** How long a due schedule waits before its location's flag is read again, while schedules are off there. */
-const DISABLED_RETRY = HOUR
 /** How long a schedule whose prompt failed waits before trying again. */
 const FAILED_RETRY = 5 * MINUTE
 /** How long a schedule whose check failed waits before trying again, up to MAX_CHECK_FAILURES. */
@@ -219,16 +206,11 @@ const layer = Layer.effect(
     const execution = yield* SessionExecution.Service
     const doorbell = yield* Latch.make()
 
-    // Config is per location, so a schedule follows the config where its Session lives.
-    const settings = (session: SessionSchema.Info) =>
+    // Config is per location, so a schedule follows the timezone configured where its Session lives.
+    const timezone = (session: SessionSchema.Info) =>
       Effect.gen(function* () {
         const config = yield* Config.Service
-        const flags = yield* Flag.Service
-        const entries = yield* config.entries()
-        return {
-          enabled: flags.resolve(entries).schedules.enabled,
-          timezone: Config.latest(entries, "timezone"),
-        }
+        return Config.latest(yield* config.entries(), "timezone")
       }).pipe(instances.provide(session))
 
     const find = (id: ID) =>
@@ -431,12 +413,6 @@ const layer = Layer.effect(
       if (due === null || row.session_id === null) return
       if (!(yield* claimLeader(yield* Clock.currentTimeMillis))) return
       const session = yield* sessions.get(row.session_id)
-      if (!(yield* settings(session)).enabled) {
-        // Reading the flag boots the Session's location, so check again in an hour rather than every tick. The row
-        // keeps its due time, so once the flag is back on it catches up like any missed slot.
-        yield* update(row, { last_outcome: "disabled", retry_at: now + DISABLED_RETRY, time_updated: now })
-        return
-      }
       if (row.last_message_id !== null && (yield* pending(row.last_message_id))) {
         // The wake that followed admission may have been lost; waking again is harmless.
         yield* execution.wake(session.id)
@@ -685,15 +661,14 @@ const layer = Layer.effect(
         const session = yield* sessions.get(input.sessionID)
         const missingDirectory = () =>
           Effect.fail(new InvalidError({ reason: `Session directory does not exist: ${session.location.directory}` }))
-        const config = yield* settings(session).pipe(
+        const tz = yield* timezone(session).pipe(
           Effect.catchTag("FileSystem.DirectoryNotFoundError", missingDirectory),
         )
-        if (!config.enabled) return yield* new DisabledError()
         const check = yield* resolveStoredCheck(input)
         const when = input.when ?? (check?.mode === "until" ? DEFAULT_UNTIL_EVERY : undefined)
         if (when === undefined)
           return yield* new InvalidError({ reason: "when is required unless until is set" })
-        const zone = yield* resolveZone(when.tz ?? config.timezone)
+        const zone = yield* resolveZone(when.tz ?? tz)
         const now = yield* Clock.currentTimeMillis
         const due = yield* firstDue(when, check !== undefined, zone, now)
         if (input.ends?.times !== undefined && input.ends.times < 1)
@@ -822,13 +797,6 @@ const layer = Layer.effect(
       remove: Effect.fn("Schedule.remove")(function* (id) {
         yield* find(id)
         yield* db.delete(ScheduleTable).where(eq(ScheduleTable.id, id)).run().pipe(Effect.orDie)
-      }),
-      enabled: Effect.fn("Schedule.enabled")(function* (sessionID) {
-        const session = yield* sessions.get(sessionID)
-        return yield* settings(session).pipe(
-          Effect.map((value) => value.enabled),
-          Effect.catchTag("FileSystem.DirectoryNotFoundError", () => Effect.succeed(false)),
-        )
       }),
       tick,
       run,

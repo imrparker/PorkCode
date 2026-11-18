@@ -2534,7 +2534,6 @@ export type ConfigEntry =
           todo?: boolean
           background_compaction?: boolean
           media_blob?: boolean
-          schedules?: boolean
           artifacts?: boolean
           codemode_vm?: boolean
           part_rows?: boolean
