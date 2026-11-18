@@ -91,3 +91,43 @@
   line-height: var(--line-height-x-large); /* 120% */
   letter-spacing: var(--letter-spacing-tightest);
 }
+
+/* PorkCode control language: shared primitives every restyled control reads so shape, motion and
+   focus feel like one product. Values are mode-independent; they reference per-mode theme tokens
+   that resolve at use time, so all bundled themes keep working without duplicating these per scheme. */
+:root {
+  --pc-ease: cubic-bezier(0.22, 0.8, 0.3, 1);
+  --pc-control-radius: 10px;
+  --pc-control-radius-sm: 8px;
+  /* Soft accent glow replacing hard focus outlines. */
+  --pc-focus-ring: 0 0 0 3px color-mix(in oklab, var(--v2-border-border-focus) 26%, transparent);
+  /* Subtle press feedback for buttons and toggles. */
+  --pc-press: scale(0.975);
+}
+
+/* Frosted-glass redesign. The atmosphere paints the ambient gradient behind the whole window so the
+   translucent chrome has something to refract; the glass roles frost only floating chrome (titlebar,
+   tabs, sidebar peek, composer). They set ONLY background + backdrop-filter so a call site's existing
+   elevation shadow still applies. Popovers/dialogs/menus get the same treatment in their own CSS rules.
+   The message timeline stays opaque for scroll perf. */
+.pc-atmosphere {
+  background: var(--pc-atmosphere);
+}
+
+.pc-glass-bar {
+  background-color: var(--pc-glass-bar-bg);
+  -webkit-backdrop-filter: var(--pc-glass-bar-blur);
+  backdrop-filter: var(--pc-glass-bar-blur);
+}
+
+.pc-glass-float {
+  background-color: var(--pc-glass-float-bg);
+  -webkit-backdrop-filter: var(--pc-glass-float-blur);
+  backdrop-filter: var(--pc-glass-float-blur);
+}
+
+.pc-glass-field {
+  background-color: var(--pc-glass-field-bg);
+  -webkit-backdrop-filter: blur(10px) saturate(1.3);
+  backdrop-filter: blur(10px) saturate(1.3);
+}

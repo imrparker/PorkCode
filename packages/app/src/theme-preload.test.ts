@@ -21,10 +21,10 @@ beforeEach(() => {
 
 describe("theme preload", () => {
   test.each([
-    { stored: undefined, systemDark: false, scheme: "light", background: "#fafafa" },
-    { stored: "dark", systemDark: false, scheme: "dark", background: "#080808" },
-    { stored: "light", systemDark: true, scheme: "light", background: "#fafafa" },
-    { stored: "system", systemDark: true, scheme: "dark", background: "#080808" },
+    { stored: undefined, systemDark: false, scheme: "light", background: "#f5f5f6" },
+    { stored: "dark", systemDark: false, scheme: "dark", background: "#121216" },
+    { stored: "light", systemDark: true, scheme: "light", background: "#f5f5f6" },
+    { stored: "system", systemDark: true, scheme: "dark", background: "#121216" },
   ])(
     "paints the default theme in $scheme for stored scheme $stored (system dark: $systemDark)",
     ({ stored, systemDark, scheme, background }) => {
@@ -33,7 +33,7 @@ describe("theme preload", () => {
       if (stored) localStorage.setItem("opencode-color-scheme", stored)
       run()
 
-      expect(document.documentElement.dataset.theme).toBe("oc-2")
+      expect(document.documentElement.dataset.theme).toBe("pc-1")
       expect(document.documentElement.dataset.colorScheme).toBe(scheme)
       expect(document.documentElement.style.backgroundColor).toBe(background)
     },

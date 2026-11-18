@@ -9,8 +9,17 @@
   letter-spacing: inherit;
   line-height: inherit;
   box-sizing: border-box;
+  transition:
+    background-color 140ms var(--pc-ease),
+    box-shadow 140ms var(--pc-ease);
 
   &:focus {
     outline: none;
+  }
+
+  /* Ghost-in-place editor: geometry stays, focus reads as the shared soft accent glow. */
+  &:focus-visible {
+    background-color: color-mix(in oklab, var(--v2-background-bg-accent) 7%, transparent);
+    box-shadow: var(--pc-focus-ring);
   }
 }

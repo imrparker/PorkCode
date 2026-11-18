@@ -32,35 +32,21 @@
   font-style: normal;
 }
 
+/* Geist Sans and Geist Mono ship as variable faces (SIL OFL, vendored from the `geist` package). The redesign
+   replaced Inter and IBM Plex Mono; italics fall back to synthesis. */
 @font-face {
-  font-family: "Inter";
-  src: url("/assets/Inter.ttf") format("truetype");
+  font-family: "Geist";
+  src: url("/assets/Geist-Variable.woff2") format("woff2");
   font-weight: 100 900;
   font-style: normal;
-}
-
-/* Text covers every weight below bold, so only bold syntax tokens and markup load the Bold face. */
-@font-face {
-  font-family: "IBM Plex Mono";
-  src: url("@ibm/plex/IBM-Plex-Mono/fonts/complete/woff2/IBMPlexMono-Text.woff2") format("woff2");
-  font-weight: 100 599;
-  font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: "IBM Plex Mono";
-  src: url("@ibm/plex/IBM-Plex-Mono/fonts/complete/woff2/IBMPlexMono-Bold.woff2") format("woff2");
-  font-weight: 600 900;
+  font-family: "Geist Mono";
+  src: url("/assets/GeistMono-Variable.woff2") format("woff2");
+  font-weight: 100 900;
   font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "IBM Plex Mono";
-  src: url("@ibm/plex/IBM-Plex-Mono/fonts/complete/woff2/IBMPlexMono-TextItalic.woff2") format("woff2");
-  font-weight: 100 599;
-  font-style: italic;
   font-display: swap;
 }
 

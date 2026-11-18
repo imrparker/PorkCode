@@ -34,16 +34,16 @@ export function projectSettingsKey(scope: ServerScope, projectID: string | undef
   return projectID ? ScopedKey.from(scope, projectID) : undefined
 }
 
-export const monoDefault = "IBM Plex Mono"
+export const monoDefault = "Geist Mono"
 
-export const sansDefault = "Inter"
+export const sansDefault = "Geist"
 
 export const terminalDefault = "JetBrainsMono Nerd Font Mono"
 
 const monoFallback =
-  '"IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace'
+  '"Geist Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace'
 
-const sansFallback = '"Inter", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'
+const sansFallback = '"Geist", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'
 
 const terminalFallback =
   '"JetBrainsMono Nerd Font Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace'
@@ -183,7 +183,6 @@ const soundsSchema = Persistence.struct({
   questions: Schema.String,
   errorsEnabled: Schema.Boolean,
   errors: Schema.String,
-  interfaceEnabled: Schema.optional(Schema.Boolean),
 })
 
 export const settingsSchema = Persistence.struct({
@@ -325,7 +324,6 @@ export const defaultSettings: Settings = {
     questions: "staplebops-05",
     errorsEnabled: true,
     errors: "nope-03",
-    interfaceEnabled: true,
   },
 }
 
@@ -595,13 +593,6 @@ export const { use: useSettings, provider: SettingsProvider } = createSimpleCont
         errors: withFallback(() => store.sounds?.errors, defaultSettings.sounds.errors),
         setErrors(value: string) {
           setStore("sounds", "errors", value)
-        },
-        interfaceEnabled: withFallback(
-          () => store.sounds?.interfaceEnabled,
-          defaultSettings.sounds.interfaceEnabled ?? true,
-        ),
-        setInterfaceEnabled(value: boolean) {
-          setStore("sounds", "interfaceEnabled", value)
         },
       },
     }

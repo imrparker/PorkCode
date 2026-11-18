@@ -3,7 +3,7 @@
 import { createMemo, createSignal, onCleanup, onMount, untrack } from "solid-js"
 import { makeEventListener } from "@solid-primitives/event-listener"
 import { createSimpleContext } from "../context/helper"
-import oc2ThemeJson from "./themes/oc-2.json"
+import pc1ThemeJson from "./themes/pc-1.json"
 import { resolveThemeVariant, themeToCss } from "./resolve"
 import { resolveThemeVariantV2, themeV2ToCss } from "./v2/resolve"
 import type { DesktopTheme } from "./types"
@@ -65,7 +65,8 @@ function knownThemes() {
 
 const names = new Map(
   Object.entries({
-    "oc-2": "PorkCode",
+    "pc-1": "Pork Code",
+    "oc-2": "Classic",
     amoled: "AMOLED",
     aura: "Aura",
     ayu: "Ayu",
@@ -104,9 +105,9 @@ const names = new Map(
   }),
 )
 
-// SAFETY: oc-2.json follows desktop-theme.schema.json; JSON modules only widen its colors to `string`, and
+// SAFETY: pc-1.json follows desktop-theme.schema.json; JSON modules only widen its colors to `string`, and
 // v2/resolve.test.ts resolves the same file as a DesktopTheme.
-const oc2Theme = oc2ThemeJson as DesktopTheme
+const pc1Theme = pc1ThemeJson as DesktopTheme
 
 // Storage access throws where localStorage is missing or blocked; every caller treats that as no stored value.
 function read(key: string) {
@@ -167,12 +168,12 @@ function applyThemeCss(theme: DesktopTheme, themeId: string, mode: "light" | "da
   ensureThemeStyleElement().textContent = fullCss
   document.documentElement.dataset.theme = themeId
   document.documentElement.dataset.colorScheme = mode
-  document.documentElement.style.backgroundColor = isDark ? "#080808" : "#fafafa"
+  document.documentElement.style.backgroundColor = tokens["background-base"]
 
   // Update theme-color meta tag to match light/dark mode
   const meta = document.querySelector('meta[name="theme-color"]')
 
-  if (meta) meta.setAttribute("content", isDark ? "#080808" : "#fafafa")
+  if (meta) meta.setAttribute("content", tokens["background-base"])
 }
 
 function cacheThemeVariants(theme: DesktopTheme) {
@@ -198,7 +199,7 @@ export const { use: useTheme, provider: ThemeProvider } = createSimpleContext({
       themeId: read(STORAGE_KEYS.THEME_ID) || props.defaultTheme || DEFAULT_THEME_ID,
       scheme: parseColorScheme(read(STORAGE_KEYS.COLOR_SCHEME)),
       systemMode: getSystemMode(),
-      defaultTheme: oc2Theme,
+      defaultTheme: pc1Theme,
       bundled: knownThemes(),
     })
 

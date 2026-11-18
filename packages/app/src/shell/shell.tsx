@@ -207,7 +207,7 @@ export default function Layout(props: ParentProps) {
 
   return (
     <div
-      class="relative bg-v2-background-bg-deep flex-1 min-h-0 min-w-0 flex flex-col select-none [&_input]:select-text [&_textarea]:select-text [&_[contenteditable]]:select-text"
+      class="relative pc-atmosphere flex-1 min-h-0 min-w-0 flex flex-col select-none [&_input]:select-text [&_textarea]:select-text [&_[contenteditable]]:select-text"
       style={{
         // Mobile panels only need clearance for their outer border.
         "--shell-inline-inset": mobile() ? "1px" : "8px",
@@ -266,13 +266,13 @@ export default function Layout(props: ParentProps) {
                 ref={peekSurface}
                 data-slot="vertical-tabs-peek-surface"
                 aria-hidden="true"
-                class="pointer-events-none absolute inset-y-0 end-0 bg-v2-background-bg-deep shadow-[var(--v2-elevation-floating)]"
+                class="pointer-events-none absolute inset-y-0 end-0 pc-glass-bar shadow-[var(--v2-elevation-floating)]"
                 style={{ width: `${state.tabsWidth}px` }}
               />
               <div
                 ref={(element) => setState("tabsMount", element)}
                 data-slot="vertical-tabs-mount"
-                class="absolute inset-y-0 end-0 contain-strict [overflow-clip-margin:var(--sidebar-divider-bleed,0px)] will-change-[opacity] flex min-h-0 flex-col bg-v2-background-bg-deep ps-[var(--sidebar-inset-start)] pe-[var(--sidebar-inset-end)] pb-[var(--shell-bottom-inset,8px)] pt-[var(--shell-top-inset,8px)]"
+                class="absolute inset-y-0 end-0 contain-strict [overflow-clip-margin:var(--sidebar-divider-bleed,0px)] will-change-[opacity] flex min-h-0 flex-col pc-glass-bar ps-[var(--sidebar-inset-start)] pe-[var(--sidebar-inset-end)] pb-[var(--shell-bottom-inset,8px)] pt-[var(--shell-top-inset,8px)]"
                 style={{
                   width: `${state.tabsWidth}px`,
                   "padding-bottom": "max(10px, var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)))",

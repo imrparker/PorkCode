@@ -135,6 +135,24 @@
     --v2-illustration-illustration-layer-02: var(--v2-grey-400);
     --v2-illustration-illustration-layer-03: var(--v2-grey-500);
 
+    /* ── Glass chrome (redesign) ── */
+    /* Translucent surfaces blend the theme's own colors, so every bundled theme keeps working while the
+       chrome reads as frosted glass over --pc-atmosphere. Opacity floors keep text legible on the gradient.
+       The ambient tint is derived from the theme accent (single hue family) so no theme gets an off-palette
+       glow; light mode has no top-inner specular edge (borders/shadows define edges there). */
+    --pc-glass-bar-bg: color-mix(in oklab, var(--v2-background-bg-deep) 80%, transparent);
+    --pc-glass-bar-blur: blur(16px) saturate(1.35);
+    --pc-glass-float-bg: color-mix(in oklab, var(--v2-background-bg-layer-01) 88%, transparent);
+    --pc-glass-float-blur: blur(24px) saturate(1.5);
+    --pc-glass-field-bg: color-mix(in oklab, var(--v2-background-bg-base) 90%, transparent);
+    /* Must stay a valid <shadow-value>: a bare `none` inside a comma-joined box-shadow list makes the
+       whole declaration invalid at computed-value time, silently deleting elevation (and focus rings). */
+    --pc-glass-edge: inset 0 0 0 0 transparent;
+    --pc-atmosphere:
+      radial-gradient(120% 90% at 15% -12%, color-mix(in oklab, var(--v2-background-bg-accent) 14%, transparent), transparent 62%),
+      radial-gradient(100% 80% at 85% 4%, color-mix(in oklab, var(--v2-background-bg-accent) 9%, transparent), transparent 58%),
+      var(--v2-background-bg-deep);
+
     --font-family-text: var(--font-family-sans);
     --v2-font-family-sans: var(--font-family-sans);
     --v2-font-family-code: var(--font-family-mono);
@@ -519,5 +537,18 @@
     --v2-illustration-illustration-layer-01: var(--v2-grey-900);
     --v2-illustration-illustration-layer-02: var(--v2-grey-800);
     --v2-illustration-illustration-layer-03: var(--v2-grey-700);
+
+    /* ── Glass chrome (redesign, dark) ── */
+    --pc-glass-bar-bg: color-mix(in oklab, var(--v2-background-bg-deep) 76%, transparent);
+    --pc-glass-bar-blur: blur(18px) saturate(1.4);
+    --pc-glass-float-bg: color-mix(in oklab, var(--v2-background-bg-layer-01) 86%, transparent);
+    --pc-glass-float-blur: blur(26px) saturate(1.55);
+    --pc-glass-field-bg: color-mix(in oklab, var(--v2-background-bg-base) 88%, transparent);
+    /* Dark mode keeps a faint top-inner specular line so glass reads as catching light from above. */
+    --pc-glass-edge: inset 0 0.5px 0 0 var(--v2-alpha-light-10);
+    --pc-atmosphere:
+      radial-gradient(120% 90% at 15% -12%, color-mix(in oklab, var(--v2-background-bg-accent) 22%, transparent), transparent 64%),
+      radial-gradient(100% 80% at 85% 4%, color-mix(in oklab, var(--v2-background-bg-accent) 13%, transparent), transparent 60%),
+      var(--v2-background-bg-deep);
   }
 }

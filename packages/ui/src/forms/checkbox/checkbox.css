@@ -26,12 +26,13 @@
     margin-top: var(--checkbox-offset, 0px);
     aspect-ratio: 1;
     flex-shrink: 0;
-    border-radius: var(--radius-sm);
-    border: 1px solid var(--v2-border-border-base);
+    border-radius: 6px;
+    border: 1px solid var(--v2-border-border-strong);
+    background-color: transparent;
     transition:
-      border-color 220ms var(--tool-motion-ease, cubic-bezier(0.22, 1, 0.36, 1)),
-      background-color 220ms var(--tool-motion-ease, cubic-bezier(0.22, 1, 0.36, 1)),
-      box-shadow 220ms var(--tool-motion-ease, cubic-bezier(0.22, 1, 0.36, 1));
+      border-color 180ms var(--pc-ease),
+      background-color 180ms var(--pc-ease),
+      box-shadow 180ms var(--pc-ease);
   }
 
   [data-slot="checkbox-checkbox-indicator"] {
@@ -40,12 +41,12 @@
     justify-content: center;
     width: 100%;
     height: 100%;
-    color: var(--icon-base);
+    color: var(--v2-icon-icon-contrast);
     opacity: 0;
-    transform: scale(0.9);
+    transform: scale(0.7);
     transition:
-      opacity 180ms var(--tool-motion-ease, cubic-bezier(0.22, 1, 0.36, 1)),
-      transform 220ms var(--tool-motion-ease, cubic-bezier(0.22, 1, 0.36, 1));
+      opacity 180ms var(--pc-ease),
+      transform 180ms var(--pc-ease);
   }
 
   [data-slot="checkbox-checkbox-label"] {
@@ -78,31 +79,37 @@
   }
 
   &:hover:not([data-disabled], [data-readonly]) [data-slot="checkbox-checkbox-control"] {
-    border-color: var(--v2-border-border-strong);
-    background-color: var(--surface-hover);
+    border-color: color-mix(in oklab, var(--v2-background-bg-accent) 40%, var(--v2-border-border-strong));
+    background-color: color-mix(in oklab, var(--v2-background-bg-accent) 9%, transparent);
   }
 
   &:not([data-readonly]) [data-slot="checkbox-checkbox-input"]:focus-visible + [data-slot="checkbox-checkbox-control"] {
     border-color: var(--v2-border-border-focus);
-    box-shadow: var(--shadow-xs-border-focus);
+    box-shadow: var(--pc-focus-ring);
   }
 
   &[data-checked] [data-slot="checkbox-checkbox-control"],
   &[data-indeterminate] [data-slot="checkbox-checkbox-control"] {
-    border-color: var(--v2-border-border-strong);
-    background-color: var(--surface-weak);
+    border-color: var(--v2-background-bg-accent);
+    background-color: var(--v2-background-bg-accent);
   }
 
   &[data-checked]:hover:not([data-disabled], [data-readonly]) [data-slot="checkbox-checkbox-control"],
   &[data-indeterminate]:hover:not([data-disabled]) [data-slot="checkbox-checkbox-control"] {
-    border-color: var(--v2-border-border-strong);
-    background-color: var(--surface-hover);
+    border-color: var(--v2-background-bg-accent);
+    background-color: var(--v2-background-bg-accent);
+    background-image: linear-gradient(
+      0deg,
+      var(--v2-overlay-simple-overlay-contrast-hover),
+      var(--v2-overlay-simple-overlay-contrast-hover)
+    );
   }
 
   &[data-checked] [data-slot="checkbox-checkbox-indicator"],
   &[data-indeterminate] [data-slot="checkbox-checkbox-indicator"] {
     opacity: 1;
     transform: scale(1);
+    animation: pc-checkbox-pop 180ms var(--pc-ease);
   }
 
   &[data-disabled] {
@@ -114,6 +121,12 @@
     background-color: var(--surface-disabled);
   }
 
+  /* Keep a checked box legible when disabled: faded accent instead of the flat disabled fill. */
+  &[data-disabled]:where([data-checked], [data-indeterminate]) [data-slot="checkbox-checkbox-control"] {
+    border-color: var(--v2-border-border-muted);
+    background-color: color-mix(in oklab, var(--v2-background-bg-accent) 45%, transparent);
+  }
+
   &[data-invalid] [data-slot="checkbox-checkbox-control"] {
     border-color: var(--v2-state-border-danger);
   }
@@ -122,4 +135,21 @@
     cursor: default;
     pointer-events: none;
   }
+}
+
+/* Kobalte mounts the indicator only when checked, so a transition cannot run — replay the pop on mount. */
+@keyframes pc-checkbox-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Motion setting keys off the root attribute (not the media query) so it can override the OS; see settings/model.tsx. */
+:root[data-motion="reduce"] [data-component="checkbox"] [data-slot="checkbox-checkbox-indicator"] {
+  animation: none;
 }

@@ -63,13 +63,13 @@
     left: 0;
     width: 16px;
     height: 16px;
-    border-radius: 4px;
+    border-radius: 6px;
     color: var(--v2-icon-icon-contrast);
     background: var(--v2-background-bg-base);
     box-shadow: inset 0 0 0 0.5px var(--v2-border-border-strong);
     transition:
-      background 85ms ease-out,
-      box-shadow 85ms ease-out;
+      background 160ms var(--pc-ease),
+      box-shadow 160ms var(--pc-ease);
   }
 
   [data-slot="checkbox-v2"][data-surface="layer-1"] [data-slot="checkbox-v2-control"] {
@@ -114,8 +114,22 @@
     [data-slot="checkbox-v2-input"]:focus-visible
     ~ [data-slot="checkbox-v2-control-stack"]
     [data-slot="checkbox-v2-control"] {
-    outline: 2px solid var(--v2-border-border-focus);
-    outline-offset: 2px;
+    outline: none;
+    box-shadow: inset 0 0 0 1px var(--v2-border-border-focus), var(--pc-focus-ring);
+  }
+
+  /* Checked fills flat with the accent plus a top-inner specular line; the halo keeps it glowing softly. */
+  [data-slot="checkbox-v2"]:where([data-checked], [data-indeterminate]) [data-slot="checkbox-v2-control"] {
+    background: var(--v2-background-bg-accent);
+    box-shadow:
+      inset 0 1px 0 var(--v2-alpha-light-14),
+      0 0 0 3px color-mix(in oklab, var(--v2-background-bg-accent) 16%, transparent);
+  }
+
+  [data-slot="checkbox-v2"]:where([data-invalid]):where(:not([data-checked], [data-indeterminate]))
+    [data-slot="checkbox-v2-control"] {
+    background: var(--v2-state-bg-danger);
+    box-shadow: inset 0 0 0 0.5px var(--v2-state-fg-danger);
   }
 
   @media (hover: hover) {
@@ -124,7 +138,7 @@
       )
       [data-slot="checkbox-v2-control"] {
       box-shadow:
-        inset 0 0 0 0.5px var(--v2-border-border-strong),
+        inset 0 0 0 1px color-mix(in oklab, var(--v2-background-bg-accent) 45%, var(--v2-border-border-strong)),
         inset 0 0 0 100vmax var(--v2-overlay-simple-overlay-hover);
     }
 
@@ -133,21 +147,10 @@
       )
       [data-slot="checkbox-v2-control"] {
       box-shadow:
-        inset 0 0 0 0.5px var(--v2-border-border-strong),
-        inset 0 0 0 100vmax var(--v2-overlay-simple-overlay-contrast-hover);
+        inset 0 1px 0 var(--v2-alpha-light-14),
+        inset 0 0 0 100vmax var(--v2-overlay-simple-overlay-contrast-hover),
+        0 0 0 3px color-mix(in oklab, var(--v2-background-bg-accent) 16%, transparent);
     }
-  }
-
-  /* The depth gradient is Figma's white-to-clear fill at 20% opacity over the accent. */
-  [data-slot="checkbox-v2"]:where([data-checked], [data-indeterminate]) [data-slot="checkbox-v2-control"] {
-    background:
-      linear-gradient(180deg, var(--v2-alpha-light-20) 0%, var(--v2-alpha-light-0) 100%), var(--v2-background-bg-accent);
-  }
-
-  [data-slot="checkbox-v2"]:where([data-invalid]):where(:not([data-checked], [data-indeterminate]))
-    [data-slot="checkbox-v2-control"] {
-    background: var(--v2-state-bg-danger);
-    box-shadow: inset 0 0 0 0.5px var(--v2-state-fg-danger);
   }
 
   [data-slot="checkbox-v2"] .checkbox-v2-icon {
@@ -158,12 +161,30 @@
     display: none;
   }
 
+  /* The icons toggle via display, so the pop replays each time one becomes visible. */
   [data-slot="checkbox-v2"]:where([data-checked]):where(:not([data-indeterminate])) .checkbox-v2-icon--check,
   [data-slot="checkbox-v2"]:where([data-indeterminate]) .checkbox-v2-icon--minus {
     display: block;
+    animation: pc-checkbox-v2-pop 160ms var(--pc-ease);
   }
 
   [data-slot="checkbox-v2"]:where([data-disabled]) [data-slot="checkbox-v2-row"] {
     opacity: 0.5;
   }
+}
+
+@keyframes pc-checkbox-v2-pop {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.7);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+/* Motion setting keys off the root attribute (not the media query) so it can override the OS; see settings/model.tsx. */
+:root[data-motion="reduce"] [data-slot="checkbox-v2"] .checkbox-v2-icon {
+  animation: none;
 }

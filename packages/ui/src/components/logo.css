@@ -1,4 +1,5 @@
 [data-component="logo-mark"] {
   width: 16px;
-  aspect-ratio: 4/5;
+  /* Matches the Mark viewBox (ink + echo); a mismatched ratio would letterbox the glyph inside its box. */
+  aspect-ratio: 17/21;
 }

@@ -13,9 +13,11 @@
   z-index: 60;
   pointer-events: auto;
 
-  background: var(--v2-background-bg-layer-01);
-  border-radius: 6px;
-  box-shadow: var(--v2-elevation-floating);
+  background: var(--pc-glass-float-bg);
+  -webkit-backdrop-filter: var(--pc-glass-float-blur);
+  backdrop-filter: var(--pc-glass-float-blur);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--v2-elevation-floating), var(--pc-glass-edge);
 
   outline: none;
 
@@ -52,13 +54,17 @@
   align-items: center;
   gap: 8px;
   height: 28px;
-  padding: 0 12px;
+  margin-inline: 6px;
+  padding: 0 8px;
   padding-inline-end: 6px;
   background: transparent;
-  border-radius: 4px;
+  border-radius: var(--pc-control-radius-sm);
   outline: none;
   cursor: default;
   user-select: none;
+  transition:
+    background-color 140ms var(--pc-ease),
+    color 140ms var(--pc-ease);
 
   font-variation-settings: "slnt" 0;
   font-variant-numeric: tabular-nums;
@@ -87,7 +93,10 @@
     display: inline-flex;
     align-items: center;
     flex: none;
-    height: 11px;
+    padding: 3px 5px;
+    background: var(--v2-alpha-light-6);
+    border: 0.5px solid color-mix(in oklab, var(--v2-border-border-base) 80%, transparent);
+    border-radius: 6px;
 
     font-size: 11px;
     font-weight: 530;
@@ -145,13 +154,21 @@
     background: var(--menu-v2-hover);
   }
 
+  &[data-checked] {
+    background: color-mix(in oklab, var(--v2-background-bg-accent) 10%, transparent);
+  }
+
+  &[data-checked][data-highlighted] {
+    background: color-mix(in oklab, var(--v2-background-bg-accent) 14%, transparent);
+  }
+
   &[data-checked] [data-slot="menu-v2-item-content"] {
     font-weight: 440;
     color: var(--menu-v2-fg);
   }
 
   &[data-checked] [data-slot="menu-v2-item-indicator"] {
-    color: var(--menu-v2-icon);
+    color: var(--v2-icon-icon-accent);
   }
 
   &[data-disabled] {
@@ -162,9 +179,9 @@
 
 [data-slot="menu-v2-separator"] {
   height: 1px;
-  width: calc(100% + 4px);
-  margin: 2px -2px;
-  background: var(--v2-border-border-muted);
+  margin-block: 4px;
+  margin-inline: 6px;
+  background: color-mix(in oklab, var(--v2-border-border-base) 55%, transparent);
   border: none;
 }
 
@@ -173,7 +190,8 @@
   display: flex;
   align-items: center;
   height: 28px;
-  padding: 0 12px;
+  margin-inline: 6px;
+  padding: 0 8px;
 
   font-size: 11px;
   font-weight: 530;

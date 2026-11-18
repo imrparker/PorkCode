@@ -171,7 +171,6 @@ test("Questions settings default independently of old Permissions settings and s
     "Permissions",
     "Questions",
     "Errors",
-    "Interface",
   ])
   const questions = settings.getByRole("switch", { name: "Questions", exact: true })
 

@@ -1,6 +1,6 @@
 /* `width` and `height` props arrive as variables, so classes and other CSS still size the spinner over them, as they
    did over an SVG's attributes. */
-[data-slot="spinner-dots"] {
+[data-slot="spinner-ring"] {
   position: relative;
   display: block;
   width: var(--spinner-width, 18px);
@@ -13,22 +13,52 @@
   flex-shrink: 0;
 }
 
-/* Each dot rests at its frozen pose, so reduced motion only has to stop the animation. */
-[data-slot="spinner-dots"] > svg {
+[data-slot="spinner-ring"] > svg {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   overflow: visible;
-  opacity: var(--still);
+  animation: spinner-rotate calc(1.6s * var(--spinner-time, 1)) linear infinite;
 }
 
-/* syncSpinPhase marks spinners out of view; `!important` beats the inline animation each dot carries. */
-[data-slot="spinner-dots"][data-offscreen] > svg {
+/* The arc breathes from a sliver to about half the ring while the SVG rotates under it. pathLength is 100, so the
+   dash values are percentages of the circumference. The still (reduced-motion) pose is the base dasharray. */
+[data-slot="spinner-ring"] circle {
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-dasharray: 30 70;
+  animation: spinner-breathe calc(1.6s * var(--spinner-time, 1)) ease-in-out infinite;
+}
+
+@keyframes spinner-rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes spinner-breathe {
+  0% {
+    stroke-dasharray: 8 92;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: 46 54;
+    stroke-dashoffset: -16;
+  }
+  100% {
+    stroke-dasharray: 8 92;
+    stroke-dashoffset: -100;
+  }
+}
+
+/* syncSpinPhase marks spinners out of view; `!important` beats the animations above. */
+[data-slot="spinner-ring"][data-offscreen] :is(svg, circle) {
   animation-play-state: paused !important;
 }
 
-:root[data-motion="reduce"] [data-slot="spinner-dots"] > svg {
-  /* Beats the inline animation each dot carries. */
+:root[data-motion="reduce"] [data-slot="spinner-ring"] :is(svg, circle) {
+  /* Falls back to the base dasharray: a still arc. */
   animation: none !important;
 }

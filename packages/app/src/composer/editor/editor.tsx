@@ -245,7 +245,7 @@ export function ComposerEditor(props: ComposerEditorProps) {
         ref={composer}
         data-component="composer"
         data-dock-border-underlay={props.borderUnderlay ? "true" : undefined}
-        class="group/composer relative w-full overflow-clip rounded-xl bg-v2-background-bg-base"
+        class="group/composer relative w-full overflow-clip rounded-xl pc-glass-field"
         style={{ height: historyHeight() === undefined ? undefined : `${historyHeight()}px` }}
         classList={{
           "shadow-[var(--v2-elevation-raised)]": !props.borderUnderlay,

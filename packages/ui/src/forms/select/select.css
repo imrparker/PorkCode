@@ -13,9 +13,11 @@
   overflow: hidden;
   z-index: 60;
   pointer-events: auto;
-  background: var(--v2-background-bg-layer-01);
-  border-radius: 6px;
-  box-shadow: var(--v2-elevation-floating);
+  background: var(--pc-glass-float-bg);
+  -webkit-backdrop-filter: var(--pc-glass-float-blur);
+  backdrop-filter: var(--pc-glass-float-blur);
+  border-radius: 12px;
+  box-shadow: var(--v2-elevation-overlay), var(--pc-glass-edge);
 }
 
 /* Shared trigger structure for the inline control. */
@@ -30,18 +32,20 @@
   width: 280px;
   height: 28px;
   border: 0;
-  border-radius: 6px;
+  border-radius: var(--pc-control-radius);
   outline: 1px solid transparent;
   outline-offset: -1px;
   background: var(--v2-background-bg-base);
-  box-shadow: var(--v2-elevation-input);
+  box-shadow:
+    inset 0 1px 2px var(--v2-alpha-dark-6),
+    var(--v2-elevation-input);
   flex: none;
   align-self: stretch;
   user-select: none;
   transition:
-    background 85ms ease-out,
-    outline-color 85ms ease-out,
-    box-shadow 85ms ease-out;
+    background 140ms var(--pc-ease),
+    outline-color 140ms var(--pc-ease),
+    box-shadow 140ms var(--pc-ease);
 }
 
 [data-component="select-v2"][data-appearance="small"] {
@@ -99,12 +103,12 @@
 
 [data-component="select-v2"]:where(:focus-within):not([data-disabled], [data-invalid]):not([data-expanded]) {
   outline-color: var(--v2-border-border-focus);
-  box-shadow: none;
+  box-shadow: var(--pc-focus-ring);
 }
 
 [data-component="select-v2"]:where([data-invalid]):not([data-disabled]) {
   outline-color: var(--v2-state-fg-danger);
-  box-shadow: none;
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--v2-state-fg-danger) 26%, transparent);
 }
 
 [data-component="select-v2"]:where([data-disabled]) {
@@ -172,9 +176,10 @@
   padding: 2px;
   gap: 3px;
   border: 0;
-  border-radius: 4px;
+  border-radius: var(--pc-control-radius-sm);
   background: transparent;
   color: var(--v2-icon-icon-muted);
+  transition: color 140ms var(--pc-ease);
   pointer-events: none;
 }
 
@@ -197,11 +202,15 @@
   padding-block: 4px;
   padding-inline: 8px 4px;
   gap: 4px;
-  border-radius: 4px;
+  border-radius: var(--pc-control-radius-sm);
   background: transparent;
   box-shadow: none;
   outline: none;
   align-self: auto;
+}
+
+[data-component="select-v2"][data-appearance="inline"]:where(:focus-within):not([data-disabled], [data-invalid]) {
+  box-shadow: var(--pc-focus-ring);
 }
 
 [data-component="select-v2"][data-appearance="inline"]:where(:hover):not([data-disabled], [data-invalid]):not(
@@ -280,13 +289,23 @@
 }
 
 /* Listbox uses data-selected; menu item CSS uses data-checked — mirror selection styling */
+[data-slot="select-v2-listbox"] [data-component="menu-v2-item"][data-selected] {
+  background: color-mix(in oklab, var(--v2-background-bg-accent) 10%, transparent);
+}
+
+/* Mirror menu.css's checked+highlighted rule; without it this (0,3,0) selector outranks the menu's
+   plain [data-highlighted] hover and arrowing over the selected row shows no distinct highlight. */
+[data-slot="select-v2-listbox"] [data-component="menu-v2-item"][data-selected][data-highlighted] {
+  background: color-mix(in oklab, var(--v2-background-bg-accent) 14%, transparent);
+}
+
 [data-slot="select-v2-listbox"] [data-component="menu-v2-item"][data-selected] [data-slot="menu-v2-item-content"] {
   font-weight: 440;
   color: var(--menu-v2-fg);
 }
 
 [data-slot="select-v2-listbox"] [data-component="menu-v2-item"][data-selected] [data-slot="menu-v2-item-indicator"] {
-  color: var(--menu-v2-icon);
+  color: var(--v2-icon-icon-accent);
 }
 
 [data-slot="select-v2-listbox"]

@@ -15,28 +15,38 @@
   padding: 5px 6px;
   gap: 6px;
 
-  background: var(--v2-background-bg-layer-01);
-  box-shadow: var(--v2-elevation-floating);
-  border-radius: 4px;
+  /* Dark frosted chip in both schemes, so the light text below stays legible over any backdrop. */
+  background: color-mix(in oklab, var(--v2-grey-900) 92%, transparent);
+  -webkit-backdrop-filter: blur(12px) saturate(1.3);
+  backdrop-filter: blur(12px) saturate(1.3);
+  box-shadow:
+    var(--v2-elevation-overlay),
+    inset 0 1px 0 var(--v2-alpha-light-8);
+  border-radius: var(--pc-control-radius-sm);
 
   font-style: normal;
   font-weight: 530;
   font-size: 11px;
   line-height: 12px;
   letter-spacing: 0.05px;
-  color: var(--v2-text-text-base);
+  color: var(--v2-text-text-inverse);
   font-variant-numeric: tabular-nums;
   font-variation-settings: "slnt" 0;
 
   user-select: none;
   pointer-events: none;
 
-  animation: tooltipV2In 120ms ease-out;
+  animation: tooltipV2In 140ms var(--pc-ease);
   transform-origin: var(--kb-tooltip-content-transform-origin);
 
   &[data-closed] {
     animation: tooltipV2Out 80ms ease-in forwards;
   }
+}
+
+[data-color-scheme="dark"] [data-component="tooltip-v2"] {
+  background: color-mix(in oklab, var(--v2-grey-1100) 92%, transparent);
+  color: var(--v2-grey-100);
 }
 
 [data-component="tooltip-v2"][data-appearance="standard"] {
@@ -75,22 +85,22 @@
 @keyframes tooltipV2In {
   from {
     opacity: 0;
-    transform: scale(0.96);
+    transform: translateY(2px);
   }
   to {
     opacity: 1;
-    transform: scale(1);
+    transform: translateY(0);
   }
 }
 
 @keyframes tooltipV2Out {
   from {
     opacity: 1;
-    transform: scale(1);
+    transform: translateY(0);
   }
   to {
     opacity: 0;
-    transform: scale(0.96);
+    transform: translateY(2px);
   }
 }
 

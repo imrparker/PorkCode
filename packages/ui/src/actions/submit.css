@@ -20,6 +20,10 @@
     color: var(--v2-text-text-contrast);
     text-shadow: 0 0.5px 0.5px rgba(0, 0, 0, 0.3);
     box-shadow: var(--v2-elevation-button-contrast);
+    transition:
+      background-color 150ms var(--pc-ease),
+      box-shadow 150ms var(--pc-ease),
+      transform 150ms var(--pc-ease);
   }
 
   [data-color-scheme="dark"]
@@ -69,6 +73,7 @@
         var(--v2-background-bg-icon-button-contrast) 0%,
         var(--v2-background-bg-icon-button-contrast) 100%
       );
+    transform: var(--pc-press);
   }
 
   :is(
@@ -77,5 +82,14 @@
   ):is(:disabled, [data-state="disabled"]) {
     opacity: 0.4;
     cursor: not-allowed;
+  }
+
+  /* Motion setting keys off the root attribute (not the media query) so it can override the OS; see settings/model.tsx. */
+  :root[data-motion="reduce"]
+    :is(
+      [data-component="button-v2"][data-variant="submit"],
+      [data-component="icon-button-v2"]:is([data-variant="submit"], [data-variant="contrast"])
+    ):is(:active, [data-state="pressed"]):not(:disabled) {
+    transform: none;
   }
 }

@@ -87,7 +87,7 @@ describe("product menu", () => {
     press(name(), "ArrowDown")
 
     expect(items(menus()[0]!).map((item) => [item.textContent, item.getAttribute("aria-current")])).toEqual([
-      ["OpenCode", null],
+      ["PorkCode", null],
       ["Console", null],
       ["Data", "page"],
       ["Docs", null],

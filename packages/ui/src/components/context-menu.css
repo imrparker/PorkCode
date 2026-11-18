@@ -3,10 +3,12 @@
   min-width: 8rem;
   overflow: hidden;
   border: none;
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-xs-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xs-border), var(--pc-glass-edge);
   background-clip: padding-box;
-  background-color: var(--surface-raised-stronger-non-alpha);
+  background-color: var(--pc-glass-float-bg);
+  -webkit-backdrop-filter: var(--pc-glass-float-blur);
+  backdrop-filter: var(--pc-glass-float-blur);
   padding: 4px;
   z-index: 100;
   transform-origin: var(--kb-menu-content-transform-origin);
@@ -38,8 +40,9 @@
     display: flex;
     align-items: center;
     gap: 8px;
+    margin-inline: 6px;
     padding: 4px 8px;
-    border-radius: var(--radius-sm);
+    border-radius: var(--pc-control-radius-sm);
     cursor: default;
     outline: none;
 
@@ -51,12 +54,22 @@
     color: var(--text-strong);
 
     transition-property: background-color, color;
-    transition-duration: var(--transition-duration);
-    transition-timing-function: var(--transition-easing);
+    transition-duration: 150ms;
+    transition-timing-function: var(--pc-ease);
     user-select: none;
 
-    &:hover {
-      background-color: var(--surface-raised-base-hover);
+    &:hover,
+    &[data-highlighted] {
+      background-color: var(--v2-overlay-simple-overlay-hover);
+    }
+
+    &[data-checked] {
+      background-color: color-mix(in oklab, var(--v2-background-bg-accent) 10%, transparent);
+    }
+
+    &[data-checked]:hover,
+    &[data-checked][data-highlighted] {
+      background-color: color-mix(in oklab, var(--v2-background-bg-accent) 14%, transparent);
     }
 
     &[data-disabled] {
@@ -67,7 +80,7 @@
 
   [data-slot="context-menu-sub-trigger"] {
     &[data-expanded] {
-      background: var(--surface-raised-base-hover);
+      background: var(--v2-overlay-simple-overlay-hover);
       outline: none;
       border: none;
     }
@@ -81,6 +94,10 @@
     height: 16px;
   }
 
+  [data-checked] [data-slot="context-menu-item-indicator"] {
+    color: var(--v2-icon-icon-accent);
+  }
+
   [data-slot="context-menu-item-label"] {
     flex: 1;
   }
@@ -92,11 +109,13 @@
 
   [data-slot="context-menu-separator"] {
     height: 1px;
-    margin: 4px -4px;
-    border-top-color: var(--v2-border-border-muted);
+    margin-block: 4px;
+    margin-inline: 6px;
+    border-top-color: color-mix(in oklab, var(--v2-border-border-base) 55%, transparent);
   }
 
   [data-slot="context-menu-group-label"] {
+    margin-inline: 6px;
     padding: 4px 8px;
     font-family: var(--font-family-sans);
     font-size: var(--font-size-x-small);

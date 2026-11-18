@@ -3,7 +3,7 @@
   align-items: stretch;
   flex-shrink: 0;
   height: 28px;
-  border-radius: 6px;
+  border-radius: var(--pc-control-radius);
   background-color: transparent;
   box-shadow: none;
   overflow: hidden;
@@ -27,6 +27,10 @@
   color: var(--v2-icon-icon-base);
   cursor: default;
   outline: none;
+  transition:
+    background-color 150ms var(--pc-ease),
+    box-shadow 150ms var(--pc-ease),
+    transform 150ms var(--pc-ease);
 }
 
 [data-component="split-button-v2-action"] {
@@ -35,16 +39,17 @@
 }
 
 [data-component="split-button-v2-action"]:hover:not(:disabled) {
-  background-color: var(--v2-overlay-simple-overlay-hover);
+  background-color: color-mix(in oklab, var(--v2-background-bg-accent) 9%, transparent);
 }
 
 [data-component="split-button-v2-action"]:is(:active, [data-pressed]):not(:disabled) {
   background-color: var(--v2-overlay-simple-overlay-pressed);
+  transform: var(--pc-press);
 }
 
+/* The group clips its children, so segment focus is an inset ring instead of a clipped outer glow. */
 [data-component="split-button-v2-action"]:is(:focus-visible, [data-focus]) {
-  outline: 2px solid var(--v2-border-border-focus);
-  outline-offset: -2px;
+  box-shadow: inset 0 0 0 2px var(--v2-border-border-focus);
   z-index: 1;
 }
 
@@ -59,22 +64,33 @@
 }
 
 [data-component="split-button-v2-menu-trigger"]:is(:hover, [data-expanded]):not(:disabled) {
-  background-color: var(--v2-overlay-simple-overlay-hover);
+  background-color: color-mix(in oklab, var(--v2-background-bg-accent) 9%, transparent);
 }
 
 [data-component="split-button-v2-menu-trigger"]:is(:active, [data-pressed]):not(:disabled) {
   background-color: var(--v2-overlay-simple-overlay-pressed);
+  transform: var(--pc-press);
 }
 
 [data-component="split-button-v2-menu-trigger"]:is(:focus-visible, [data-focus]) {
-  outline: 2px solid var(--v2-border-border-focus);
-  outline-offset: -2px;
+  box-shadow: inset 0 0 0 2px var(--v2-border-border-focus);
   z-index: 1;
 }
 
 [data-component="split-button-v2-menu-trigger"]:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+/* Motion setting keys off the root attribute (not the media query) so it can override the OS; see settings/model.tsx. */
+:root[data-motion="reduce"] [data-component="split-button-v2-action"],
+:root[data-motion="reduce"] [data-component="split-button-v2-menu-trigger"] {
+  transition-property: background-color, box-shadow;
+}
+
+:root[data-motion="reduce"] [data-component="split-button-v2-action"]:is(:active, [data-pressed]):not(:disabled),
+:root[data-motion="reduce"] [data-component="split-button-v2-menu-trigger"]:is(:active, [data-pressed]):not(:disabled) {
+  transform: none;
 }
 
 [data-component="split-button-v2-action"] [data-component="app-icon"] {

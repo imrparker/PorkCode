@@ -11,7 +11,7 @@
     align-items: center;
     justify-content: center;
     gap: 6px;
-    border-radius: 6px;
+    border-radius: var(--pc-control-radius);
     font-style: normal;
     font-weight: 530;
     font-size: 13px;
@@ -23,6 +23,10 @@
     user-select: none;
     cursor: pointer;
     outline: none;
+    transition:
+      background-color 150ms var(--pc-ease),
+      box-shadow 150ms var(--pc-ease),
+      transform 150ms var(--pc-ease);
   }
 
   [data-component="button-v2"] > * {
@@ -33,11 +37,6 @@
     outline: none;
   }
 
-  [data-component="button-v2"]:is(:focus-visible, [data-state="focus"]):not(:disabled):not([data-variant="loading"]) {
-    outline: 2px solid var(--v2-border-border-focus);
-    outline-offset: 2.5px;
-  }
-
   [data-component="button-v2"][data-size="normal"] {
     height: 28px;
     padding: 0 11px;
@@ -46,7 +45,7 @@
   [data-component="button-v2"][data-size="small"] {
     height: 24px;
     padding: 0 9px;
-    border-radius: 4px;
+    border-radius: var(--pc-control-radius-sm);
   }
 
   [data-component="button-v2"][data-size="large"] {
@@ -72,25 +71,22 @@
 
   /* Neutral */
   [data-component="button-v2"][data-variant="neutral"] {
-    background-color: var(--v2-background-bg-button-neutral);
+    background-color: color-mix(in oklab, var(--v2-background-bg-button-neutral) 78%, transparent);
     color: var(--v2-text-text-base);
-    box-shadow: var(--v2-elevation-button-neutral);
+    box-shadow: inset 0 1px 0 var(--v2-alpha-light-8), inset 0 0 0 1px var(--v2-border-border-base),
+      var(--v2-elevation-button-neutral);
   }
 
   [data-component="button-v2"][data-variant="neutral"]:is(:hover, [data-state="hover"]):not(:disabled) {
-    background-image:
-      linear-gradient(90deg, var(--v2-overlay-simple-overlay-hover) 0%, var(--v2-overlay-simple-overlay-hover) 100%),
-      linear-gradient(90deg, var(--v2-background-bg-button-neutral) 0%, var(--v2-background-bg-button-neutral) 100%);
+    background-image: linear-gradient(90deg, var(--v2-overlay-simple-overlay-hover) 0%, var(--v2-overlay-simple-overlay-hover) 100%);
   }
 
   [data-component="button-v2"][data-variant="neutral"]:is(:active, [data-state="pressed"]):not(:disabled) {
-    background-image:
-      linear-gradient(
-        90deg,
-        var(--v2-overlay-simple-overlay-pressed) 0%,
-        var(--v2-overlay-simple-overlay-pressed) 100%
-      ),
-      linear-gradient(90deg, var(--v2-background-bg-button-neutral) 0%, var(--v2-background-bg-button-neutral) 100%);
+    background-image: linear-gradient(
+      90deg,
+      var(--v2-overlay-simple-overlay-pressed) 0%,
+      var(--v2-overlay-simple-overlay-pressed) 100%
+    );
   }
 
   [data-component="button-v2"][data-variant="neutral"]:is(:disabled, [data-state="disabled"]) {
@@ -100,25 +96,22 @@
 
   /* Danger */
   [data-component="button-v2"][data-variant="danger"] {
-    background-color: var(--v2-background-bg-button-neutral);
+    background-color: color-mix(in oklab, var(--v2-background-bg-button-neutral) 78%, transparent);
     color: var(--v2-state-fg-danger);
-    box-shadow: var(--v2-elevation-button-neutral);
+    box-shadow: inset 0 1px 0 var(--v2-alpha-light-8), inset 0 0 0 1px var(--v2-border-border-base),
+      var(--v2-elevation-button-neutral);
   }
 
   [data-component="button-v2"][data-variant="danger"]:is(:hover, [data-state="hover"]):not(:disabled) {
-    background-image:
-      linear-gradient(90deg, var(--v2-overlay-simple-overlay-hover) 0%, var(--v2-overlay-simple-overlay-hover) 100%),
-      linear-gradient(90deg, var(--v2-background-bg-button-neutral) 0%, var(--v2-background-bg-button-neutral) 100%);
+    background-image: linear-gradient(90deg, var(--v2-overlay-simple-overlay-hover) 0%, var(--v2-overlay-simple-overlay-hover) 100%);
   }
 
   [data-component="button-v2"][data-variant="danger"]:is(:active, [data-state="pressed"]):not(:disabled) {
-    background-image:
-      linear-gradient(
-        90deg,
-        var(--v2-overlay-simple-overlay-pressed) 0%,
-        var(--v2-overlay-simple-overlay-pressed) 100%
-      ),
-      linear-gradient(90deg, var(--v2-background-bg-button-neutral) 0%, var(--v2-background-bg-button-neutral) 100%);
+    background-image: linear-gradient(
+      90deg,
+      var(--v2-overlay-simple-overlay-pressed) 0%,
+      var(--v2-overlay-simple-overlay-pressed) 100%
+    );
   }
 
   [data-component="button-v2"][data-variant="danger"]:is(:disabled, [data-state="disabled"]) {
@@ -127,25 +120,22 @@
   }
 
   [data-component="button-v2"][data-variant="warning"] {
-    background-color: var(--v2-background-bg-button-neutral);
+    background-color: color-mix(in oklab, var(--v2-background-bg-button-neutral) 78%, transparent);
     color: var(--v2-state-fg-warning);
-    box-shadow: var(--v2-elevation-button-neutral);
+    box-shadow: inset 0 1px 0 var(--v2-alpha-light-8), inset 0 0 0 1px var(--v2-border-border-base),
+      var(--v2-elevation-button-neutral);
   }
 
   [data-component="button-v2"][data-variant="warning"]:is(:hover, [data-state="hover"]):not(:disabled) {
-    background-image:
-      linear-gradient(90deg, var(--v2-overlay-simple-overlay-hover) 0%, var(--v2-overlay-simple-overlay-hover) 100%),
-      linear-gradient(90deg, var(--v2-background-bg-button-neutral) 0%, var(--v2-background-bg-button-neutral) 100%);
+    background-image: linear-gradient(90deg, var(--v2-overlay-simple-overlay-hover) 0%, var(--v2-overlay-simple-overlay-hover) 100%);
   }
 
   [data-component="button-v2"][data-variant="warning"]:is(:active, [data-state="pressed"]):not(:disabled) {
-    background-image:
-      linear-gradient(
-        90deg,
-        var(--v2-overlay-simple-overlay-pressed) 0%,
-        var(--v2-overlay-simple-overlay-pressed) 100%
-      ),
-      linear-gradient(90deg, var(--v2-background-bg-button-neutral) 0%, var(--v2-background-bg-button-neutral) 100%);
+    background-image: linear-gradient(
+      90deg,
+      var(--v2-overlay-simple-overlay-pressed) 0%,
+      var(--v2-overlay-simple-overlay-pressed) 100%
+    );
   }
 
   [data-component="button-v2"][data-variant="warning"]:is(:disabled, [data-state="disabled"]) {
@@ -173,36 +163,31 @@
     cursor: not-allowed;
   }
 
-  /* Contrast */
+  /* Contrast: the primary action, filled with the theme accent and lifted on hover. */
   [data-component="button-v2"][data-variant="contrast"] {
-    background-image:
-      linear-gradient(180deg, var(--v2-alpha-light-20) 0%, var(--v2-alpha-light-0) 100%),
-      linear-gradient(90deg, var(--v2-background-bg-contrast) 0%, var(--v2-background-bg-contrast) 100%);
+    background-color: var(--v2-background-bg-accent);
     color: var(--v2-text-text-contrast);
     text-shadow: 0 0.5px 0.5px rgba(0, 0, 0, 0.3);
-    box-shadow: var(--v2-elevation-button-contrast);
+    box-shadow: inset 0 1px 0 var(--v2-alpha-light-16), var(--v2-elevation-button-neutral);
   }
 
   [data-component="button-v2"][data-variant="contrast"]:is(:hover, [data-state="hover"]):not(:disabled) {
-    background-image:
-      linear-gradient(
-        90deg,
-        var(--v2-overlay-simple-overlay-contrast-hover) 0%,
-        var(--v2-overlay-simple-overlay-contrast-hover) 100%
-      ),
-      linear-gradient(180deg, var(--v2-alpha-light-20) 0%, var(--v2-alpha-light-0) 100%),
-      linear-gradient(90deg, var(--v2-background-bg-contrast) 0%, var(--v2-background-bg-contrast) 100%);
+    background-image: linear-gradient(
+      90deg,
+      var(--v2-overlay-simple-overlay-contrast-hover) 0%,
+      var(--v2-overlay-simple-overlay-contrast-hover) 100%
+    );
+    transform: translateY(-0.5px);
+    box-shadow: inset 0 1px 0 var(--v2-alpha-light-16), var(--v2-elevation-raised);
   }
 
   [data-component="button-v2"][data-variant="contrast"]:is(:active, [data-state="pressed"]):not(:disabled) {
-    background-image:
-      linear-gradient(
-        90deg,
-        var(--v2-overlay-simple-overlay-contrast-pressed) 0%,
-        var(--v2-overlay-simple-overlay-contrast-pressed) 100%
-      ),
-      linear-gradient(180deg, var(--v2-alpha-light-20) 0%, var(--v2-alpha-light-0) 100%),
-      linear-gradient(90deg, var(--v2-background-bg-contrast) 0%, var(--v2-background-bg-contrast) 100%);
+    background-image: linear-gradient(
+      90deg,
+      var(--v2-overlay-simple-overlay-contrast-pressed) 0%,
+      var(--v2-overlay-simple-overlay-contrast-pressed) 100%
+    );
+    box-shadow: inset 0 1px 0 var(--v2-alpha-light-8), var(--v2-elevation-button-neutral);
   }
 
   [data-component="button-v2"][data-variant="contrast"]:is(:disabled, [data-state="disabled"]) {
@@ -228,7 +213,7 @@
   [data-component="button-v2"][data-variant="ghost"]:is(:hover, [data-state="hover"]):not(:disabled):not(
       [data-expanded]
     ) {
-    background-color: var(--v2-overlay-simple-overlay-hover);
+    background-color: color-mix(in oklab, var(--v2-background-bg-accent) 9%, transparent);
   }
 
   [data-component="button-v2"][data-variant="ghost"]:is(:active, [data-state="pressed"]):not(:disabled) {
@@ -259,7 +244,7 @@
     [data-component="button-v2"][data-variant="ghost-muted"]:is(:hover, [data-state="hover"]):not(:disabled):not(
         [data-expanded]
       ) {
-      background-color: var(--v2-overlay-simple-overlay-hover);
+      background-color: color-mix(in oklab, var(--v2-background-bg-accent) 9%, transparent);
     }
   }
 
@@ -289,7 +274,7 @@
   }
 
   [data-component="button-v2"][data-variant="ghost-danger"]:is(:hover, [data-state="hover"]):not(:disabled) {
-    background-color: var(--v2-overlay-simple-overlay-hover);
+    background-color: color-mix(in oklab, var(--v2-state-border-danger) 14%, transparent);
   }
 
   [data-component="button-v2"][data-variant="ghost-danger"]:is(:active, [data-state="pressed"]):not(:disabled) {
@@ -314,7 +299,7 @@
   [data-component="button-v2"][data-variant="ghost-faint"]:is(:hover, [data-state="hover"]):not(:disabled):not(
       [data-expanded]
     ) {
-    background-color: var(--v2-overlay-simple-overlay-hover);
+    background-color: color-mix(in oklab, var(--v2-background-bg-accent) 9%, transparent);
   }
 
   [data-component="button-v2"][data-variant="ghost-faint"]:is(:active, [data-state="pressed"]):not(:disabled) {
@@ -329,4 +314,22 @@
     opacity: 0.5;
     cursor: not-allowed;
   }
+
+  /* Focus and press read the same on every variant: an accent hairline with a soft glow, then a light squeeze. */
+  [data-component="button-v2"]:is(:focus-visible, [data-state="focus"]):not(:disabled):not([data-variant="loading"]) {
+    outline: none;
+    box-shadow: inset 0 0 0 1px var(--v2-border-border-focus), var(--pc-focus-ring);
+  }
+
+  [data-component="button-v2"]:is(:active, [data-state="pressed"]):not(:disabled):not([data-variant="loading"]) {
+    transform: var(--pc-press);
+  }
+
+/* Motion setting keys off the root attribute (not the media query) so it can override the OS; see settings/model.tsx. */
+:root[data-motion="reduce"] [data-component="button-v2"],
+:root[data-motion="reduce"] [data-component="button-v2"][data-variant="contrast"]:is(:hover, [data-state="hover"]):not(:disabled),
+:root[data-motion="reduce"] [data-component="button-v2"]:is(:active, [data-state="pressed"]):not(:disabled):not([data-variant="loading"]) {
+  transform: none;
+  transition-property: background-color, box-shadow;
+}
 }

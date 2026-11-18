@@ -839,7 +839,7 @@ export const dict = {
   "settings.about.firstIllustrated": "First illustrated in London, England",
   "settings.about.website": "github.com/imrparker/PorkCode",
   "settings.about.description": "PorkCode, the open source coding agent",
-  "settings.about.typeset": "Typeset in Inter and IBM Plex Mono",
+  "settings.about.typeset": "Typeset in Geist and Geist Mono",
   "settings.about.notices.title": "Third-party notices",
   "settings.about.notices.description": "PorkCode includes the following open source software.",
   "settings.about.notices.license": "License text",
@@ -1107,9 +1107,6 @@ export const dict = {
   "settings.general.sounds.questions.description": "Play sound when the agent asks a question",
   "settings.general.sounds.errors.title": "Errors",
   "settings.general.sounds.errors.description": "Play sound when an error occurs",
-  "settings.general.sounds.interface.title": "Interface",
-  "settings.general.sounds.interface.description":
-    "Play subtle sounds when the wordmark appears and when you play with it",
 
   "settings.shortcuts.title": "Keyboard shortcuts",
   "settings.shortcuts.reset.button": "Reset to defaults",

@@ -15,9 +15,11 @@
   margin-block: var(--shell-top-inset, 8px) var(--shell-bottom-inset, 8px);
   justify-content: center;
   overflow: hidden;
-  border-radius: 10px;
-  background: var(--v2-background-bg-base);
-  box-shadow: var(--v2-elevation-raised);
+  border-radius: var(--radius-2xl);
+  background: color-mix(in oklab, var(--v2-background-bg-layer-01) 86%, transparent);
+  -webkit-backdrop-filter: var(--pc-glass-float-blur);
+  backdrop-filter: var(--pc-glass-float-blur);
+  box-shadow: var(--v2-elevation-raised), var(--pc-glass-edge);
   outline: none;
   container: settings-screen / inline-size;
 }
@@ -59,8 +61,9 @@
   max-width: 720px;
 }
 
+/* Bottom padding is breathing room between the description and the first row of settings below it. */
 .settings-screen .settings-tab-header {
-  padding: 48px 0 0;
+  padding: 48px 0 28px;
 }
 
 .settings-screen .settings-tab-body {
@@ -606,22 +609,11 @@
   display: none;
 }
 
+/* No fill and not sticky. A translucent band here double-blurs over the .settings-screen glass and
+   reads as a discolored rectangle whose edges cut through the title text; the header scrolls with
+   its content instead, so there is no surface boundary near it at all. */
 .settings-tab-header {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  padding: 40px 40px 0;
-  background: var(--v2-background-bg-base);
-}
-
-.settings-tab-header::before {
-  content: "";
-  position: absolute;
-  inset-inline: 0;
-  top: 100%;
-  height: 24px;
-  background: linear-gradient(to bottom, var(--v2-background-bg-base), transparent);
-  pointer-events: none;
+  padding: 40px 40px 24px;
 }
 
 .settings-tab-header-row {

@@ -15,8 +15,10 @@
   height: 28px;
   background: var(--v2-background-bg-layer-01);
   border: none;
-  border-radius: 6px;
-  box-shadow: 0 0 0 0.5px var(--v2-border-border-base);
+  border-radius: 999px;
+  box-shadow:
+    0 0 0 0.5px var(--v2-border-border-base),
+    inset 0 1px 2px var(--v2-alpha-dark-6);
   flex: none;
   user-select: none;
   -webkit-user-select: none;
@@ -27,9 +29,9 @@
   top: 0;
   bottom: 0;
   left: 0;
-  border-radius: 6px;
-  background: var(--v2-background-bg-base);
-  box-shadow: 0 0 0 0.5px var(--v2-border-border-strong);
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--v2-background-bg-accent) 16%, transparent);
+  box-shadow: var(--v2-elevation-elements);
   pointer-events: none;
   user-select: none;
   -webkit-user-select: none;
@@ -51,7 +53,7 @@
   height: 28px;
   margin: 0;
   border: none;
-  border-radius: 6px;
+  border-radius: 999px;
   background: transparent;
   box-shadow: none;
   cursor: pointer;
@@ -66,9 +68,9 @@
   font-variation-settings: "slnt" 0;
   color: var(--v2-text-text-muted);
   transition:
-    color 0.15s ease,
-    background-color 0.12s ease,
-    box-shadow 0.12s ease;
+    color 150ms var(--pc-ease),
+    background-color 140ms var(--pc-ease),
+    box-shadow 140ms var(--pc-ease);
 }
 
 [data-slot="segmented-control-v2-item"]:where(:hover:not(:disabled):not([data-pressed])) {
@@ -81,8 +83,8 @@
 }
 
 [data-slot="segmented-control-v2-item"]:where(:focus-visible) {
-  outline: 2px solid var(--v2-border-border-focus);
-  outline-offset: 1px;
+  outline: none;
+  box-shadow: var(--pc-focus-ring);
   z-index: 2;
 }
 
@@ -91,9 +93,10 @@
   z-index: 1;
 }
 
+/* Before the indicator is measured, the selected item carries the pill look itself. */
 [data-slot="segmented-control-v2"]:not([data-ready]) [data-slot="segmented-control-v2-item"]:where([data-pressed]) {
-  background: var(--v2-background-bg-base);
-  box-shadow: 0 0 0 0.5px var(--v2-border-border-strong);
+  background: color-mix(in oklab, var(--v2-background-bg-accent) 16%, transparent);
+  box-shadow: none;
 }
 
 [data-slot="segmented-control-v2-item-label"] {

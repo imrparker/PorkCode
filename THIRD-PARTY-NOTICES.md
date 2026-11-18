@@ -8,7 +8,8 @@ to accompany copies. Those notices are collected here.
 
 | Font | File(s) | License | Copyright |
 | --- | --- | --- | --- |
-| Inter | `packages/ui/src/assets/fonts/Inter.ttf`, `packages/app/public/assets/Inter.ttf` | SIL Open Font License 1.1 | Copyright 2020 The Inter Project Authors (https://github.com/rsms/inter) |
+| Geist Sans (variable) | `packages/app/public/assets/Geist-Variable.woff2` | SIL Open Font License 1.1 | Copyright (c) 2023 Vercel, in collaboration with basement.studio (https://github.com/vercel/geist-font) |
+| Geist Mono (variable) | `packages/app/public/assets/GeistMono-Variable.woff2` | SIL Open Font License 1.1 | Copyright (c) 2023 Vercel, in collaboration with basement.studio (https://github.com/vercel/geist-font) |
 | JetBrains Mono (Nerd Font patched) | `packages/ui/src/assets/fonts/JetBrainsMonoNerdFontMono-*.woff2`, `packages/app/public/assets/JetBrainsMonoNerdFontMono-*.woff2` | SIL Open Font License 1.1 (font); MIT (Nerd Fonts icon patches) | Copyright 2020 The JetBrains Mono Project Authors (https://github.com/JetBrains/JetBrainsMono); Nerd Fonts copyright per https://www.nerdfonts.com |
 
 The full SIL Open Font License 1.1 text is reproduced in

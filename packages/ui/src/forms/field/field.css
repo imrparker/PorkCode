@@ -49,14 +49,19 @@
   height: 16px;
   padding: 0;
   border: 0;
-  border-radius: 0;
+  border-radius: var(--pc-control-radius-sm);
   background: transparent;
   color: var(--v2-icon-icon-muted);
   cursor: pointer;
   outline: none;
+  transition:
+    background-color 140ms var(--pc-ease),
+    box-shadow 140ms var(--pc-ease),
+    color 140ms var(--pc-ease);
 }
 
 [data-component="field-v2"] [data-slot="field-v2-label-info"]:is(:hover, [data-state="hover"]) {
+  background-color: color-mix(in oklab, var(--v2-background-bg-accent) 9%, transparent);
   color: var(--v2-text-text-base);
 }
 
@@ -65,9 +70,8 @@
 }
 
 [data-component="field-v2"] [data-slot="field-v2-label-info"]:focus-visible {
-  outline: 2px solid var(--v2-border-border-focus);
-  outline-offset: 1px;
-  border-radius: 2px;
+  outline: none;
+  box-shadow: var(--pc-focus-ring);
 }
 
 [data-component="field-v2"] [data-slot="field-v2-prefix"],

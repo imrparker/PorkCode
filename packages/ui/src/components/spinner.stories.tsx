@@ -1,16 +1,15 @@
 import { Spinner } from "./spinner"
 
 const docs = `### Overview
-Dot-matrix indicator for AI activity: a running session, turn, subagent or tool. Busy session tabs, \`ActivityRing\`
+Activity indicator for AI work: a running session, turn, subagent or tool. Busy session tabs, \`ActivityRing\`
 and the session progress indicator render it. Other loading states use \`Loader\`.
 
 ### Variants and states
-- Soft Radar: a lit head sweeps each ring of a 5×5 grid, leaving a fading trail, around a steady centre.
+- Breathing arc: one rounded-cap arc rotates while its length eases in and out, reading as a calm breath.
 
 ### Behavior
-- CSS animation only. Every dot shares one loop, and \`syncSpinPhase\` pins every instance to the same start, so
-  spinners on screen stay in phase.
-- Reduced motion freezes it on a still pose.
+- CSS animation only. \`syncSpinPhase\` pins every instance to the same start, so spinners on screen stay in phase.
+- Reduced motion freezes it on a still arc.
 
 ### Accessibility
 - Use alongside text or aria-live regions to convey loading state.
@@ -40,4 +39,4 @@ export default {
   },
 }
 
-export const SoftRadar = {}
+export const BreathingArc = {}

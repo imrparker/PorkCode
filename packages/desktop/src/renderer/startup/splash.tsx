@@ -1,5 +1,3 @@
-import { Splash } from "@opencode/ui/logo"
-import { Wordmark } from "@opencode/ui/wordmark"
 import type { Platform } from "@opencode/app/desktop"
 import { onCleanup, onMount, Show } from "solid-js"
 import "./splash.css"
@@ -57,7 +55,9 @@ export function LoadingSplash(props: {
             "bg-v2-background-bg-base": !props.deep,
           }}
         >
-          <Splash class="w-16 h-20 opacity-50 animate-pulse" />
+          <span class="font-sans text-2xl font-medium tracking-tight text-v2-text-text-muted opacity-50 animate-pulse">
+            porkcode
+          </span>
         </div>
       }
     >
@@ -65,7 +65,7 @@ export function LoadingSplash(props: {
         data-component="first-launch-splash"
         data-drawing={props.drawingPaused ? "pending" : "running"}
         aria-hidden="true"
-        class="h-dvh w-screen bg-v2-background-bg-base"
+        class="h-dvh w-screen pc-atmosphere"
         style={{
           // Match the default session's titlebar, panel insets, and wordmark position.
           "padding-block-start": `calc(${titlebarHeight()} + ${props.platform.os === "windows" ? 1 : 8}px)`,
@@ -73,19 +73,13 @@ export function LoadingSplash(props: {
           "padding-inline": "32px",
         }}
         onAnimationEnd={(event) => {
-          if (event.animationName === "first-launch-wordmark-draw") props.onDrawEnd()
+          if (event.animationName === "first-launch-wordmark-fade") props.onDrawEnd()
         }}
       >
         <div class="relative size-full">
-          <div class="absolute inset-x-0 top-[25.375%]">
-            <div class="mx-auto w-full max-w-[720px]">
-              <Wordmark
-                outline
-                fade={false}
-                muted={false}
-                class="mx-auto block h-auto w-4/5 text-v2-icon-icon-faint opacity-50"
-              />
-            </div>
+          {/* Calm lockup: the monogram and brand name fade up together over the ambient gradient. */}
+          <div class="first-launch-lockup absolute inset-x-0 top-[25.375%] flex justify-center">
+            <span class="font-sans text-3xl font-medium tracking-tight text-v2-text-text-muted">porkcode</span>
           </div>
         </div>
       </div>

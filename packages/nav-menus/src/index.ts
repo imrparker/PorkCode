@@ -30,7 +30,7 @@ export type Product = "opencode" | "console" | "data" | "docs"
  * The OpenCode products, in the menu's order, each at a `path` on opencode.ai (the host's `link` resolves it).
  */
 export const products: { id: Product; name: string; path: string }[] = [
-  { id: "opencode", name: "OpenCode", path: "/" },
+  { id: "opencode", name: "PorkCode", path: "/" },
   { id: "console", name: "Console", path: "/console" },
   { id: "data", name: "Data", path: "/data" },
   { id: "docs", name: "Docs", path: "/docs" },
@@ -147,7 +147,7 @@ export function installNavMenus(options: NavMenusOptions = {}) {
     const menu = document.createElement("div")
     menu.dataset.navMenu = kind
     menu.setAttribute("role", "menu")
-    menu.setAttribute("aria-label", kind === "logo" ? "Brand assets" : "OpenCode products")
+    menu.setAttribute("aria-label", kind === "logo" ? "Brand assets" : "PorkCode products")
     menu.id = `nav-menu-${kind}`
     // Counts as an open menu for the host's floating things (opencode.ai's menu-open.ts).
     menu.setAttribute("data-menu-open", "")
@@ -467,7 +467,7 @@ export function addProductToggles() {
     chevron.dataset.navProductToggle = ""
     chevron.setAttribute("aria-haspopup", "menu")
     chevron.setAttribute("aria-expanded", "false")
-    chevron.setAttribute("aria-label", "OpenCode products")
+    chevron.setAttribute("aria-label", "PorkCode products")
     chevron.innerHTML = `<svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" stroke-width="1.5" vector-effect="non-scaling-stroke"/></svg>`
     name.after(chevron)
   })

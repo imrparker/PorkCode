@@ -15,23 +15,28 @@
       width: 100%;
       height: 36px;
       padding-inline-end: 12px;
-      border-radius: 6px;
+      border-radius: var(--pc-control-radius);
       outline: 0;
       background: color-mix(in srgb, var(--v2-background-bg-layer-02) 60%, transparent);
       box-shadow: none;
       transition:
-        background-color 120ms ease-in-out,
-        box-shadow 120ms ease-in-out;
+        background-color 150ms var(--pc-ease),
+        box-shadow 150ms var(--pc-ease);
     }
 
-    [data-component="text-input-v2"]:where(:hover, :focus-within):not([data-disabled], [data-invalid]) {
+    [data-component="text-input-v2"]:where(:hover):not([data-disabled], [data-invalid]):not(:focus-within) {
       background: var(--v2-background-bg-layer-02);
       box-shadow: none;
     }
 
+    [data-component="text-input-v2"]:where(:focus-within):not([data-disabled], [data-invalid]) {
+      background: var(--v2-background-bg-layer-02);
+      box-shadow: var(--pc-focus-ring);
+    }
+
     [data-slot="text-input-v2-value"] {
       gap: 8px;
-      border-radius: 6px;
+      border-radius: var(--pc-control-radius);
       background: transparent;
     }
 
@@ -40,7 +45,7 @@
     }
 
     [data-slot="text-input-v2-input"] {
-      border-radius: 6px;
+      border-radius: var(--pc-control-radius);
       background: transparent;
     }
   }
@@ -145,15 +150,16 @@
     gap: 8px;
     padding: 0 12px;
     border: 0;
-    border-radius: 6px;
+    border-radius: var(--pc-control-radius-sm);
     background: transparent;
     color: var(--v2-text-text-base);
     text-align: start;
     cursor: default;
     scroll-margin-block: 0 24px;
+    transition: background-color 140ms var(--pc-ease);
 
     &[data-active] {
-      background: var(--v2-overlay-simple-overlay-hover);
+      background: color-mix(in oklab, var(--v2-background-bg-accent) 10%, transparent);
       outline: none;
     }
 
@@ -207,7 +213,7 @@
       z-index: 12;
       max-height: min(45vh, 480px);
       overflow: hidden;
-      border-radius: 8px;
+      border-radius: var(--pc-control-radius);
       background: var(--search-list-surface);
       box-shadow: var(--v2-elevation-floating);
     }
@@ -220,13 +226,10 @@
 }
 
 [data-color-scheme="dark"] [data-component="search-list"] [data-slot="search-list-row"][data-active] {
-  background: var(--v2-alpha-light-10);
+  background: color-mix(in oklab, var(--v2-background-bg-accent) 16%, transparent);
 }
 
-@media (prefers-reduced-motion: reduce) {
-  [data-component="search-list"] {
-    [data-slot="search-list-search"] [data-component="text-input-v2"] {
-      transition: none;
-    }
-  }
+/* Motion setting keys off the root attribute (not the media query) so it can override the OS; see settings/model.tsx. */
+:root[data-motion="reduce"] [data-component="search-list"] :is([data-slot="search-list-search"] [data-component="text-input-v2"], [data-slot="search-list-row"]) {
+  transition: none;
 }

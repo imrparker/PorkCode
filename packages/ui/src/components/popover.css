@@ -6,12 +6,14 @@
   z-index: 50;
   min-width: 200px;
   max-width: 320px;
-  border-radius: var(--radius-md);
-  background-color: var(--surface-raised-stronger-non-alpha);
+  border-radius: var(--radius-lg);
+  background-color: var(--pc-glass-float-bg);
 
   border: 1px solid var(--v2-border-border-muted);
   background-clip: padding-box;
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-md), var(--pc-glass-edge);
+  -webkit-backdrop-filter: var(--pc-glass-float-blur);
+  backdrop-filter: var(--pc-glass-float-blur);
 
   &:focus-within {
     outline: none;
