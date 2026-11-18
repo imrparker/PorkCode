@@ -187,7 +187,7 @@ function formatCondition(condition: Schedule.Condition): string {
 }
 
 /** One line per schedule, for models that read tool content rather than output (Code Mode off). */
-function summary(view: View) {
+export function summary(view: View) {
   const when = view.when
   const trigger =
     when.type === "in"
@@ -216,7 +216,7 @@ function summary(view: View) {
     .join(", ")
 }
 
-function toView(info: Schedule.Info): View {
+export function toView(info: Schedule.Info): View {
   const local = (time: DateTime.Utc | undefined) => {
     if (time === undefined) return undefined
     return Option.match(DateTime.zoneMakeNamed(info.tz), {

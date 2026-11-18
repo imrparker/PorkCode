@@ -86,6 +86,7 @@ import { QuestionTool } from "../tool/plugin/question.js"
 import { ReadToolFileSystem } from "../tool/read-filesystem.js"
 import { ReadTool } from "../tool/plugin/read.js"
 import { ArtifactTools } from "../tool/plugin/artifact.js"
+import { LoopTools } from "../tool/plugin/loop.js"
 import { ScheduleTools } from "../tool/plugin/schedule.js"
 import { ShellTool } from "../tool/plugin/shell.js"
 import { SkillTool } from "../tool/plugin/skill.js"
@@ -271,6 +272,7 @@ const pre = [
   ReadTool.Plugin,
   ArtifactTools.Plugin,
   ScheduleTools.Plugin,
+  LoopTools.Plugin,
   ShellTool.Plugin,
   SkillTool.Plugin,
   SubagentTool.Plugin,

@@ -14,6 +14,7 @@ import {
   ID,
   Info,
   Outcome,
+  Origin,
   Request,
   Status,
   type StoredCheck,
@@ -35,7 +36,7 @@ import { SessionInboxTable } from "./session/sql.js"
 import { ScheduleCheck } from "./schedule/check.js"
 import { ScheduleTable } from "./schedule/sql.js"
 
-export { ID, Info, CreateInput, Request, Condition, ConditionInput, When, Status, Outcome, toCreateInput }
+export { ID, Info, CreateInput, Request, Condition, ConditionInput, When, Status, Outcome, Origin, toCreateInput }
 
 export class NotFoundError extends Schema.TaggedError<NotFoundError>()("Schedule.NotFoundError", {
   scheduleID: ID,
@@ -63,7 +64,11 @@ export interface Interface {
   readonly create: (
     input: CreateInput,
   ) => Effect.Effect<Info, InvalidError | DisabledError | Session.NotFoundError | Permission.Error>
-  readonly list: (input?: { readonly sessionID?: SessionSchema.ID }) => Effect.Effect<Info[]>
+  readonly list: (input?: {
+    readonly sessionID?: SessionSchema.ID
+    /** Restrict to schedules made by one kind of caller, e.g. only `/loop` loops. */
+    readonly origin?: Origin
+  }) => Effect.Effect<Info[]>
   readonly get: (id: ID) => Effect.Effect<Info, NotFoundError>
   readonly pause: (id: ID) => Effect.Effect<Info, NotFoundError>
   readonly resume: (id: ID) => Effect.Effect<Info, NotFoundError>
@@ -271,7 +276,7 @@ const layer = Layer.effect(
         sessionID,
         id,
         text,
-        delivery: "steer",
+        delivery: row.delivery ?? "steer",
         metadata: {
           schedule: {
             id: row.id,
@@ -736,6 +741,8 @@ const layer = Layer.effect(
             id: scheduleID,
             session_id: session.id,
             name: input.name ?? null,
+            delivery: input.delivery ?? null,
+            origin: input.origin ?? null,
             check: check ?? null,
             state: seeded.state,
             checks: seeded.checks,
@@ -766,10 +773,14 @@ const layer = Layer.effect(
         return toInfo(row)
       }),
       list: Effect.fn("Schedule.list")(function* (input) {
+        const conditions = [
+          input?.sessionID === undefined ? undefined : eq(ScheduleTable.session_id, input.sessionID),
+          input?.origin === undefined ? undefined : eq(ScheduleTable.origin, input.origin),
+        ].filter((condition) => condition !== undefined)
         const rows = yield* db
           .select()
           .from(ScheduleTable)
-          .where(input?.sessionID === undefined ? undefined : eq(ScheduleTable.session_id, input.sessionID))
+          .where(conditions.length === 0 ? undefined : and(...conditions))
           .orderBy(asc(ScheduleTable.time_created), asc(ScheduleTable.id))
           .all()
           .pipe(Effect.orDie)
