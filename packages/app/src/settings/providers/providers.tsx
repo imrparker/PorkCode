@@ -50,7 +50,7 @@ type ProviderItem = ReturnType<ReturnType<typeof useProviders>["connected"]>[num
 // provider/local.ts), so the rows stay listed with a live detection state instead of vanishing until
 // a server answers; other ports are set through opencode.json providers.<id>.settings.baseURL.
 const LOCAL_BACKENDS: ReadonlyArray<{ id: string; name: string; url: string; requiresKey?: boolean }> = [
-  { id: "porkagent", name: "PorkAgent", url: "https://porkagent.ngrok.dev", requiresKey: true },
+  { id: "porkagent", name: "PorkAgent", url: "https://api.porkagent.com", requiresKey: true },
   { id: "lmstudio", name: "LM Studio", url: "http://127.0.0.1:1234" },
   { id: "ollama", name: "Ollama", url: "http://127.0.0.1:11434" },
   { id: "vllm", name: "vLLM", url: "http://127.0.0.1:8000" },
