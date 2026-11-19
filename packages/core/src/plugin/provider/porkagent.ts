@@ -29,7 +29,7 @@ export const make = createLocalProviderPlugin({
   id: "opencode.provider.porkagent",
   providerID: "porkagent",
   name: "PorkAgent",
-  origin: "https://porkagent.ngrok.dev",
+  origin: "https://api.porkagent.com",
   stripPathSuffix: /\/(?:api\/)?v1$/,
   package: "@opencode/ai/providers/openai-compatible/responses",
   requiresKey: true,
