@@ -223,13 +223,71 @@ describe("Open Responses-compatible route", () => {
         {
           type: "message",
           role: "user",
-          content: [{ type: "input_file", filename: "input.pdf", file_data: pdf }],
+          content: [{ type: "input_file", filename: "input.pdf", file_data: pdf, detail: "auto" }],
         },
         { type: "function_call", call_id: "call_1", name: "read", arguments: "{}" },
         {
           type: "function_call_output",
           call_id: "call_1",
-          output: [{ type: "input_file", filename: "result.pdf", file_data: pdf }],
+          output: [{ type: "input_file", filename: "result.pdf", file_data: pdf, detail: "auto" }],
+        },
+      ])
+    }),
+  )
+
+  it.effect("defaults image detail so strict responses servers accept the part", () =>
+    Effect.gen(function* () {
+      const model = configure({
+        apiKey: "test-key",
+        baseURL: "https://responses.example.test/v1",
+        provider: "example",
+      }).model("example-model")
+      const image = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
+      const prepared = yield* compileRequest(
+        ai.request({
+          model,
+          messages: [Message.user([{ type: "media", media: Media.fromDataUrl(image) }])],
+        }),
+      )
+
+      expect(prepared.body.input).toEqual([
+        {
+          type: "message",
+          role: "user",
+          content: [{ type: "input_image", image_url: image, detail: "auto" }],
+        },
+      ])
+    }),
+  )
+
+  it.effect("preserves an explicit image detail from provider metadata", () =>
+    Effect.gen(function* () {
+      const model = configure({
+        apiKey: "test-key",
+        baseURL: "https://responses.example.test/v1",
+        provider: "example",
+      }).model("example-model")
+      const image = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
+      const prepared = yield* compileRequest(
+        ai.request({
+          model,
+          messages: [
+            Message.user([
+              {
+                type: "media",
+                media: Media.fromDataUrl(image),
+                providerMetadata: { example: { detail: "high" } },
+              },
+            ]),
+          ],
+        }),
+      )
+
+      expect(prepared.body.input).toEqual([
+        {
+          type: "message",
+          role: "user",
+          content: [{ type: "input_image", image_url: image, detail: "high" }],
         },
       ])
     }),
