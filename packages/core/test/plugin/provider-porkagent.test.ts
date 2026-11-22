@@ -44,6 +44,7 @@ describe("PorkAgentPlugin", () => {
               return Response.json({
                 models: [
                   remote("qwen/qwen3-coder", { loaded: true, vision: false, tools: true }),
+                  remote("Qwen/Qwen3.8-27B-FP8", { loaded: true, vision: true, tools: true }),
                   remote("unloaded-model", { loaded: false }),
                   { type: "embedding", key: "nomic-embed", display_name: "Nomic Embed", loaded_instances: [{ config: { context_length: 2048 } }], max_context_length: 2048 },
                 ],
@@ -75,6 +76,19 @@ describe("PorkAgentPlugin", () => {
               capabilities: { tools: true, input: ["text"], output: ["text"] },
               limit: { context: 131_072 },
             })
+            // Qwen3.8 loads spell their thinking menu from the backend's effort set, which has no "high" tier;
+            // "none" is the off switch, spelled as reasoning effort rather than a toggle.
+            const qwen38 = yield* eventually(
+              modelState.get(providerID, Model.ID.make("Qwen/Qwen3.8-27B-FP8")),
+              (model) => model !== undefined,
+            )
+            const expected = (effort: string) => ({
+              id: Model.VariantID.make(effort),
+              settings: { reasoningEffort: effort, reasoningSummary: "auto", include: ["reasoning.encrypted_content"] },
+            })
+            expect(qwen38?.variants).toEqual(["none", "low", "medium", "xhigh"].map(expected))
+            // Models without a known reasoning set keep an empty menu.
+            expect(coder?.variants).toEqual([])
             expect(yield* modelState.get(providerID, Model.ID.make("unloaded-model"))).toBeUndefined()
             expect(yield* modelState.get(providerID, Model.ID.make("nomic-embed"))).toBeUndefined()
           }),
