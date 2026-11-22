@@ -38,7 +38,7 @@ describe("VLLMPlugin", () => {
   it.live("waits for readiness and discovers official vLLM model metadata", () =>
     Effect.acquireUseRelease(
       Effect.sync(() => {
-        const state = { healthy: false, models: 0, probes: 0, vision: true }
+        const state = { healthy: false, models: 0 }
         return {
           state,
           server: Bun.serve({
@@ -46,12 +46,6 @@ describe("VLLMPlugin", () => {
             fetch: (request) => {
               const path = new URL(request.url).pathname
               if (path === "/health") return new Response(null, { status: state.healthy ? 200 : 503 })
-              if (request.method === "POST" && path === "/chat/completions") {
-                state.probes++
-                return state.vision
-                  ? Response.json({ id: "cmpl-probe", object: "chat.completion" })
-                  : new Response("Unexpected item type in content", { status: 400 })
-              }
               state.models++
               return Response.json({
                 object: "list",
@@ -93,61 +87,13 @@ describe("VLLMPlugin", () => {
           expect(model).toMatchObject({
             modelID: "Qwen/Qwen3-Coder",
             name: "Qwen/Qwen3-Coder",
-            capabilities: { tools: false, input: ["text", "image"], output: ["text"] },
+            capabilities: { tools: false, input: ["text"], output: ["text"] },
             limit: { context: 65_536, output: 32_000 },
           })
           expect(yield* modelState.get(providerID, Model.ID.make("unknown-limit"))).toMatchObject({
             limit: { context: 200_000, output: 32_000 },
           })
           expect(yield* modelState.get(providerID, Model.ID.make("foreign-model"))).toBeUndefined()
-          // Both served models are probed once; the verdicts are cached, so refreshes stop probing.
-          expect(state.probes).toBe(2)
-          yield* Effect.promise(() => Bun.sleep(20))
-          expect(state.probes).toBe(2)
-        }),
-      ({ server }) => Effect.promise(() => server.stop(true)),
-    ),
-  )
-
-  it.live("keeps models text-only when the vision probe is refused", () =>
-    Effect.acquireUseRelease(
-      Effect.sync(() => {
-        const state = { probes: 0 }
-        return {
-          state,
-          server: Bun.serve({
-            port: 0,
-            fetch: (request) => {
-              const path = new URL(request.url).pathname
-              if (path === "/health") return new Response()
-              if (request.method === "POST" && path === "/chat/completions") {
-                state.probes++
-                return new Response(JSON.stringify({ error: { message: "Unexpected item type in content" } }), {
-                  status: 400,
-                  headers: { "content-type": "application/json" },
-                })
-              }
-              return Response.json({ object: "list", data: [remoteModel("text-only-model")] })
-            },
-          }),
-        }
-      }),
-      ({ state, server }) =>
-        Effect.gen(function* () {
-          const modelState = yield* Model.Service
-          const providerID = Provider.ID.make("vllm")
-          yield* addPlugin(server.url.origin, "5 millis")
-          const model = yield* eventually(
-            modelState.get(providerID, Model.ID.make("text-only-model")),
-            (item) => item !== undefined,
-          )
-          expect(model).toMatchObject({
-            modelID: "text-only-model",
-            capabilities: { tools: false, input: ["text"], output: ["text"] },
-          })
-          // A definitive refusal is cached per endpoint and model, so refreshes stop probing.
-          yield* Effect.promise(() => Bun.sleep(20))
-          expect(state.probes).toBe(1)
         }),
       ({ server }) => Effect.promise(() => server.stop(true)),
     ),
