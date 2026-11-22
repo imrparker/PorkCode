@@ -592,23 +592,28 @@ const lowerMedia = Effect.fnUntraced(function* (part: MediaPart, request: LLMReq
   if (providerMedia) return providerMedia
   const rawDetail = part.providerMetadata?.[metadataKey(request.model)]?.detail
   const detail = rawDetail === undefined ? undefined : yield* decodeImageDetail(rawDetail)
+  // Strict OpenAI-compatible servers (notably vLLM's /responses surface) validate parts against
+  // openai-python's TypedDicts, where `detail` is a required key even though it "defaults to
+  // auto". JSON.stringify drops undefined values, so always emit the documented default instead
+  // of omitting the key, or the whole request is rejected with `Field required`.
+  const detailValue = detail ?? "auto"
   const mime = part.media.mediaType.toLowerCase()
   const url = ProviderShared.mediaUrl(part.media)
   const location = url ?? (yield* ProviderShared.requireInlineMedia(adapter.name, part.media)).dataUrl
   if (part.media.kind !== "image") {
     if (part.media.kind === "video") return { type: "input_video" as const, video_url: location }
-    if (url) return { type: "input_file" as const, file_url: url, detail }
+    if (url) return { type: "input_file" as const, file_url: url, detail: detailValue }
     return {
       type: "input_file" as const,
       filename: part.filename ?? (mime === "application/pdf" ? "document.pdf" : "file"),
-      detail,
+      detail: detailValue,
       file_data: location,
     }
   }
   return {
     type: "input_image" as const,
     image_url: location,
-    detail,
+    detail: detailValue,
   }
 })
 
