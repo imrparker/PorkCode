@@ -1,3 +1,4 @@
+import type { ConfigProvider } from "@opencode/schema/config/provider"
 import { Effect, Schema } from "effect"
 import { createLocalProviderPlugin } from "./local.js"
 
@@ -25,6 +26,12 @@ const RemoteModel = Schema.Struct({
 
 const Response = Schema.Struct({ models: Schema.Array(RemoteModel) })
 
+// Qwen3.8 thinking levels: the vLLM backend accepts exactly none/low/medium/xhigh and 400s on every other
+// effort (the family has no "high" tier); "none" turns thinking off entirely. Quantized loads of the family
+// keep the same tiers, so the match is on the family rather than one exact key.
+const QWEN38_REASONING: ConfigProvider.Reasoning = { supported: true, effort: ["none", "low", "medium", "xhigh"] }
+const isQwen38 = (key: string) => /qwen3\.8/i.test(key)
+
 export const make = createLocalProviderPlugin({
   id: "opencode.provider.porkagent",
   providerID: "porkagent",
@@ -51,6 +58,8 @@ export const make = createLocalProviderPlugin({
     // LM Studio's /v1/responses reports output_tokens equal to reasoning_tokens whenever a function_call is produced;
     // its chat surface counts arguments correctly but the responses loader is required for cache-hit reporting.
     compatibility: { usageExcludesToolCallTokens: true },
+    // The thinking-level menu ships with the model for every client; per-machine config stays an override.
+    ...(isQwen38(item.key) ? { reasoning: QWEN38_REASONING } : {}),
   }),
 })
 

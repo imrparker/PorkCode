@@ -1,5 +1,6 @@
 import { define } from "@opencode/plugin/effect/plugin"
 import type { Entry } from "@opencode/schema/config"
+import type { ConfigProvider } from "@opencode/schema/config/provider"
 import { Integration } from "@opencode/schema/integration"
 import type { Compatibility } from "@opencode/schema/model-compatibility"
 import { Duration, Effect, Option, Schedule, type Schema, Semaphore, Stream } from "effect"
@@ -12,6 +13,7 @@ import { Environment } from "../../environment/index.js"
 import { EnvironmentUnavailable } from "../../environment/unavailable.js"
 import { Location } from "../../location.js"
 import { Model } from "../../model.js"
+import { Variant } from "../../variant.js"
 import type { PluginInternal } from "../internal.js"
 import { foldSettings } from "./configured.js"
 import { ProviderRefresh } from "./refresh.js"
@@ -25,6 +27,9 @@ export type LocalModel = {
   readonly context?: number | null
   // Endpoint compatibility overrides for every discovered model, e.g. LM Studio's tool-call usage exclusion.
   readonly compatibility?: Compatibility
+  // Reasoning controls the backend honors for this model. Discovered models have no catalog entry, so this is
+  // what spells their variant menu (e.g. the Qwen3.8 family's none/low/medium/xhigh on vLLM).
+  readonly reasoning?: ConfigProvider.Reasoning
 }
 
 export type LocalDiscoveryClient = ReturnType<typeof createClient>
@@ -124,6 +129,15 @@ export function createLocalProviderPlugin<Discovered>(input: {
               }
               if (typeof spec.context === "number" && spec.context > 0) model.limit.context = spec.context
               model.compatibility = spec.compatibility
+              // The provider package is the effective one until a per-model override lands in a later transform.
+              if (spec.reasoning !== undefined) {
+                model.variants = [
+                  ...Variant.resolve(
+                    { ...model, package: model.package ?? (input.package ?? "@opencode/ai/providers/openai-compatible") },
+                    Variant.supports(spec.reasoning),
+                  ),
+                ]
+              }
             })
           }
         })
