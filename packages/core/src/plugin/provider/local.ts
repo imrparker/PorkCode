@@ -233,8 +233,8 @@ function createClient(
   // The old flat 1-second budget assumed a loopback round trip; a backend behind an ngrok-class tunnel or LAN hop
   // measures ~600 ms healthy and exceeds it cold, which silently emptied remote provider lists. Only an explicitly
   // configured remote baseURL gets the longer budget.
-  const timeout = isLoopback(root) ? Duration.seconds(1) : Duration.seconds(5)
-  const timedOut = (path: string) =>
+  const defaultTimeout = isLoopback(root) ? Duration.seconds(1) : Duration.seconds(5)
+  const timedOut = (path: string, timeout: Duration.Input = defaultTimeout) =>
     Effect.timeoutOrElse({
       duration: timeout,
       orElse: () => Effect.fail(new Error(`${endpoint(path)} timed out after ${Duration.toSeconds(timeout)}s`)),
@@ -256,12 +256,15 @@ function createClient(
       bodySchema: Schema.Codec<B, BI>,
       body: B,
       responseSchema: Schema.Codec<A, AI>,
+      // The default budget covers a read round trip; callers that trigger a decode (the vLLM vision
+      // probe) pass a larger one so a cold server is not misread as a refusal.
+      timeout?: Duration.Input,
     ) =>
       auth(HttpClientRequest.post(endpoint(path))).pipe(
         HttpClientRequest.schemaBodyJson(bodySchema)(body),
         Effect.flatMap(http.execute),
         Effect.flatMap(HttpClientResponse.schemaBodyJson(responseSchema)),
-        timedOut(path),
+        timedOut(path, timeout),
       ),
   }
 }

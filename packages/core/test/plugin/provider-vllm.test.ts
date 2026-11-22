@@ -5,10 +5,10 @@ import { Model } from "@opencode/core/model"
 import { Plugin } from "@opencode/core/plugin"
 import { PluginHost } from "@opencode/core/plugin/host"
 import { ProviderPlugins } from "@opencode/core/plugin/provider"
-import { make, VLLMPlugin } from "@opencode/core/plugin/provider/vllm"
+import { make, VLLMPlugin, classifyProbe } from "@opencode/core/plugin/provider/vllm"
 import { Provider } from "@opencode/core/provider"
 import { Document, Event, Info } from "@opencode/schema/config"
-import { describe, expect } from "bun:test"
+import { describe, expect, test } from "bun:test"
 import { Duration, Effect, Layer, Schema } from "effect"
 import { eventually } from "../lib/eventually"
 import { testEffect } from "../lib/effect"
@@ -38,7 +38,7 @@ describe("VLLMPlugin", () => {
   it.live("waits for readiness and discovers official vLLM model metadata", () =>
     Effect.acquireUseRelease(
       Effect.sync(() => {
-        const state = { healthy: false, models: 0 }
+        const state = { healthy: false, models: 0, probes: 0 }
         return {
           state,
           server: Bun.serve({
@@ -46,6 +46,10 @@ describe("VLLMPlugin", () => {
             fetch: (request) => {
               const path = new URL(request.url).pathname
               if (path === "/health") return new Response(null, { status: state.healthy ? 200 : 503 })
+              if (request.method === "POST" && path === "/v1/chat/completions") {
+                state.probes++
+                return Response.json({ id: "cmpl-probe", object: "chat.completion" })
+              }
               state.models++
               return Response.json({
                 object: "list",
@@ -87,13 +91,156 @@ describe("VLLMPlugin", () => {
           expect(model).toMatchObject({
             modelID: "Qwen/Qwen3-Coder",
             name: "Qwen/Qwen3-Coder",
-            capabilities: { tools: false, input: ["text"], output: ["text"] },
+            capabilities: { tools: false, input: ["text", "image"], output: ["text"] },
             limit: { context: 65_536, output: 32_000 },
           })
           expect(yield* modelState.get(providerID, Model.ID.make("unknown-limit"))).toMatchObject({
             limit: { context: 200_000, output: 32_000 },
           })
           expect(yield* modelState.get(providerID, Model.ID.make("foreign-model"))).toBeUndefined()
+          // Both served models are probed once; the verdicts are cached, so refreshes stop probing.
+          expect(state.probes).toBe(2)
+          yield* Effect.promise(() => Bun.sleep(20))
+          expect(state.probes).toBe(2)
+        }),
+      ({ server }) => Effect.promise(() => server.stop(true)),
+    ),
+  )
+
+  it.live("keeps models text-only and caches the verdict when the vision probe is refused", () =>
+    Effect.acquireUseRelease(
+      Effect.sync(() => {
+        const state = { probes: 0 }
+        return {
+          state,
+          server: Bun.serve({
+            port: 0,
+            fetch: (request) => {
+              const path = new URL(request.url).pathname
+              if (path === "/health") return new Response()
+              if (request.method === "POST" && path === "/v1/chat/completions") {
+                state.probes++
+                return new Response(
+                  JSON.stringify({
+                    error: {
+                      message: "Multi-modal processor not available for text-only models",
+                      type: "BadRequestError",
+                      code: 400,
+                    },
+                  }),
+                  { status: 400, headers: { "content-type": "application/json" } },
+                )
+              }
+              return Response.json({ object: "list", data: [remoteModel("text-only-model")] })
+            },
+          }),
+        }
+      }),
+      ({ state, server }) =>
+        Effect.gen(function* () {
+          const modelState = yield* Model.Service
+          const providerID = Provider.ID.make("vllm")
+          yield* addPlugin(server.url.origin, "5 millis")
+          const model = yield* eventually(
+            modelState.get(providerID, Model.ID.make("text-only-model")),
+            (item) => item !== undefined,
+          )
+          expect(model).toMatchObject({
+            modelID: "text-only-model",
+            capabilities: { tools: false, input: ["text"], output: ["text"] },
+          })
+          // A definitive refusal is cached per endpoint and model, so refreshes stop probing.
+          yield* Effect.promise(() => Bun.sleep(20))
+          expect(state.probes).toBe(1)
+        }),
+      ({ server }) => Effect.promise(() => server.stop(true)),
+    ),
+  )
+
+  it.live("keeps models text-only and keeps retrying while the vision probe stays unsettled", () =>
+    Effect.acquireUseRelease(
+      Effect.sync(() => {
+        const state = { probes: 0 }
+        return {
+          state,
+          server: Bun.serve({
+            port: 0,
+            fetch: (request) => {
+              const path = new URL(request.url).pathname
+              if (path === "/health") return new Response()
+              if (request.method === "POST" && path === "/v1/chat/completions") {
+                state.probes++
+                // A model that is not loaded (or a proxy 404) settles nothing.
+                return new Response(JSON.stringify({ error: { message: "The model does not exist" } }), {
+                  status: 404,
+                  headers: { "content-type": "application/json" },
+                })
+              }
+              return Response.json({ object: "list", data: [remoteModel("unloaded-model")] })
+            },
+          }),
+        }
+      }),
+      ({ state, server }) =>
+        Effect.gen(function* () {
+          const modelState = yield* Model.Service
+          const providerID = Provider.ID.make("vllm")
+          yield* addPlugin(server.url.origin, "5 millis")
+          const model = yield* eventually(
+            modelState.get(providerID, Model.ID.make("unloaded-model")),
+            (item) => item !== undefined,
+          )
+          expect(model).toMatchObject({
+            modelID: "unloaded-model",
+            capabilities: { tools: false, input: ["text"], output: ["text"] },
+          })
+          // An unsettled verdict is not cached, so the next discovery cycle retries the probe.
+          const before = state.probes
+          yield* Effect.promise(() => Bun.sleep(30))
+          expect(state.probes).toBeGreaterThan(before)
+        }),
+      ({ server }) => Effect.promise(() => server.stop(true)),
+    ),
+  )
+
+  it.live("keeps a confirmed vision capability through transient probe failures", () =>
+    Effect.acquireUseRelease(
+      Effect.sync(() => {
+        const state = { probes: 0, answering: true }
+        return {
+          state,
+          server: Bun.serve({
+            port: 0,
+            fetch: (request) => {
+              const path = new URL(request.url).pathname
+              if (path === "/health") return new Response()
+              if (request.method === "POST" && path === "/v1/chat/completions") {
+                state.probes++
+                if (!state.answering) return new Response("overloaded", { status: 503 })
+                return Response.json({ id: "cmpl-probe", object: "chat.completion" })
+              }
+              return Response.json({ object: "list", data: [remoteModel("vision-model")] })
+            },
+          }),
+        }
+      }),
+      ({ state, server }) =>
+        Effect.gen(function* () {
+          const modelState = yield* Model.Service
+          const providerID = Provider.ID.make("vllm")
+          yield* addPlugin(server.url.origin, "5 millis")
+          const model = yield* eventually(
+            modelState.get(providerID, Model.ID.make("vision-model")),
+            (item) => item !== undefined,
+          )
+          expect(model).toMatchObject({ capabilities: { input: ["text", "image"] } })
+
+          // A 5xx settles nothing; the confirmed verdict stands instead of flipping to text-only.
+          state.answering = false
+          yield* Effect.promise(() => Bun.sleep(30))
+          expect(yield* modelState.get(providerID, Model.ID.make("vision-model"))).toMatchObject({
+            capabilities: { input: ["text", "image"] },
+          })
         }),
       ({ server }) => Effect.promise(() => server.stop(true)),
     ),
@@ -280,3 +427,23 @@ function configuration(settings: { baseURL?: string; apiKey?: string }) {
     info: decode({ providers: { vllm: { settings } } }),
   })
 }
+
+describe("classifyProbe", () => {
+  test("settles vision on a completed probe", () => {
+    expect(classifyProbe(200, undefined)).toBe(true)
+  })
+
+  test("settles text-only on a refusal that names the modality", () => {
+    expect(classifyProbe(400, "Multi-modal processor not available for text-only models")).toBe(false)
+    expect(classifyProbe(415, "Unexpected item type in content")).toBe(false)
+    expect(classifyProbe(422, "The model does not support image input")).toBe(false)
+  })
+
+  test("leaves everything else open", () => {
+    expect(classifyProbe(404, "The model does not exist")).toBe("unknown")
+    expect(classifyProbe(400, "max_tokens must be positive")).toBe("unknown")
+    expect(classifyProbe(429, "Rate limit reached")).toBe("unknown")
+    expect(classifyProbe(500, "overloaded")).toBe("unknown")
+    expect(classifyProbe(undefined, undefined)).toBe("unknown")
+  })
+})
